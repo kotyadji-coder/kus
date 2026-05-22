@@ -1492,15 +1492,6 @@ p {{ margin: 0; }}
     </div>
     <div class="contact-card">
       <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a1 1 0 01-1 1A16 16 0 014 5a1 1 0 011-1z"/></svg>
-      </div>
-      <div>
-        <div class="label">Телефон</div>
-        <div class="val">+7&nbsp;958&nbsp;111-42-00</div>
-      </div>
-    </div>
-    <div class="contact-card">
-      <div class="ico">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
       </div>
       <div>
