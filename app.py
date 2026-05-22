@@ -31,6 +31,8 @@ PRICES = {
     "barf": 1390,
     "cooked": 1390,
     "dry": 990,
+    "barf_and_dry": 2380,
+    "cooked_and_dry": 2380,
 }
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -108,6 +110,11 @@ async def submit_order(request: Request, background_tasks: BackgroundTasks):
     if data.get("telegram_user_id"):
         data["telegram_user_id"] = int(data["telegram_user_id"])
 
+    # Комбо: натуралка + сухой корм
+    if data.get("diet_type") == "combo":
+        combo_natural = data.get("combo_natural", "barf")
+        data["diet_type"] = f"{combo_natural}_and_dry"
+
     try:
         form = OrderForm(**data)
     except Exception as e:
@@ -147,7 +154,13 @@ async def _create_yookassa_payment(order_id: int, amount: float, form: OrderForm
     auth = base64.b64encode(f"{YOOKASSA_SHOP_ID}:{YOOKASSA_SECRET_KEY}".encode()).decode()
     idempotency_key = str(uuid.uuid4())
 
-    diet_label = "Расчёт натурального рациона" if form.diet_type.value in ("barf", "cooked") else "Подбор сухого корма"
+    dt = form.diet_type.value
+    if dt in ("barf_and_dry", "cooked_and_dry"):
+        diet_label = "Натуралка + сухой корм"
+    elif dt in ("barf", "cooked"):
+        diet_label = "Расчёт натурального рациона"
+    else:
+        diet_label = "Подбор сухого корма"
 
     payload = {
         "amount": {"value": f"{amount:.2f}", "currency": "RUB"},

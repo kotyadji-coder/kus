@@ -254,7 +254,7 @@
             <p class="step-desc">Выберите тип рациона. Вы получите персональный PDF-документ с полным расчётом и рекомендациями.</p>
 
             <label>Тип рациона</label>
-            <div class="hint" style="margin-top:0;margin-bottom:8px;">Не знаете, что выбрать? Сухой корм проще в быту, натуралка полезнее при аллергиях. Нажмите «Помощь» в Telegram-боте <a href="https://t.me/doggifood_bot" style="color:#055ba9;">@doggifood_bot</a> — поможем определиться.</div>
+            <div class="hint" style="margin-top:0;margin-bottom:8px;">Натуралка — видотипичное питание с полным контролем состава. Сухой корм — удобнее в быту. Оба варианта работают, если подобраны правильно.</div>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="diet_type" value="barf" required>
                     <div class="card"><div class="card-title">Натуралка: сырое (BARF) — 1 390 руб.</div><div class="card-desc">Недельное меню с граммовками, список покупок, витамины, схема перевода</div></div></label>
@@ -262,6 +262,18 @@
                     <div class="card"><div class="card-title">Натуралка: варка — 1 390 руб.</div><div class="card-desc">То же самое, но для термообработанного рациона (без костей)</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="dry">
                     <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов в 3 ценовых категориях с честным разбором состава</div></div></label>
+                <label class="card-option"><input type="radio" name="diet_type" value="combo">
+                    <div class="card" style="border-color:#f59e0b;"><div class="card-title">Оба: натуралка + сухой корм — 2 380 руб.</div><div class="card-desc">Получите оба PDF — и рацион натуралки, и подбор лучших кормов</div></div></label>
+            </div>
+
+            <div id="comboSubSection" style="display:none;">
+                <label>Какой тип натуралки?</label>
+                <div class="cards">
+                    <label class="card-option"><input type="radio" name="combo_natural" value="barf">
+                        <div class="card"><div class="card-title">Сырое (BARF)</div><div class="card-desc">С сырыми костями</div></div></label>
+                    <label class="card-option"><input type="radio" name="combo_natural" value="cooked">
+                        <div class="card"><div class="card-title">Варка</div><div class="card-desc">Без костей</div></div></label>
+                </div>
             </div>
 
             <div id="budgetSection" style="display:none;">
@@ -431,13 +443,17 @@
         if (currentStep > 1) showStep(currentStep - 1);
     }
 
-    // Show/hide budget section based on diet_type
+    // Show/hide sections based on diet_type
     document.querySelectorAll('input[name="diet_type"]').forEach(r => {
         r.addEventListener('change', () => {
             const budget = document.getElementById('budgetSection');
-            budget.style.display = (r.value === 'barf' || r.value === 'cooked') ? 'block' : 'none';
+            const combo = document.getElementById('comboSubSection');
+            const needsNatural = (r.value === 'barf' || r.value === 'cooked' || r.value === 'combo');
+            budget.style.display = needsNatural ? 'block' : 'none';
+            combo.style.display = r.value === 'combo' ? 'block' : 'none';
             const btn = document.getElementById('submitBtn');
-            btn.textContent = r.value === 'dry' ? 'Оплатить 990 руб.' : 'Оплатить 1 390 руб.';
+            const prices = {dry: '990', barf: '1 390', cooked: '1 390', combo: '2 380'};
+            btn.textContent = 'Оплатить ' + (prices[r.value] || '1 390') + ' руб.';
         });
     });
 

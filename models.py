@@ -39,6 +39,8 @@ class DietType(str, enum.Enum):
     barf = "barf"
     cooked = "cooked"
     dry = "dry"
+    barf_and_dry = "barf_and_dry"
+    cooked_and_dry = "cooked_and_dry"
 
 class Budget(str, enum.Enum):
     supermarket = "supermarket"

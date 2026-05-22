@@ -42,13 +42,21 @@ async def process_order(order: dict):
         stop_products = parse_stop_products(order.get("stop_products") or "")
 
         # 2. Генерируем PDF
-        if diet_type in ("barf", "cooked"):
+        if diet_type in ("barf_and_dry", "cooked_and_dry"):
+            # Комбо: натуралка + сухой корм — два PDF
+            natural_type = "barf" if diet_type == "barf_and_dry" else "cooked"
+            order_natural = {**order, "diet_type": natural_type}
+            pdf_natural = await _generate_natural_pdf(order_natural, diagnoses, stop_products)
+            pdf_dry = await _generate_dry_food_pdf(order, diagnoses, stop_products)
+            await _deliver(order, pdf_natural)
+            await _deliver(order, pdf_dry)
+            pdf_path = pdf_natural  # для записи в БД
+        elif diet_type in ("barf", "cooked"):
             pdf_path = await _generate_natural_pdf(order, diagnoses, stop_products)
+            await _deliver(order, pdf_path)
         else:
             pdf_path = await _generate_dry_food_pdf(order, diagnoses, stop_products)
-
-        # 3. Доставляем
-        await _deliver(order, pdf_path)
+            await _deliver(order, pdf_path)
 
         # 4. Обновляем статус
         await update_order(order_id, status="done", pdf_path=pdf_path)
