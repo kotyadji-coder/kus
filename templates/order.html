@@ -254,6 +254,7 @@
             <p class="step-desc">Выберите тип рациона. Вы получите персональный PDF-документ с полным расчётом и рекомендациями.</p>
 
             <label>Тип рациона</label>
+            <div class="hint" style="margin-top:0;margin-bottom:8px;">Не знаете, что выбрать? Сухой корм проще в быту, натуралка полезнее при аллергиях. Нажмите «Помощь» в Telegram-боте <a href="https://t.me/doggifood_bot" style="color:#055ba9;">@doggifood_bot</a> — поможем определиться.</div>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="diet_type" value="barf" required>
                     <div class="card"><div class="card-title">Натуралка: сырое (BARF) — 1 390 руб.</div><div class="card-desc">Недельное меню с граммовками, список покупок, витамины, схема перевода</div></div></label>
@@ -377,19 +378,49 @@
         window.scrollTo(0, 0);
     }
 
+    function clearErrors(step) {
+        step.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+        step.querySelectorAll('.error-msg.visible').forEach(el => el.classList.remove('visible'));
+    }
+
+    function showError(input, msg) {
+        input.classList.add('field-error');
+        // Find or create error message element
+        let errEl = input.closest('.card-option')
+            ? input.closest('.cards').nextElementSibling
+            : input.nextElementSibling;
+        if (!errEl || !errEl.classList.contains('error-msg')) {
+            errEl = document.createElement('div');
+            errEl.className = 'error-msg';
+            if (input.type === 'radio') {
+                input.closest('.cards').after(errEl);
+            } else {
+                input.after(errEl);
+            }
+        }
+        errEl.textContent = msg;
+        errEl.classList.add('visible');
+    }
+
     function nextStep() {
         const step = document.querySelector(`.step[data-step="${currentStep}"]`);
+        clearErrors(step);
         const inputs = step.querySelectorAll('[required]');
         let valid = true;
+        const checkedRadios = new Set();
         inputs.forEach(input => {
             if (input.type === 'radio') {
                 const name = input.name;
+                if (checkedRadios.has(name)) return;
+                checkedRadios.add(name);
                 const checked = step.querySelector(`input[name="${name}"]:checked`);
-                if (!checked) { valid = false; }
+                if (!checked) {
+                    valid = false;
+                    showError(input, 'Выберите один из вариантов');
+                }
             } else if (!input.value.trim()) {
                 valid = false;
-                input.classList.add('field-error');
-                setTimeout(() => input.classList.remove('field-error'), 2000);
+                showError(input, 'Заполните это поле');
             }
         });
         if (!valid) return;

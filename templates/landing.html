@@ -377,6 +377,7 @@ a { color: var(--primary); text-decoration: none; }
           <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Инструкция по переходу</strong> — <span style="color:var(--ink-soft)">без срывов ЖКТ</span></span></li>
         </ul>
         <a href="/order" class="btn btn--accent btn--large btn--full">Подобрать корм — 990 &#8381;</a>
+        <a href="/preview/preview_dry_demo.html" target="_blank" style="display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--primary);font-weight:600;">Посмотреть пример PDF &rarr;</a>
       </div>
       <div class="service-card service-card--highlight">
         <div class="service-card__header">
@@ -392,6 +393,7 @@ a { color: var(--primary); text-decoration: none; }
           <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Советы по закупкам</strong> — <span style="color:var(--ink-soft)">где выгоднее покупать</span></span></li>
         </ul>
         <a href="/order" class="btn btn--accent btn--large btn--full">Рассчитать рацион — 1 390 &#8381;</a>
+        <a href="/preview/preview_natural_demo.html" target="_blank" style="display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--primary);font-weight:600;">Посмотреть пример PDF &rarr;</a>
       </div>
     </div>
     <div class="services__note">Оплата онлайн &middot; Результат обычно в течение 2 часов &middot; Поддержка 7 дней после получения</div>
@@ -492,6 +494,18 @@ a { color: var(--primary); text-decoration: none; }
           <button class="faq-item__q">А если рацион не подойдёт? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
           <div class="faq-item__a">У вас 7 дней поддержки — скорректируем. Такое бывает редко, потому что мы учитываем все параметры заранее.</div>
         </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Почему не просто сходить к ветеринару? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Консультация ветеринарного диетолога стоит от 3 000 руб. и требует очного визита. Мы делаем то же самое онлайн, дешевле и с готовым PDF — меню, граммовки, список покупок. При серьёзных диагнозах рекомендуем согласовать результат с ветврачом.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Можно вернуть деньги? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Да. До получения результата — полный возврат без вопросов. Если PDF не доставлен в течение 5 рабочих дней — тоже полный возврат. Подробнее в <a href="/oferta" style="color:var(--primary);">оферте</a>.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Это онлайн-услуга? Работаете по всей России? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Да, полностью онлайн. Вы заполняете анкету на сайте, получаете PDF на email и в Telegram. Работаем по всей России и СНГ.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -504,7 +518,7 @@ a { color: var(--primary); text-decoration: none; }
       <div class="final-cta__bg"></div>
       <div class="final-cta__content">
         <h2 class="section-title" style="color:#fff;font-size:30px;">Хватит гадать —<br>дайте собаке лучшее</h2>
-        <p style="margin-top:16px;font-size:16px;line-height:1.5;color:rgba(255,255,255,0.85);max-width:580px;">Стоимость подбора — дешевле одного визита к ветеринару. А результат — на всю жизнь.</p>
+        <p style="margin-top:16px;font-size:16px;line-height:1.5;color:rgba(255,255,255,0.85);max-width:580px;">Консультация ветеринарного диетолога — от 3 000 руб. Подбор рациона у нас — от 990 руб., онлайн, с готовым PDF и 7 днями поддержки.</p>
         <div class="final-cta__buttons">
           <a href="/order" class="btn btn--white btn--large">Подбор сухого корма — 990 &#8381;</a>
           <a href="/order" class="btn btn--accent btn--large">Расчёт натуралки — 1 390 &#8381;</a>
@@ -531,8 +545,9 @@ a { color: var(--primary); text-decoration: none; }
       <div>
         <div class="footer__heading">Контакты</div>
         <div class="footer__links">
-          <div>площадь Ленина, 3<br>Архангельск</div>
+          <div>Работаем онлайн по всей России</div>
           <div>ежедневно 10:00-20:00</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);">ИП Мищенко А.Е., Архангельск</div>
         </div>
       </div>
       <div>

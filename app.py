@@ -53,7 +53,11 @@ os.makedirs(templates_dir, exist_ok=True)
 os.makedirs(static_dir, exist_ok=True)
 
 templates = Jinja2Templates(directory=templates_dir)
+output_dir = os.path.join(os.path.dirname(__file__), "output")
+os.makedirs(output_dir, exist_ok=True)
+
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+app.mount("/preview", StaticFiles(directory=output_dir), name="preview")
 
 
 # =====================================================================
