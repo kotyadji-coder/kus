@@ -4,6 +4,8 @@
 """
 
 import os
+import base64
+import io
 from datetime import date
 from calculator import DietResult, DietCalculator, DogProfile
 from declension import decline_name
@@ -14,6 +16,17 @@ try:
 except ImportError:
     WEASYPRINT_AVAILABLE = False
 
+
+def _generate_qr_b64(url: str) -> str:
+    """Генерирует QR-код как base64 PNG."""
+    try:
+        import qrcode
+        qr = qrcode.make(url, box_size=4, border=2)
+        buf = io.BytesIO()
+        qr.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode("utf-8")
+    except Exception:
+        return ""
 
 DIET_TYPE_LABELS = {"barf": "BARF (сырое)", "cooked": "Термообработка (варка)"}
 CONDITION_LABELS = {"thin": "Недовес", "athletic": "Норма", "chubby": "Лёгкий перевес", "obese": "Ожирение"}
@@ -139,6 +152,10 @@ def generate_html(result: DietResult) -> str:
     sex_text = "мальчик" if dog.sex == "male" else "девочка"
     doc_id = f"Рацион {dog.name}"
     weight_diff = round(dog.weight_kg - result.ideal_weight_kg, 1)
+
+    # QR-код на бота
+    qr_b64 = _generate_qr_b64("https://t.me/doggifood_bot")
+    qr_img = f'<img src="data:image/png;base64,{qr_b64}" alt="QR" style="width:22mm;height:22mm;">' if qr_b64 else ''
 
     # Склонения клички
     name = dog.name  # именительный
@@ -1563,11 +1580,12 @@ p {{ margin: 0; }}
     </div>
   </div>
 
-  <div class="support-strip">
-    <div>
+  <div class="support-strip" style="display:flex;align-items:center;gap:6mm;">
+    <div style="flex:1;">
       <h3>7 дней бесплатной поддержки</h3>
       <p>Стул не такой? {name} отказался? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
     </div>
+    {f'<div style="flex:0 0 auto;text-align:center;"><div style="background:#fff;border-radius:8px;padding:2mm;">{qr_img}</div><div style="font-size:7pt;color:rgba(255,255,255,0.7);margin-top:2px;">Наведите камеру</div></div>' if qr_img else ''}
   </div>
 
   <div class="bye">
