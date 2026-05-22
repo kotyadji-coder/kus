@@ -13,29 +13,39 @@
         .logo a { text-decoration: none; color: #055ba9; font-size: 24px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
         .logo-icon { width: 32px; height: 32px; border-radius: 8px; background: #055ba9; color: #fff; display: inline-flex; align-items: center; justify-content: center; }
 
-        /* Progress bar */
-        .progress { display: flex; gap: 6px; margin-bottom: 24px; }
-        .progress-dot { flex: 1; height: 4px; border-radius: 2px; background: #ddd; transition: background 0.3s; }
-        .progress-dot.active { background: #055ba9; }
-        .step-label { text-align: center; font-size: 13px; color: #888; margin-bottom: 16px; }
+        /* Progress bar — circles with numbers */
+        .progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 24px; }
+        .progress-step { display: flex; align-items: center; }
+        .progress-circle {
+            width: 36px; height: 36px; border-radius: 50%; border: 2px solid #ddd;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #bbb; background: #fff;
+            transition: all 0.3s;
+        }
+        .progress-circle.active { border-color: #055ba9; background: #055ba9; color: #fff; }
+        .progress-circle.done { border-color: #16a34a; background: #16a34a; color: #fff; }
+        .progress-line { width: 32px; height: 2px; background: #ddd; transition: background 0.3s; }
+        .progress-line.active { background: #055ba9; }
+        .progress-line.done { background: #16a34a; }
 
         /* Steps */
-        .step { display: none; }
+        .step { display: none; animation: fadeIn 0.3s ease; }
         .step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 20px; color: #055ba9; margin-bottom: 6px; }
-        .step-desc { font-size: 14px; color: #777; line-height: 1.5; margin-bottom: 18px; }
+        h2 { font-size: 22px; color: #055ba9; margin-bottom: 6px; }
+        .step-desc { font-size: 14px; color: #777; line-height: 1.5; margin-bottom: 20px; }
 
         /* Form elements */
-        label { display: block; font-size: 17px; font-weight: 700; margin: 20px 0 8px; color: #222; }
+        label { display: block; font-size: 17px; font-weight: 700; margin: 22px 0 8px; color: #222; }
         input[type="text"], input[type="number"], input[type="email"], input[type="tel"],
         select, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 16px; background: white; -webkit-appearance: none;
+            width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 10px;
+            font-size: 16px; background: white; -webkit-appearance: none; transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #055ba9; box-shadow: 0 0 0 3px rgba(5,91,169,0.1); }
         textarea { resize: vertical; min-height: 60px; }
-        .hint { font-size: 12px; color: #999; margin-top: 4px; }
+        .hint { font-size: 13px; color: #999; margin-top: 4px; line-height: 1.4; }
 
         /* Card selectors */
         .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; }
@@ -43,27 +53,40 @@
         .card-option { position: relative; }
         .card-option input { position: absolute; opacity: 0; }
         .card-option .card {
-            border: 2px solid #e0e0e0; border-radius: 10px; padding: 14px;
-            cursor: pointer; transition: all 0.2s; background: white;
+            border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px 14px 14px 16px;
+            cursor: pointer; transition: all 0.2s; background: white; position: relative;
         }
-        .card-option input:checked + .card { border-color: #055ba9; background: #f0f6ff; }
-        .card .card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .card-option .card:hover { border-color: #b0c4de; }
+        .card-option input:checked + .card {
+            border-color: #055ba9; background: #f0f6ff;
+            box-shadow: 0 0 0 1px #055ba9;
+        }
+        .card-option input:checked + .card::after {
+            content: '';
+            position: absolute; top: 10px; right: 10px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #055ba9;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E");
+            background-size: 12px; background-repeat: no-repeat; background-position: center;
+        }
+        .card .card-icon { font-size: 20px; margin-bottom: 4px; }
+        .card .card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; padding-right: 24px; }
         .card .card-desc { font-size: 12px; color: #777; line-height: 1.4; }
 
         /* Buttons */
-        .buttons { display: flex; gap: 10px; margin-top: 24px; }
-        .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .buttons { display: flex; gap: 10px; margin-top: 28px; }
+        .btn { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .btn-back { background: #e8e8e8; color: #555; }
         .btn-next { background: #055ba9; color: white; }
-        .btn-submit { background: #e8751a; color: white; }
+        .btn-submit { background: #e8751a; color: white; font-size: 17px; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
 
         /* Checkbox */
-        .checkbox-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-        .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 12px 14px; background: #f8f9fb; border-radius: 10px; }
+        .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #055ba9; }
 
-        .consent { font-size: 12px; color: #999; margin-top: 16px; }
+        .consent { font-size: 12px; color: #999; margin-top: 16px; line-height: 1.5; }
         .consent a { color: #055ba9; }
 
         /* Datalist */
@@ -71,8 +94,12 @@
 
         /* Validation error */
         .field-error { border-color: #e74c3c !important; }
-        .error-msg { font-size: 12px; color: #e74c3c; margin-top: 4px; display: none; }
+        .error-msg { font-size: 13px; color: #e74c3c; margin-top: 6px; display: none; font-weight: 500; }
         .error-msg.visible { display: block; }
+
+        /* Combo highlight */
+        .card-combo { border-color: #f59e0b !important; }
+        .card-combo .card-badge { display: inline-block; font-size: 11px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 100px; margin-bottom: 6px; }
     </style>
 </head>
 <body>
@@ -84,14 +111,27 @@
         </a>
     </div>
 
-    <div class="progress">
-        <div class="progress-dot active" data-step="1"></div>
-        <div class="progress-dot" data-step="2"></div>
-        <div class="progress-dot" data-step="3"></div>
-        <div class="progress-dot" data-step="4"></div>
-        <div class="progress-dot" data-step="5"></div>
+    <div class="progress" id="progressBar">
+        <div class="progress-step">
+            <div class="progress-circle active" data-step="1">1</div>
+        </div>
+        <div class="progress-line" data-step="2"></div>
+        <div class="progress-step">
+            <div class="progress-circle" data-step="2">2</div>
+        </div>
+        <div class="progress-line" data-step="3"></div>
+        <div class="progress-step">
+            <div class="progress-circle" data-step="3">3</div>
+        </div>
+        <div class="progress-line" data-step="4"></div>
+        <div class="progress-step">
+            <div class="progress-circle" data-step="4">4</div>
+        </div>
+        <div class="progress-line" data-step="5"></div>
+        <div class="progress-step">
+            <div class="progress-circle" data-step="5">5</div>
+        </div>
     </div>
-    <div class="step-label" id="stepLabel">Шаг 1 из 5</div>
 
     <form id="orderForm" method="POST" action="/order">
         {% if telegram_user_id %}
@@ -101,7 +141,7 @@
         <!-- STEP 1: О собаке -->
         <div class="step active" data-step="1">
             <h2>Расскажите о собаке</h2>
-            <p class="step-desc">Эти данные нужны для точного расчёта суточной нормы и подбора продуктов. Чем точнее — тем лучше результат.</p>
+            <p class="step-desc">Эти данные нужны для точного расчёта суточной нормы и подбора продуктов.</p>
 
             <label for="dog_name">Кличка</label>
             <input type="text" id="dog_name" name="dog_name" required placeholder="Барон">
@@ -148,24 +188,20 @@
 
             <label>Пол</label>
             <div class="cards">
-                <label class="card-option">
-                    <input type="radio" name="sex" value="male" required>
-                    <div class="card"><div class="card-title">Мальчик</div></div>
-                </label>
-                <label class="card-option">
-                    <input type="radio" name="sex" value="female">
-                    <div class="card"><div class="card-title">Девочка</div></div>
-                </label>
+                <label class="card-option"><input type="radio" name="sex" value="male" required>
+                    <div class="card"><div class="card-title">Мальчик</div></div></label>
+                <label class="card-option"><input type="radio" name="sex" value="female">
+                    <div class="card"><div class="card-title">Девочка</div></div></label>
             </div>
 
             <div class="checkbox-row">
                 <input type="checkbox" id="neutered" name="neutered">
-                <label for="neutered" style="margin:0;font-weight:normal;">Кастрирован / стерилизована</label>
+                <label for="neutered" style="margin:0;font-weight:normal;font-size:15px;">Кастрирован / стерилизована</label>
             </div>
 
             <label for="weight_kg">Текущий вес (кг)</label>
             <input type="number" id="weight_kg" name="weight_kg" required min="0.5" max="150" step="0.1" placeholder="25">
-            <div class="hint">Если не знаете точно — приблизительно, это нормально</div>
+            <div class="hint">Приблизительно тоже подойдёт</div>
 
             <div class="buttons">
                 <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
@@ -175,44 +211,44 @@
         <!-- STEP 2: Рацион и активность -->
         <div class="step" data-step="2">
             <h2>Активность и кондиция</h2>
-            <p class="step-desc">Помогает рассчитать калорийность рациона. Порция для дивана и для охотника — разные вещи.</p>
+            <p class="step-desc">Порция для дивана и для охотника — разные вещи. Это влияет на калорийность.</p>
 
             <label>Что ест сейчас?</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="current_food" value="dry" required>
-                    <div class="card"><div class="card-title">Сухой корм</div></div></label>
+                    <div class="card"><div class="card-icon">🥣</div><div class="card-title">Сухой корм</div></div></label>
                 <label class="card-option"><input type="radio" name="current_food" value="porridge">
-                    <div class="card"><div class="card-title">Каши с мясом</div></div></label>
+                    <div class="card"><div class="card-icon">🍲</div><div class="card-title">Каши с мясом</div></div></label>
                 <label class="card-option"><input type="radio" name="current_food" value="natural">
-                    <div class="card"><div class="card-title">Натуралка</div></div></label>
+                    <div class="card"><div class="card-icon">🥩</div><div class="card-title">Натуралка</div></div></label>
                 <label class="card-option"><input type="radio" name="current_food" value="table">
-                    <div class="card"><div class="card-title">Еда со стола</div></div></label>
+                    <div class="card"><div class="card-icon">🍽</div><div class="card-title">Еда со стола</div></div></label>
                 <label class="card-option"><input type="radio" name="current_food" value="mixed">
-                    <div class="card"><div class="card-title">Смешанное (корм + обычная еда)</div></div></label>
+                    <div class="card"><div class="card-icon">🔀</div><div class="card-title">Смешанное (корм + обычная еда)</div></div></label>
             </div>
 
             <label>Кондиция (упитанность)</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="condition" value="thin" required>
-                    <div class="card"><div class="card-title">Худышка</div><div class="card-desc">Рёбра и позвоночник сильно торчат</div></div></label>
+                    <div class="card"><div class="card-icon">🦴</div><div class="card-title">Худышка</div><div class="card-desc">Рёбра и позвоночник сильно торчат</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="athletic">
-                    <div class="card"><div class="card-title">Атлет</div><div class="card-desc">Рёбра прощупываются, талия видна, вес идеальный</div></div></label>
+                    <div class="card"><div class="card-icon">💪</div><div class="card-title">Атлет</div><div class="card-desc">Рёбра прощупываются, талия видна</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="chubby">
-                    <div class="card"><div class="card-title">Пончик</div><div class="card-desc">Рёбра найти сложно, талии почти нет</div></div></label>
+                    <div class="card"><div class="card-icon">🍩</div><div class="card-title">Пончик</div><div class="card-desc">Рёбра найти сложно, талии почти нет</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="obese">
-                    <div class="card"><div class="card-title">Колобок</div><div class="card-desc">Ожирение, собаке тяжело двигаться</div></div></label>
+                    <div class="card"><div class="card-icon">🏋️</div><div class="card-title">Колобок</div><div class="card-desc">Ожирение, тяжело двигаться</div></div></label>
             </div>
 
             <label>Активность</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="activity" value="lazy" required>
-                    <div class="card"><div class="card-title">Ленивая</div><div class="card-desc">Гуляем мало, в основном спит</div></div></label>
+                    <div class="card"><div class="card-icon">😴</div><div class="card-title">Ленивая</div><div class="card-desc">Гуляем мало, в основном спит</div></div></label>
                 <label class="card-option"><input type="radio" name="activity" value="moderate">
-                    <div class="card"><div class="card-title">Средняя</div><div class="card-desc">2-3 прогулки, игры с мячом</div></div></label>
+                    <div class="card"><div class="card-icon">🐕</div><div class="card-title">Средняя</div><div class="card-desc">2-3 прогулки, игры с мячом</div></div></label>
                 <label class="card-option"><input type="radio" name="activity" value="high">
-                    <div class="card"><div class="card-title">Высокая</div><div class="card-desc">Спорт, охота, рабочая собака</div></div></label>
+                    <div class="card"><div class="card-icon">🏃</div><div class="card-title">Высокая</div><div class="card-desc">Спорт, охота, рабочая собака</div></div></label>
                 <label class="card-option"><input type="radio" name="activity" value="puppy">
-                    <div class="card"><div class="card-title">Растущий организм</div><div class="card-desc">Активный щенок</div></div></label>
+                    <div class="card"><div class="card-icon">🐶</div><div class="card-title">Растущий организм</div><div class="card-desc">Активный щенок</div></div></label>
             </div>
 
             <div class="buttons">
@@ -224,22 +260,22 @@
         <!-- STEP 3: Здоровье -->
         <div class="step" data-step="3">
             <h2>Здоровье</h2>
-            <p class="step-desc">Если есть диагнозы или проблемы с ЖКТ — мы учтём это при подборе. Некоторые продукты и корма противопоказаны при определённых заболеваниях.</p>
+            <p class="step-desc">Некоторые продукты и корма противопоказаны при определённых заболеваниях. Учтём это при подборе.</p>
 
-            <label for="diagnoses">Есть ли подтверждённые диагнозы?</label>
+            <label for="diagnoses">Есть ли диагнозы?</label>
             <textarea id="diagnoses" name="diagnoses" placeholder="Гастрит, панкреатит, аллергия... Если нет — оставьте пустым"></textarea>
             <div class="hint">Не уверены — напишите как есть, мы разберёмся</div>
 
             <label>Как дела со стулом?</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="stool" value="good" required>
-                    <div class="card"><div class="card-title">Отличный</div><div class="card-desc">Оформленный, 1-2 раза в день</div></div></label>
+                    <div class="card"><div class="card-icon">✅</div><div class="card-title">Отличный</div><div class="card-desc">Оформленный, 1-2 раза в день</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="loose">
-                    <div class="card"><div class="card-title">Часто жидкий</div></div></label>
+                    <div class="card"><div class="card-icon">💧</div><div class="card-title">Часто жидкий</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="constipation">
-                    <div class="card"><div class="card-title">Бывают запоры</div></div></label>
+                    <div class="card"><div class="card-icon">⏸</div><div class="card-title">Бывают запоры</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="high_volume">
-                    <div class="card"><div class="card-title">Много и часто</div><div class="card-desc">Может говорить о плохом усвоении корма</div></div></label>
+                    <div class="card"><div class="card-icon">📦</div><div class="card-title">Много и часто</div><div class="card-desc">Может говорить о плохом усвоении корма</div></div></label>
             </div>
 
             <div class="buttons">
@@ -251,28 +287,28 @@
         <!-- STEP 4: Что подбираем -->
         <div class="step" data-step="4">
             <h2>Что подбираем</h2>
-            <p class="step-desc">Выберите тип рациона. Вы получите персональный PDF-документ с полным расчётом и рекомендациями.</p>
+            <p class="step-desc">Вы получите персональный PDF с полным расчётом и рекомендациями.</p>
 
             <label>Тип рациона</label>
-            <div class="hint" style="margin-top:0;margin-bottom:8px;">Натуралка — видотипичное питание с полным контролем состава. Сухой корм — удобнее в быту. Оба варианта работают, если подобраны правильно.</div>
+            <div class="hint" style="margin-top:0;margin-bottom:10px;">Натуралка — видотипичное питание с полным контролем состава. Сухой корм — удобнее в быту. Оба варианта работают, если подобраны правильно.</div>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="diet_type" value="barf" required>
-                    <div class="card"><div class="card-title">Натуралка: сырое (BARF) — 1 390 руб.</div><div class="card-desc">Недельное меню с граммовками, список покупок, витамины, схема перевода</div></div></label>
+                    <div class="card"><div class="card-icon">🥩</div><div class="card-title">Натуралка: сырое (BARF) — 1 390 руб.</div><div class="card-desc">Недельное меню, граммовки, список покупок, витамины, схема перевода</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="cooked">
-                    <div class="card"><div class="card-title">Натуралка: варка — 1 390 руб.</div><div class="card-desc">То же самое, но для термообработанного рациона (без костей)</div></div></label>
+                    <div class="card"><div class="card-icon">🍳</div><div class="card-title">Натуралка: варка — 1 390 руб.</div><div class="card-desc">То же самое, но для термообработанного рациона (без костей)</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="dry">
-                    <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов в 3 ценовых категориях с честным разбором состава</div></div></label>
+                    <div class="card"><div class="card-icon">🥣</div><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов в 3 ценовых категориях с разбором состава</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="combo">
-                    <div class="card" style="border-color:#f59e0b;"><div class="card-title">Оба: натуралка + сухой корм — 1 950 руб.</div><div class="card-desc">Получите оба PDF — и рацион натуралки, и подбор лучших кормов</div></div></label>
+                    <div class="card card-combo"><div class="card-badge">Экономия 430 руб.</div><div class="card-icon">⭐</div><div class="card-title">Комбо: натуралка + сухой — 1 950 руб.</div><div class="card-desc">Два полных PDF — натуралка дома, корм в поездку</div></div></label>
             </div>
 
             <div id="comboSubSection" style="display:none;">
                 <label>Какой тип натуралки?</label>
                 <div class="cards">
                     <label class="card-option"><input type="radio" name="combo_natural" value="barf">
-                        <div class="card"><div class="card-title">Сырое (BARF)</div><div class="card-desc">С сырыми костями</div></div></label>
+                        <div class="card"><div class="card-icon">🥩</div><div class="card-title">Сырое (BARF)</div><div class="card-desc">С сырыми костями</div></div></label>
                     <label class="card-option"><input type="radio" name="combo_natural" value="cooked">
-                        <div class="card"><div class="card-title">Варка</div><div class="card-desc">Без костей</div></div></label>
+                        <div class="card"><div class="card-icon">🍳</div><div class="card-title">Варка</div><div class="card-desc">Без костей</div></div></label>
                 </div>
             </div>
 
@@ -280,17 +316,17 @@
                 <label>Где покупаете продукты?</label>
                 <div class="cards single-col">
                     <label class="card-option"><input type="radio" name="budget" value="supermarket">
-                        <div class="card"><div class="card-title">Супермаркет</div><div class="card-desc">Курица, индейка, говядина</div></div></label>
+                        <div class="card"><div class="card-icon">🏪</div><div class="card-title">Супермаркет</div><div class="card-desc">Курица, индейка, говядина</div></div></label>
                     <label class="card-option"><input type="radio" name="budget" value="market">
-                        <div class="card"><div class="card-title">Рынок / мясные магазины</div><div class="card-desc">Рубец, лёгкие, печень, разные виды мяса</div></div></label>
+                        <div class="card"><div class="card-icon">🏬</div><div class="card-title">Рынок / мясные магазины</div><div class="card-desc">Рубец, печень, разные виды мяса</div></div></label>
                     <label class="card-option"><input type="radio" name="budget" value="unlimited">
-                        <div class="card"><div class="card-title">Не ограничено</div><div class="card-desc">Кролик, утка, лосось и т.д.</div></div></label>
+                        <div class="card"><div class="card-icon">✨</div><div class="card-title">Не ограничено</div><div class="card-desc">Кролик, утка, лосось и т.д.</div></div></label>
                 </div>
             </div>
 
-            <label for="stop_products">Стоп-продукты (аллергия, непереносимость)</label>
+            <label for="stop_products">Стоп-продукты</label>
             <textarea id="stop_products" name="stop_products" placeholder="Курица, говядина... Если нет — оставьте пустым"></textarea>
-            <div class="hint">Эти продукты будут полностью исключены из рациона</div>
+            <div class="hint">Аллергия, непереносимость — эти продукты будут полностью исключены</div>
 
             <div class="buttons">
                 <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
@@ -330,24 +366,16 @@
     let currentStep = 1;
     const totalSteps = 5;
     const STORAGE_KEY = 'kus_order_form';
+    const CHECK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>';
 
-    const stepLabels = [
-        '', 'Шаг 1 из 5', 'Шаг 2 из 5', 'Шаг 3 из 5', 'Шаг 4 из 5', 'Шаг 5 из 5'
-    ];
-
-    // --- Save / Restore form data ---
     function saveForm() {
         const form = document.getElementById('orderForm');
         const data = {};
         for (const el of form.elements) {
             if (!el.name || el.type === 'hidden') continue;
-            if (el.type === 'radio') {
-                if (el.checked) data[el.name] = el.value;
-            } else if (el.type === 'checkbox') {
-                data[el.name] = el.checked;
-            } else {
-                data[el.name] = el.value;
-            }
+            if (el.type === 'radio') { if (el.checked) data[el.name] = el.value; }
+            else if (el.type === 'checkbox') { data[el.name] = el.checked; }
+            else { data[el.name] = el.value; }
         }
         data._step = currentStep;
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
@@ -363,28 +391,35 @@
             if (el.type === 'radio') {
                 el.checked = (el.value === data[el.name]);
                 if (el.checked) el.dispatchEvent(new Event('change', {bubbles: true}));
-            } else if (el.type === 'checkbox') {
-                el.checked = data[el.name];
-            } else {
-                el.value = data[el.name];
-            }
+            } else if (el.type === 'checkbox') { el.checked = data[el.name]; }
+            else { el.value = data[el.name]; }
         }
-        if (data._step && data._step > 1 && data._step <= totalSteps) {
-            showStep(data._step);
-        }
+        if (data._step && data._step > 1 && data._step <= totalSteps) showStep(data._step);
     }
 
-    // Save on every input change
     document.getElementById('orderForm').addEventListener('input', saveForm);
     document.getElementById('orderForm').addEventListener('change', saveForm);
+
+    function updateProgress(n) {
+        document.querySelectorAll('.progress-circle').forEach(c => {
+            const s = parseInt(c.dataset.step);
+            c.className = 'progress-circle';
+            if (s < n) { c.classList.add('done'); c.innerHTML = CHECK_SVG; }
+            else if (s === n) { c.classList.add('active'); c.textContent = s; }
+            else { c.textContent = s; }
+        });
+        document.querySelectorAll('.progress-line').forEach(l => {
+            const s = parseInt(l.dataset.step);
+            l.className = 'progress-line';
+            if (s < n) l.classList.add('done');
+            else if (s === n) l.classList.add('active');
+        });
+    }
 
     function showStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
-        document.querySelectorAll('.progress-dot').forEach(d => {
-            d.classList.toggle('active', parseInt(d.dataset.step) <= n);
-        });
-        document.getElementById('stepLabel').textContent = stepLabels[n];
+        updateProgress(n);
         currentStep = n;
         saveForm();
         window.scrollTo(0, 0);
@@ -397,18 +432,14 @@
 
     function showError(input, msg) {
         input.classList.add('field-error');
-        // Find or create error message element
         let errEl = input.closest('.card-option')
             ? input.closest('.cards').nextElementSibling
             : input.nextElementSibling;
         if (!errEl || !errEl.classList.contains('error-msg')) {
             errEl = document.createElement('div');
             errEl.className = 'error-msg';
-            if (input.type === 'radio') {
-                input.closest('.cards').after(errEl);
-            } else {
-                input.after(errEl);
-            }
+            if (input.type === 'radio') { input.closest('.cards').after(errEl); }
+            else { input.after(errEl); }
         }
         errEl.textContent = msg;
         errEl.classList.add('visible');
@@ -425,8 +456,7 @@
                 const name = input.name;
                 if (checkedRadios.has(name)) return;
                 checkedRadios.add(name);
-                const checked = step.querySelector(`input[name="${name}"]:checked`);
-                if (!checked) {
+                if (!step.querySelector(`input[name="${name}"]:checked`)) {
                     valid = false;
                     showError(input, 'Выберите один из вариантов');
                 }
@@ -439,17 +469,13 @@
         if (currentStep < totalSteps) showStep(currentStep + 1);
     }
 
-    function prevStep() {
-        if (currentStep > 1) showStep(currentStep - 1);
-    }
+    function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
 
-    // Show/hide sections based on diet_type
     document.querySelectorAll('input[name="diet_type"]').forEach(r => {
         r.addEventListener('change', () => {
             const budget = document.getElementById('budgetSection');
             const combo = document.getElementById('comboSubSection');
-            const needsNatural = (r.value === 'barf' || r.value === 'cooked' || r.value === 'combo');
-            budget.style.display = needsNatural ? 'block' : 'none';
+            budget.style.display = (r.value === 'barf' || r.value === 'cooked' || r.value === 'combo') ? 'block' : 'none';
             combo.style.display = r.value === 'combo' ? 'block' : 'none';
             const btn = document.getElementById('submitBtn');
             const prices = {dry: '990', barf: '1 390', cooked: '1 390', combo: '1 950'};
@@ -457,14 +483,12 @@
         });
     });
 
-    // Prevent double submit + clear storage on success
     document.getElementById('orderForm').addEventListener('submit', function() {
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('submitBtn').textContent = 'Отправляем...';
         try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     });
 
-    // Restore on page load
     restoreForm();
 </script>
 </body>
