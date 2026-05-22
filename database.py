@@ -15,7 +15,37 @@ async def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS support_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                user_name TEXT,
+                username TEXT,
+                direction TEXT,
+                message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         await db.commit()
+
+
+async def log_support(user_id: int, user_name: str, username: str, direction: str, message: str):
+    """direction: 'in' (от клиента) или 'out' (ответ админа)"""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO support_log (user_id, user_name, username, direction, message) VALUES (?, ?, ?, ?, ?)",
+            (user_id, user_name, username, direction, message),
+        )
+        await db.commit()
+
+
+async def get_support_logs(limit: int = 100):
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(
+            "SELECT * FROM support_log ORDER BY created_at DESC LIMIT ?", (limit,)
+        ) as cursor:
+            return await cursor.fetchall()
 
 
 async def add_user(user_id: int, first_name: str, track: str):

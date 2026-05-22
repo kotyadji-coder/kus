@@ -286,6 +286,64 @@ async def admin_page(request: Request):
     })
 
 
+@app.get("/admin/support", response_class=HTMLResponse)
+async def admin_support(request: Request):
+    from database import get_support_logs
+    logs = await get_support_logs(200)
+    # Группируем по user_id для удобного просмотра
+    conversations = {}
+    for log in reversed(list(logs)):
+        uid = log["user_id"]
+        if uid not in conversations:
+            conversations[uid] = {"name": log["user_name"], "username": log["username"], "messages": []}
+        conversations[uid]["messages"].append({
+            "direction": log["direction"],
+            "message": log["message"],
+            "time": log["created_at"],
+        })
+    html = """<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Поддержка — Кусь</title>
+    <style>
+    body{font-family:system-ui,sans-serif;background:#f5f7fa;margin:0;padding:20px;}
+    .container{max-width:800px;margin:0 auto;}
+    h1{color:#055ba9;margin-bottom:20px;}
+    .conv{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:16px;overflow:hidden;}
+    .conv-header{padding:14px 18px;background:#f8f9fb;border-bottom:1px solid #e2e8f0;font-weight:700;font-size:15px;}
+    .conv-header span{color:#888;font-weight:400;font-size:13px;margin-left:8px;}
+    .msg{padding:10px 18px;border-bottom:1px solid #f0f0f0;font-size:14px;display:flex;gap:10px;align-items:flex-start;}
+    .msg:last-child{border-bottom:none;}
+    .msg-in{background:#fff;}
+    .msg-out{background:#f0f6ff;}
+    .msg-dir{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;margin-top:2px;}
+    .msg-in .msg-dir{background:#fee2e2;color:#dc2626;}
+    .msg-out .msg-dir{background:#dcfce7;color:#16a34a;}
+    .msg-text{flex:1;line-height:1.5;}
+    .msg-time{flex:0 0 auto;font-size:11px;color:#999;margin-top:3px;}
+    .back{display:inline-block;margin-bottom:16px;color:#055ba9;text-decoration:none;font-weight:600;}
+    .empty{color:#999;text-align:center;padding:40px;}
+    </style></head><body><div class="container">
+    <a href="/admin" class="back">&larr; Заказы</a>
+    <h1>Диалоги поддержки</h1>"""
+
+    if not conversations:
+        html += '<div class="empty">Пока нет обращений</div>'
+    else:
+        for uid, conv in conversations.items():
+            name = conv["name"] or "Без имени"
+            uname = f'@{conv["username"]}' if conv["username"] else ""
+            html += f'<div class="conv"><div class="conv-header">{name} <span>{uname} · ID {uid}</span></div>'
+            for m in conv["messages"]:
+                cls = "msg-in" if m["direction"] == "in" else "msg-out"
+                label = "Клиент" if m["direction"] == "in" else "Вы"
+                time_str = m["time"][:16] if m["time"] else ""
+                text = m["message"].replace("<", "&lt;").replace(">", "&gt;")
+                html += f'<div class="msg {cls}"><div class="msg-dir">{label}</div><div class="msg-text">{text}</div><div class="msg-time">{time_str}</div></div>'
+            html += '</div>'
+
+    html += '</div></body></html>'
+    return HTMLResponse(html)
+
+
 # =====================================================================
 # Запуск
 # =====================================================================

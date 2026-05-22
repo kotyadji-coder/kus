@@ -14,7 +14,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from dotenv import load_dotenv
 
-from database import init_db, add_user, get_user, increment_step, get_users_at_step
+from database import init_db, add_user, get_user, increment_step, get_users_at_step, log_support
 from messages import (
     WELCOME, TRUST, NATURAL_PRAISE, NATURAL, DRY_PRAISE, DRY,
 )
@@ -142,6 +142,7 @@ async def admin_reply(message: Message):
 
     try:
         await bot.send_message(client_id, message.text)
+        await log_support(client_id, "", "", "out", message.text)
         await message.reply("Отправлено клиенту.")
     except Exception as e:
         await message.reply(f"Ошибка отправки: {e}")
@@ -166,18 +167,20 @@ async def user_message(message: Message):
 
     _waiting_support.discard(user_id)
 
-    # Формируем сообщение для админа (БЕЗ пересылки — чтобы не светить данные)
     name = user.first_name or ""
-    username = f" (@{user.username})" if user.username else ""
+    uname = user.username or ""
+    username_display = f" (@{uname})" if uname else ""
     admin_text = (
-        f"Вопрос от {name}{username}\n"
+        f"Вопрос от {name}{username_display}\n"
         f"ID: {user_id}\n"
         f"────────────\n"
         f"{message.text}"
     )
 
+    # Логируем входящее сообщение
+    await log_support(user_id, name, uname, "in", message.text)
+
     sent = await bot.send_message(ADMIN_ID, admin_text)
-    # Сохраняем связь: message_id у админа → user_id клиента
     _support_map[sent.message_id] = user_id
 
     await message.answer(
