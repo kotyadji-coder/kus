@@ -238,7 +238,7 @@ def _send_email_pdf(email: str, pdf_path: str, order: dict):
     body = (
         f"Здравствуйте, {order['client_name']}!\n\n"
         f"Во вложении — персональный {diet_label} для {order['dog_name']}.\n"
-        f"У вас 7 дней поддержки. Пишите нам в Telegram: @doggi_arh\n\n"
+        f"У вас 7 дней поддержки. Пишите нам в Telegram: @doggifood_bot\n\n"
         f"С заботой о вашем питомце,\nКоманда Doggi"
     )
     msg.attach(MIMEText(body, "plain", "utf-8"))

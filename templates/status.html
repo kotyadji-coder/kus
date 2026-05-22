@@ -43,19 +43,19 @@
                 <div class="status-desc">
                     PDF отправлен на {{ order.email }}
                     {% if order.telegram_user_id %}<br>и в Telegram{% endif %}.
-                    <br><br>Не получили? Напишите нам в <a href="https://t.me/doggi_arh">Telegram</a>.
+                    <br><br>Не получили? Напишите нам в <a href="https://t.me/doggifood_bot">Telegram</a>.
                     <br><br>У вас 7 дней поддержки — задавайте любые вопросы!
                 </div>
             {% elif order.status == 'error' %}
                 <div class="status-icon">&#9888;</div>
                 <div class="status-text">Что-то пошло не так</div>
-                <div class="status-desc">Мы уже знаем о проблеме и скоро всё исправим.<br>Напишите нам: <a href="https://t.me/doggi_arh">@doggi_arh</a></div>
+                <div class="status-desc">Мы уже знаем о проблеме и скоро всё исправим.<br>Напишите нам: <a href="https://t.me/doggifood_bot">@doggifood_bot</a></div>
             {% endif %}
         </div>
     </div>
 
     <div class="contacts">
-        Вопросы? <a href="https://t.me/doggi_arh">Telegram @doggi_arh</a>
+        Вопросы? <a href="https://t.me/doggifood_bot">Telegram @doggifood_bot</a>
     </div>
 </div>
 

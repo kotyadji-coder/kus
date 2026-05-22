@@ -1257,7 +1257,7 @@ p {{ margin: 0; }}
     </div>
   </div>
   <div class="cover-footer">
-    <div>kus.dogfine.ru · @doggi_arh</div>
+    <div>kus.dogfine.ru · @doggifood_bot</div>
     <div>Кусь · Подбор рациона для собак</div>
     <div>стр. 1 / {total_pages}</div>
   </div>
@@ -1487,7 +1487,7 @@ p {{ margin: 0; }}
       </div>
       <div>
         <div class="label">Telegram-бот</div>
-        <div class="val">@doggi_arh</div>
+        <div class="val">@doggifood_bot</div>
       </div>
     </div>
     <div class="contact-card">

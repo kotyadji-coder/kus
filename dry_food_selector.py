@@ -955,7 +955,7 @@ p {{ margin:0; }}
     </div>
   </div>
   <div class="cover-footer">
-    <div>kus.dogfine.ru · @doggi_arh</div>
+    <div>kus.dogfine.ru · @doggifood_bot</div>
     <div>Кусь · Подбор сухого корма</div>
     <div>стр. 1 / {total_pages}</div>
   </div>
@@ -1127,7 +1127,7 @@ p {{ margin:0; }}
   <div class="contact-grid">
     <div class="contact-card">
       <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg></div>
-      <div><div class="label">Telegram-бот</div><div class="val">@doggi_arh</div></div>
+      <div><div class="label">Telegram-бот</div><div class="val">@doggifood_bot</div></div>
     </div>
     <div class="contact-card">
       <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
