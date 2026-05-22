@@ -358,6 +358,46 @@ async def admin_support(request: Request, user: str = Depends(verify_admin)):
     return HTMLResponse(html)
 
 
+@app.get("/admin/evals/preview/{idx}", response_class=HTMLResponse)
+async def eval_preview(idx: int, user: str = Depends(verify_admin)):
+    """Генерирует PDF-превью для тестового профиля по индексу."""
+    from evals import PROFILES
+    from calculator import DietCalculator, DogProfile
+    import pdf_generator
+    from dry_food_selector import DryFoodSelector, DogProfileDry, generate_dry_food_html
+
+    if idx < 0 or idx >= len(PROFILES):
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    p = PROFILES[idx]
+    calc = DietCalculator()
+
+    if p["diet_type"] in ("barf", "cooked"):
+        dog = DogProfile(
+            name=p["name"], breed=p["breed"], age_months=p["age_months"],
+            sex=p["sex"], neutered=p["neutered"], weight_kg=p["weight_kg"],
+            current_food="dry", condition=p["condition"], activity=p["activity"],
+            diagnoses=p.get("diagnoses", []), stool="good",
+            diet_type=p["diet_type"], budget=p["budget"],
+            stop_products=p.get("stop_products", []),
+        )
+        result = calc.calculate(dog)
+        html = pdf_generator.generate_html(result)
+    else:
+        dog = DogProfileDry(
+            name=p["name"], breed=p["breed"], age_months=p["age_months"],
+            sex=p["sex"], neutered=p["neutered"], weight_kg=p["weight_kg"],
+            condition=p["condition"], activity=p["activity"],
+            diagnoses=p.get("diagnoses", []), stool="good",
+            stop_products=p.get("stop_products", []),
+        )
+        selector = DryFoodSelector()
+        result = selector.select(dog)
+        html = generate_dry_food_html(result)
+
+    return HTMLResponse(html)
+
+
 @app.get("/admin/evals", response_class=HTMLResponse)
 async def admin_evals(request: Request, user: str = Depends(verify_admin)):
     from evals import run_evals
@@ -398,7 +438,7 @@ async def admin_evals(request: Request, user: str = Depends(verify_admin)):
     <p class="subtitle">10 тестовых профилей, 7 проверок на каждом. Прогон: автоматический.</p>
     <div class="avg">Средний балл: {avg_score}%</div>"""
 
-    for r in results:
+    for idx, r in enumerate(results):
         p = r["profile"]
         sc = r["score"]
         sc_bg = '#dcfce7' if sc >= 90 else '#fef3c7' if sc >= 70 else '#fee2e2'
@@ -406,7 +446,10 @@ async def admin_evals(request: Request, user: str = Depends(verify_admin)):
         html += f'''<div class="profile">
         <div class="profile-header">
           <div><div class="profile-name">{p["name"]} — {p["label"]}</div></div>
-          <div class="profile-score" style="background:{sc_bg};color:{sc_color};">{sc}%</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <a href="/admin/evals/preview/{idx}" target="_blank" style="font-size:12px;font-weight:600;color:#055ba9;text-decoration:none;padding:4px 10px;border:1px solid #055ba9;border-radius:6px;">Открыть PDF</a>
+            <div class="profile-score" style="background:{sc_bg};color:{sc_color};">{sc}%</div>
+          </div>
         </div>
         <div class="profile-meta">
           <span>{p["breed"]}</span><span>{p["weight_kg"]} кг</span><span>{p["age_months"]} мес.</span>
