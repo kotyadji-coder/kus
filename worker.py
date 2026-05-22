@@ -115,26 +115,38 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
         result.warnings
     )
 
-    # AI персональный анализ
+    # AI персональный анализ — передаём ВСЕ данные расчёта
     diet_summary = {
         "ideal_weight_kg": result.ideal_weight_kg,
+        "current_weight_kg": dog.weight_kg,
+        "weight_diff": round(dog.weight_kg - result.ideal_weight_kg, 1),
         "daily_grams": result.daily_grams,
+        "rer_kcal": result.rer_kcal,
         "mer_kcal": result.mer_kcal,
+        "ca_total_mg": result.ca_total_mg,
+        "p_total_mg": result.p_total_mg,
         "ca_p_ratio": result.ca_p_ratio,
         "meals_per_day": result.meals_per_day,
         "diet_type": dog.diet_type,
-        "supplements": [s["name"] for s in result.supplements],
+        "distribution": {k: round(v) for k, v in result.distribution.items() if v > 0},
+        "supplements": result.supplements,
         "warnings": result.warnings,
         "cost_per_day": result.cost_per_day,
         "cost_per_month": result.cost_per_month,
+        "puppy_note": result.puppy_next_recalc,
+        "cooking_tips": result.cooking_tips,
+    }
+    dog_profile_full = {
+        "name": dog.name, "breed": dog.breed, "weight_kg": dog.weight_kg,
+        "age_months": dog.age_months, "sex": dog.sex, "neutered": dog.neutered,
+        "condition": dog.condition, "activity": dog.activity,
+        "diagnoses": diagnoses, "stop_products": stop_products,
+        "pregnant": dog.pregnant, "lactating": dog.lactating,
+        "stool": dog.stool, "diet_type": dog.diet_type,
+        "season": dog.season,
     }
     result.ai_analysis = await asyncio.to_thread(generate_personal_analysis,
-        {"name": dog.name, "breed": dog.breed, "weight_kg": dog.weight_kg,
-         "age_months": dog.age_months, "sex": dog.sex, "neutered": dog.neutered,
-         "condition": dog.condition, "activity": dog.activity,
-         "diagnoses": diagnoses, "stop_products": stop_products,
-         "pregnant": dog.pregnant, "lactating": dog.lactating,
-         "stool": dog.stool, "diet_type": dog.diet_type},
+        dog_profile_full,
         diet_summary
     )
 
