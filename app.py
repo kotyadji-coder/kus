@@ -12,8 +12,10 @@ import os
 import uuid
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, BackgroundTasks, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+import secrets
+from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, Depends
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
@@ -26,6 +28,18 @@ from worker import process_order
 # --- Config ---
 YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID", "")
 YOOKASSA_SECRET_KEY = os.getenv("YOOKASSA_SECRET_KEY", "")
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASS = os.getenv("ADMIN_PASS", "kus2026")
+
+security = HTTPBasic()
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_user = secrets.compare_digest(credentials.username, ADMIN_USER)
+    correct_pass = secrets.compare_digest(credentials.password, ADMIN_PASS)
+    if not (correct_user and correct_pass):
+        raise HTTPException(status_code=401, detail="Unauthorized",
+                            headers={"WWW-Authenticate": "Basic"})
+    return credentials.username
 BASE_URL = os.getenv("BASE_URL", "https://kus.dogfine.ru")
 PRICES = {
     "barf": 1390,
@@ -279,7 +293,7 @@ async def api_breeds():
 # =====================================================================
 
 @app.get("/admin", response_class=HTMLResponse)
-async def admin_page(request: Request):
+async def admin_page(request: Request, user: str = Depends(verify_admin)):
     orders = await list_orders(100)
     return templates.TemplateResponse(request=request, name="admin.html", context={
         "orders": orders,
@@ -287,7 +301,7 @@ async def admin_page(request: Request):
 
 
 @app.get("/admin/support", response_class=HTMLResponse)
-async def admin_support(request: Request):
+async def admin_support(request: Request, user: str = Depends(verify_admin)):
     from database import get_support_logs
     logs = await get_support_logs(200)
     # Группируем по user_id для удобного просмотра
@@ -339,6 +353,96 @@ async def admin_support(request: Request):
                 text = m["message"].replace("<", "&lt;").replace(">", "&gt;")
                 html += f'<div class="msg {cls}"><div class="msg-dir">{label}</div><div class="msg-text">{text}</div><div class="msg-time">{time_str}</div></div>'
             html += '</div>'
+
+    html += '</div></body></html>'
+    return HTMLResponse(html)
+
+
+@app.get("/admin/evals", response_class=HTMLResponse)
+async def admin_evals(request: Request, user: str = Depends(verify_admin)):
+    from evals import run_evals
+    results = run_evals()
+    avg_score = round(sum(r["score"] for r in results) / len(results)) if results else 0
+    status_colors = {"ok": "#16a34a", "warn": "#f59e0b", "fail": "#dc2626"}
+
+    html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Эвалы — Кусь</title>
+    <style>
+    body{{font-family:system-ui,sans-serif;background:#f5f7fa;margin:0;padding:20px;}}
+    .container{{max-width:900px;margin:0 auto;}}
+    h1{{color:#055ba9;margin-bottom:4px;}}
+    .subtitle{{color:#666;margin-bottom:20px;font-size:14px;}}
+    .avg{{display:inline-block;padding:6px 16px;border-radius:100px;font-weight:700;font-size:18px;margin-bottom:20px;
+      background:{'#dcfce7' if avg_score>=90 else '#fef3c7' if avg_score>=70 else '#fee2e2'};
+      color:{'#16a34a' if avg_score>=90 else '#b45309' if avg_score>=70 else '#dc2626'};}}
+    .profile{{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:12px;overflow:hidden;}}
+    .profile-header{{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;}}
+    .profile-name{{font-weight:700;font-size:15px;}}
+    .profile-label{{color:#888;font-size:13px;}}
+    .profile-score{{font-weight:700;font-size:16px;padding:4px 12px;border-radius:100px;}}
+    .profile-meta{{padding:8px 18px;font-size:12px;color:#888;background:#f8f9fb;display:flex;gap:16px;flex-wrap:wrap;}}
+    .checks{{padding:10px 18px;}}
+    .check{{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;}}
+    .check-dot{{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}}
+    .check-name{{font-weight:600;color:#333;min-width:140px;}}
+    .check-detail{{color:#666;}}
+    .warns{{padding:8px 18px 12px;}}
+    .warn-item{{font-size:12px;color:#b45309;background:#fef3c7;padding:4px 10px;border-radius:6px;display:inline-block;margin:2px;}}
+    .back{{display:inline-block;margin-bottom:16px;color:#055ba9;text-decoration:none;font-weight:600;}}
+    .nav{{display:flex;gap:12px;margin-bottom:16px;}}
+    .nav a{{color:#055ba9;font-weight:600;text-decoration:none;font-size:14px;}}
+    </style></head><body><div class="container">
+    <a href="/admin" class="back">&larr; Заказы</a>
+    <div class="nav"><a href="/admin">Заказы</a><a href="/admin/support">Поддержка</a><a href="/admin/evals">Эвалы</a></div>
+    <h1>Эвалы расчёта рационов</h1>
+    <p class="subtitle">10 тестовых профилей, 7 проверок на каждом. Прогон: автоматический.</p>
+    <div class="avg">Средний балл: {avg_score}%</div>"""
+
+    for r in results:
+        p = r["profile"]
+        sc = r["score"]
+        sc_bg = '#dcfce7' if sc >= 90 else '#fef3c7' if sc >= 70 else '#fee2e2'
+        sc_color = '#16a34a' if sc >= 90 else '#b45309' if sc >= 70 else '#dc2626'
+        html += f'''<div class="profile">
+        <div class="profile-header">
+          <div><div class="profile-name">{p["name"]} — {p["label"]}</div></div>
+          <div class="profile-score" style="background:{sc_bg};color:{sc_color};">{sc}%</div>
+        </div>
+        <div class="profile-meta">
+          <span>{p["breed"]}</span><span>{p["weight_kg"]} кг</span><span>{p["age_months"]} мес.</span>
+          <span>{p["condition"]}</span><span>{p["activity"]}</span>
+          <span>{r["daily_grams"]}г/день</span><span>{r["mer_kcal"]} ккал</span>
+          <span>Ca:P {r["ca_p_ratio"]}</span>
+        </div>
+        <div class="checks">'''
+        for name, status, detail in r["checks"]:
+            color = status_colors.get(status, "#999")
+            html += f'<div class="check"><div class="check-dot" style="background:{color};"></div><div class="check-name">{name}</div><div class="check-detail">{detail}</div></div>'
+        html += '</div>'
+        if r["warnings"]:
+            html += '<div class="warns">'
+            for w in r["warnings"]:
+                html += f'<span class="warn-item">{w}</span>'
+            html += '</div>'
+        html += '</div>'
+
+    # Рекомендации
+    fails = []
+    for r in results:
+        for name, status, detail in r["checks"]:
+            if status == "fail":
+                fails.append(f"{r['profile']['name']}: {name} — {detail}")
+
+    if fails:
+        html += '<div style="margin-top:20px;padding:16px;background:#fee2e2;border-radius:12px;border:1px solid #fca5a5;">'
+        html += '<div style="font-weight:700;color:#dc2626;margin-bottom:8px;">Требуют исправления:</div>'
+        for f in fails:
+            html += f'<div style="font-size:13px;color:#333;padding:2px 0;">{f}</div>'
+        html += '</div>'
+    else:
+        html += '<div style="margin-top:20px;padding:16px;background:#dcfce7;border-radius:12px;border:1px solid #86efac;">'
+        html += '<div style="font-weight:700;color:#16a34a;">Все критические проверки пройдены!</div>'
+        html += '</div>'
 
     html += '</div></body></html>'
     return HTMLResponse(html)
