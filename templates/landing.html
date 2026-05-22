@@ -105,8 +105,8 @@ a { color: var(--primary); text-decoration: none; }
 .hero__image { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16/9; background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm)); max-height: 280px; }
 @media (min-width: 768px) { .hero__image { aspect-ratio: 5/6; max-height: none; } }
 .hero__image img { width: 100%; height: 100%; object-fit: cover; }
-.hero__badge { position: absolute; left: 16px; bottom: 16px; background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); border-radius: 16px; padding: 14px 18px; box-shadow: 0 16px 40px -12px rgba(11,23,38,0.25); display: flex; align-items: center; gap: 12px; }
-@media (min-width: 768px) { .hero__badge { left: 24px; bottom: 24px; } }
+.hero__badge { position: absolute; left: 16px; top: 16px; background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); border-radius: 16px; padding: 14px 18px; box-shadow: 0 16px 40px -12px rgba(11,23,38,0.25); display: flex; align-items: center; gap: 12px; }
+@media (min-width: 768px) { .hero__badge { left: 24px; top: 24px; } }
 .hero__badge-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
 
 /* Problem cards */
@@ -192,6 +192,9 @@ a { color: var(--primary); text-decoration: none; }
 .review-card__text { font-size: 15px; line-height: 1.55; flex: 1; }
 .review-card__author { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
 .review-card__avatar { width: 40px; height: 40px; border-radius: 20px; object-fit: cover; flex: 0 0 auto; }
+.avatar-letter { width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex: 0 0 auto; }
+.hero__avatar-letter { width: 36px; height: 36px; border-radius: 18px; border: 2px solid #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
+.hero__avatar-letter + .hero__avatar-letter { margin-left: -10px; }
 .review-card__name { font-size: 13.5px; font-weight: 600; }
 
 /* FAQ */
@@ -213,7 +216,7 @@ a { color: var(--primary); text-decoration: none; }
 /* Final CTA */
 .final-cta { position: relative; border-radius: 28px; overflow: hidden; padding: 36px 24px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
 @media (min-width: 768px) { .final-cta { padding: 80px 64px; } }
-.final-cta__bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=1400&q=80&auto=format&fit=crop') center/cover; opacity: 0.18; mix-blend-mode: overlay; }
+.final-cta__bg { position: absolute; inset: 0; background: url('/static/hero.jpg') center/cover; opacity: 0.15; mix-blend-mode: overlay; }
 .final-cta__content { position: relative; max-width: 720px; }
 .final-cta__buttons { display: flex; gap: 12px; margin-top: 32px; flex-direction: column; }
 @media (min-width: 768px) { .final-cta__buttons { flex-direction: row; } }
@@ -292,9 +295,9 @@ a { color: var(--primary); text-decoration: none; }
         </div>
         <div class="hero__social">
           <div class="hero__avatars">
-            <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
-            <img src="https://images.unsplash.com/photo-1583511655802-41f30aef99a2?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
-            <img src="https://images.unsplash.com/photo-1546238232-20216dec9f72?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
+            <span class="hero__avatar-letter" style="background:#055ba9;">А</span>
+            <span class="hero__avatar-letter" style="background:#16a34a;">Д</span>
+            <span class="hero__avatar-letter" style="background:#f59e0b;">М</span>
           </div>
           <div>
             <div class="hero__stars">
@@ -393,135 +396,18 @@ a { color: var(--primary); text-decoration: none; }
     <div style="text-align:center;margin-bottom:32px;">
       <div class="section-eyebrow">Пример результата</div>
       <h2 class="section-title" style="text-align:center;">9 страниц персональных расчётов</h2>
-      <p class="section-sub" style="text-align:center;margin-left:auto;margin-right:auto;">Каждый PDF — это полноценный документ, а не шаблон. Всё рассчитано под вашу собаку.</p>
+      <p class="section-sub" style="text-align:center;margin-left:auto;margin-right:auto;">Каждый PDF — полноценный документ, не шаблон. Листайте вправо.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="height:10px;width:50%;background:var(--primary);border-radius:3px;margin:0 auto 6px;"></div>
-          <div style="font-size:16px;font-weight:800;color:var(--primary);margin-bottom:3px;">Барон</div>
-          <div style="font-size:6px;color:#999;margin-bottom:6px;">Лабрадор-ретривер · 3 г. · 32 кг</div>
-          <div style="height:40px;background:var(--primary-soft);border-radius:5px;"></div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Обложка</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Кличка, порода, AI-фото</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:4px;">
-            <div style="background:#f5f7fa;border-radius:3px;padding:4px;text-align:center;"><div style="font-size:11px;font-weight:800;">563</div><div style="font-size:5px;color:#999;">грамм</div></div>
-            <div style="background:#f5f7fa;border-radius:3px;padding:4px;text-align:center;"><div style="font-size:11px;font-weight:800;">958</div><div style="font-size:5px;color:#999;">ккал</div></div>
-          </div>
-          <div style="height:6px;background:linear-gradient(90deg,#055ba9 40%,#f59e0b 40% 52%,#b91c1c 52% 64%,#16a34a 64%);border-radius:2px;margin-bottom:4px;"></div>
-          <div style="font-size:5px;color:#999;line-height:1.6;">Мясо мускульное 225 г<br>Сырые кости 68 г<br>Субпродукты 68 г<br>Овощи 84 г<br>Кисломолочка 45 г</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Сводка</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Нормы, калории, баланс</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:var(--primary);margin-bottom:3px;">Понедельник</div>
-          <div style="font-size:5px;color:#666;line-height:1.7;">
-            <div style="display:flex;justify-content:space-between;"><span>Говядина</span><span style="font-weight:700;">120 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Утиные шеи</span><span style="font-weight:700;">70 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Морковь</span><span style="font-weight:700;">40 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Творог 2-5%</span><span style="font-weight:700;">50 г</span></div>
-          </div>
-          <div style="border-top:1px dashed #eee;margin:3px 0;"></div>
-          <div style="font-size:7px;font-weight:700;color:var(--primary);margin-bottom:2px;">Вторник</div>
-          <div style="font-size:5px;color:#666;line-height:1.7;">
-            <div style="display:flex;justify-content:space-between;"><span>Индейка</span><span style="font-weight:700;">120 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Кабачок</span><span style="font-weight:700;">40 г</span></div>
-          </div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Меню, стр. 1</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Пн — Чт с граммовками</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:var(--primary);margin-bottom:3px;">Пятница</div>
-          <div style="font-size:5px;color:#666;line-height:1.7;">
-            <div style="display:flex;justify-content:space-between;"><span>Баранина</span><span style="font-weight:700;">130 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Тыква</span><span style="font-weight:700;">40 г</span></div>
-          </div>
-          <div style="border-top:1px dashed #eee;margin:3px 0;"></div>
-          <div style="font-size:7px;font-weight:700;color:#1e3a8a;margin-bottom:2px;">Суббота (рыба)</div>
-          <div style="font-size:5px;color:#666;line-height:1.7;">
-            <div style="display:flex;justify-content:space-between;"><span>Горбуша</span><span style="font-weight:700;">120 г</span></div>
-            <div style="display:flex;justify-content:space-between;"><span>Брокколи</span><span style="font-weight:700;">40 г</span></div>
-          </div>
-          <div style="border-top:1px dashed #eee;margin:3px 0;"></div>
-          <div style="font-size:5px;color:#999;">Воскресенье...</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Меню, стр. 2</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Пт — Вс + рыбные дни</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:#333;margin-bottom:4px;">Список покупок</div>
-          <div style="font-size:5px;color:#666;line-height:1.6;">
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Говядина — 840 г</div>
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Индейка — 720 г</div>
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Утиные шеи — 490 г</div>
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Печень — 490 г</div>
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Морковь — 280 г</div>
-            <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border:1px solid #999;border-radius:1px;"></div> Творог — 200 г</div>
-          </div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Список покупок</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Чек-лист на неделю</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:#333;margin-bottom:4px;">Витамины и добавки</div>
-          <div style="font-size:5px;color:#666;line-height:1.6;">
-            <div>Рыбий жир — 1 ч.л./день</div>
-            <div>Костная мука — 3 ч.л./день</div>
-            <div>Ламинария — 1/2 ч.л. ч/д</div>
-            <div>Витамин E — 50 МЕ/день</div>
-          </div>
-          <div style="margin-top:6px;background:var(--primary-soft);border-radius:3px;padding:4px;font-size:5px;color:var(--primary);">Персональные рекомендации от AI...</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Витамины</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Дозировки под вес</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:#333;margin-bottom:4px;">Перевод на натуралку</div>
-          <div style="font-size:5px;color:#666;line-height:1.5;">
-            <div style="display:flex;gap:3px;align-items:center;margin-bottom:2px;"><span style="background:var(--primary);color:#fff;font-size:5px;padding:1px 3px;border-radius:2px;">Дни 1-3</span> <span>Разгрузка</span></div>
-            <div style="display:flex;gap:3px;align-items:center;margin-bottom:2px;"><span style="background:var(--primary);color:#fff;font-size:5px;padding:1px 3px;border-radius:2px;">Дни 4-7</span> <span>Введение</span></div>
-            <div style="display:flex;gap:3px;align-items:center;margin-bottom:2px;"><span style="background:var(--primary);color:#fff;font-size:5px;padding:1px 3px;border-radius:2px;">Дни 8-10</span> <span>Расширение</span></div>
-            <div style="display:flex;gap:3px;align-items:center;"><span style="background:#f59e0b;color:#fff;font-size:5px;padding:1px 3px;border-radius:2px;">Дни 14+</span> <span>Полный рацион</span></div>
-          </div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Схема перевода</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Пошагово, без срывов</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;">
-          <div style="font-size:7px;font-weight:700;color:#dc2626;margin-bottom:3px;">Нельзя давать</div>
-          <div style="font-size:5px;color:#666;line-height:1.6;">
-            <div>Шоколад, кофе</div><div>Виноград, изюм</div><div>Лук, чеснок</div><div>Варёные кости</div>
-          </div>
-          <div style="border-top:1px dashed #eee;margin:3px 0;"></div>
-          <div style="font-size:7px;font-weight:700;color:#16a34a;margin-bottom:2px;">Признаки нормы</div>
-          <div style="font-size:5px;color:#666;line-height:1.6;">Стул, шерсть, энергия...</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Памятка</div>
-        <div style="font-size:11px;color:var(--ink-soft);">Что нельзя + чек-лист</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:10px;height:140px;overflow:hidden;margin-bottom:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:7px;font-weight:700;color:#333;margin-bottom:6px;">Контакты и поддержка</div>
-          <div style="background:linear-gradient(135deg,var(--primary),#04467f);border-radius:4px;padding:6px;width:80%;text-align:center;">
-            <div style="font-size:6px;color:#fff;font-weight:700;">7 дней поддержки</div>
-            <div style="font-size:5px;color:rgba(255,255,255,0.7);">в Telegram-боте</div>
-          </div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Поддержка</div>
-        <div style="font-size:11px;color:var(--ink-soft);">7 дней после получения</div>
-      </div>
+    <div style="display:flex;gap:12px;overflow-x:auto;padding:4px 0 20px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;">
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="height:4px;background:linear-gradient(90deg,var(--primary) 55%,#f59e0b);border-radius:2px;margin-bottom:6px;"></div><div style="font-size:4px;color:#999;margin-bottom:4px;">Индивидуальный рацион</div><div style="font-size:14px;font-weight:800;color:var(--primary);line-height:1;margin-bottom:2px;">Барон</div><div style="font-size:5px;font-weight:600;color:#333;margin-bottom:2px;">Лабрадор-ретривер</div><div style="font-size:4px;color:#999;margin-bottom:6px;">3 г. · 32 кг · мальчик · средняя</div><div style="height:50px;background:linear-gradient(135deg,var(--primary-soft),#fdfbf7);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:4px;color:#bbb;">AI-фото по породе</div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Обложка</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Сводка по рациону</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:4px;"><div style="background:#f5f7fa;border-radius:2px;padding:3px;text-align:center;"><div style="font-size:8px;font-weight:800;">563</div><div style="font-size:3.5px;color:#999;">г/день</div></div><div style="background:#f5f7fa;border-radius:2px;padding:3px;text-align:center;"><div style="font-size:8px;font-weight:800;">958</div><div style="font-size:3.5px;color:#999;">ккал</div></div><div style="background:#f5f7fa;border-radius:2px;padding:3px;text-align:center;"><div style="font-size:8px;font-weight:800;">2</div><div style="font-size:3.5px;color:#999;">раза</div></div><div style="background:#f5f7fa;border-radius:2px;padding:3px;text-align:center;"><div style="font-size:8px;font-weight:800;">28.2</div><div style="font-size:3.5px;color:#999;">кг цель</div></div></div><div style="height:5px;background:linear-gradient(90deg,#055ba9 40%,#f59e0b 12%,#b91c1c 12%,#16a34a 15%,#0ea5e9);border-radius:2px;margin-bottom:3px;"></div><div style="font-size:4px;color:#666;line-height:1.5;">Мясо мускульное · 225 г<br>Сырые мясные кости · 68 г<br>Субпродукты · 68 г<br>Овощи и зелень · 84 г<br>Кисломолочные · 45 г<br>Яйца · 17 г</div><div style="margin-top:4px;background:#fef3c7;border-left:2px solid #f59e0b;border-radius:2px;padding:3px;font-size:3.5px;color:#333;">Ca:P ниже нормы. Добавляйте костную муку.</div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Сводка</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:var(--primary);margin-bottom:3px;">Пн — Чт</div><div style="font-size:4px;color:#666;line-height:1.4;"><div style="font-size:4.5px;font-weight:700;color:var(--primary);margin:2px 0 1px;">Понедельник</div><div style="display:flex;justify-content:space-between;"><span>Говядина</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Утиные шеи</span><span>70 г</span></div><div style="display:flex;justify-content:space-between;"><span>Морковь</span><span>40 г</span></div><div style="display:flex;justify-content:space-between;"><span>Творог</span><span>50 г</span></div><div style="border-top:1px dashed #eee;margin:2px 0;"></div><div style="font-size:4.5px;font-weight:700;color:var(--primary);margin-bottom:1px;">Вторник</div><div style="display:flex;justify-content:space-between;"><span>Индейка (грудка)</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Печень говяжья</span><span>70 г</span></div><div style="display:flex;justify-content:space-between;"><span>Кабачок</span><span>40 г</span></div><div style="border-top:1px dashed #eee;margin:2px 0;"></div><div style="font-size:4.5px;font-weight:700;color:var(--primary);margin-bottom:1px;">Среда</div><div style="display:flex;justify-content:space-between;"><span>Баранина</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Горбуша</span><span>120 г</span></div></div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Меню, стр. 1</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:var(--primary);margin-bottom:3px;">Пт — Вс</div><div style="font-size:4px;color:#666;line-height:1.4;"><div style="font-size:4.5px;font-weight:700;color:var(--primary);margin:2px 0 1px;">Пятница</div><div style="display:flex;justify-content:space-between;"><span>Конина</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Сердце говяжье</span><span>70 г</span></div><div style="display:flex;justify-content:space-between;"><span>Тыква</span><span>40 г</span></div><div style="border-top:1px dashed #eee;margin:2px 0;"></div><div style="font-size:4.5px;font-weight:700;color:#1e3a8a;margin-bottom:1px;">Суббота (рыбный день)</div><div style="display:flex;justify-content:space-between;"><span>Минтай</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Брокколи</span><span>40 г</span></div><div style="border-top:1px dashed #eee;margin:2px 0;"></div><div style="font-size:4.5px;font-weight:700;color:var(--primary);margin-bottom:1px;">Воскресенье</div><div style="display:flex;justify-content:space-between;"><span>Индейка (бедро)</span><span>120 г</span></div><div style="display:flex;justify-content:space-between;"><span>Огурец</span><span>40 г</span></div><div style="display:flex;justify-content:space-between;"><span>Кефир</span><span>50 г</span></div></div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Меню, стр. 2</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:#333;margin-bottom:4px;">Список покупок на неделю</div><div style="font-size:4px;color:#666;line-height:1.5;"><div style="font-size:4.5px;font-weight:700;margin:3px 0 1px;color:#333;">Мясо</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Говядина — 840 г</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Индейка грудка — 480 г</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Индейка бедро — 360 г</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Баранина — 240 г</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Конина — 240 г</div><div style="font-size:4.5px;font-weight:700;margin:3px 0 1px;color:#333;">Кости</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Утиные шеи — 490 г</div><div style="font-size:4.5px;font-weight:700;margin:3px 0 1px;color:#333;">Субпродукты</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Печень — 490 г</div><div style="display:flex;align-items:center;gap:2px;"><div style="width:4px;height:4px;border:1px solid #999;border-radius:1px;"></div>Сердце — 490 г</div></div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Список покупок</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:#333;margin-bottom:4px;">Витамины и добавки</div><div style="font-size:4px;color:#666;line-height:1.4;"><div style="background:var(--primary-soft);border-radius:3px;padding:4px;margin-bottom:3px;"><div style="font-size:5px;font-weight:700;color:#333;">Рыбий жир (Омега-3)</div><div style="font-size:9px;font-weight:800;color:var(--primary);margin:2px 0;">1 ч.л./день</div><div style="font-size:3.5px;color:#666;">С едой. Лососёвое масло или капсулы.</div></div><div style="background:var(--primary-soft);border-radius:3px;padding:4px;margin-bottom:3px;"><div style="font-size:5px;font-weight:700;color:#333;">Костная мука</div><div style="font-size:9px;font-weight:800;color:var(--primary);margin:2px 0;">3 ч.л./день</div><div style="font-size:3.5px;color:#666;">Разделить на все кормления.</div></div><div style="background:var(--primary-soft);border-radius:3px;padding:4px;"><div style="font-size:5px;font-weight:700;color:#333;">Ламинария</div><div style="font-size:9px;font-weight:800;color:var(--primary);margin:2px 0;">1/2 ч.л.</div><div style="font-size:3.5px;color:#666;">Через день.</div></div></div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Витамины</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:#333;margin-bottom:4px;">Схема перевода</div><div style="font-size:4px;color:#666;line-height:1.4;"><div style="margin-bottom:3px;padding:3px;background:#fff;border:1px solid #eee;border-radius:3px;"><div style="display:flex;gap:3px;align-items:center;margin-bottom:1px;"><span style="background:var(--primary);color:#fff;font-size:4px;padding:1px 4px;border-radius:2px;font-weight:700;">1-3</span><span style="font-size:4.5px;font-weight:700;">Разгрузка</span></div><div style="font-size:3.5px;">Уменьшите сухой на 25%. Бульон.</div></div><div style="margin-bottom:3px;padding:3px;background:#fff;border:1px solid #eee;border-radius:3px;"><div style="display:flex;gap:3px;align-items:center;margin-bottom:1px;"><span style="background:var(--primary);color:#fff;font-size:4px;padding:1px 4px;border-radius:2px;font-weight:700;">4-7</span><span style="font-size:4.5px;font-weight:700;">Введение</span></div><div style="font-size:3.5px;">Утро — варёная индейка + кабачок.</div></div><div style="margin-bottom:3px;padding:3px;background:#fff;border:1px solid #eee;border-radius:3px;"><div style="display:flex;gap:3px;align-items:center;margin-bottom:1px;"><span style="background:var(--primary);color:#fff;font-size:4px;padding:1px 4px;border-radius:2px;font-weight:700;">8-10</span><span style="font-size:4.5px;font-weight:700;">Расширение</span></div><div style="font-size:3.5px;">Оба кормления — натуралка.</div></div><div style="padding:3px;background:#fff;border:1px solid #eee;border-radius:3px;"><div style="display:flex;gap:3px;align-items:center;"><span style="background:#f59e0b;color:#fff;font-size:4px;padding:1px 4px;border-radius:2px;font-weight:700;">14+</span><span style="font-size:4.5px;font-weight:700;">Полный рацион</span></div></div></div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Схема перевода</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;"><div style="font-size:5px;font-weight:700;color:#dc2626;margin-bottom:3px;">Нельзя давать собакам</div><div style="font-size:4px;color:#666;line-height:1.5;"><div style="display:flex;gap:2px;align-items:flex-start;margin-bottom:1px;"><span style="color:#dc2626;">x</span><span><b>Шоколад, кофе</b> — яд</span></div><div style="display:flex;gap:2px;align-items:flex-start;margin-bottom:1px;"><span style="color:#dc2626;">x</span><span><b>Виноград</b> — почки</span></div><div style="display:flex;gap:2px;align-items:flex-start;margin-bottom:1px;"><span style="color:#dc2626;">x</span><span><b>Лук, чеснок</b></span></div><div style="display:flex;gap:2px;align-items:flex-start;margin-bottom:1px;"><span style="color:#dc2626;">x</span><span><b>Варёные кости</b></span></div><div style="display:flex;gap:2px;align-items:flex-start;margin-bottom:1px;"><span style="color:#dc2626;">x</span><span><b>Солёное, жареное</b></span></div></div><div style="margin-top:4px;font-size:5px;font-weight:700;color:#16a34a;margin-bottom:2px;">Признаки нормы</div><div style="font-size:3.5px;color:#666;line-height:1.5;">Стул оформленный · Шерсть блестит · Энергия на прогулке · Вес стабилен</div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Памятка</div></div>
+      <div style="flex:0 0 130px;scroll-snap-align:start;"><div style="width:130px;height:184px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);padding:8px;overflow:hidden;margin-bottom:6px;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div style="font-size:5px;font-weight:700;color:#333;margin-bottom:6px;">Контакты</div><div style="background:linear-gradient(135deg,var(--primary),#04467f);border-radius:4px;padding:8px;width:90%;text-align:center;margin-bottom:6px;"><div style="font-size:6px;color:#fff;font-weight:700;">7 дней поддержки</div><div style="font-size:4px;color:rgba(255,255,255,0.7);margin-top:2px;">в Telegram-боте</div></div><div style="font-size:4px;color:#999;text-align:center;">kus.dogfine.ru<br>@doggifood_bot</div></div><div style="font-size:12px;font-weight:700;color:var(--ink);text-align:center;">Поддержка</div></div>
     </div>
   </div>
 </section>
@@ -627,17 +513,17 @@ a { color: var(--primary); text-decoration: none; }
       <div class="review-card">
         <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
         <div class="review-card__text">&laquo;Перевели Барона на натуралку по вашему расчёту. Через месяц ушла перхоть, шерсть блестит, на прогулке другой пёс.&raquo;</div>
-        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Анна, лабрадор Барон, 4 года</div></div>
+        <div class="review-card__author"><span class="avatar-letter" style="background:#055ba9;">А</span><div class="review-card__name">Анна, лабрадор Барон, 4 года</div></div>
       </div>
       <div class="review-card">
         <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
         <div class="review-card__text">&laquo;У Чарли годами был жидкий стул. Подобрали корм — впервые за всё время нормально. Спасибо за конкретные ссылки.&raquo;</div>
-        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1583511655802-41f30aef99a2?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Дмитрий, такса Чарли, 7 лет</div></div>
+        <div class="review-card__author"><span class="avatar-letter" style="background:#16a34a;">Д</span><div class="review-card__name">Дмитрий, такса Чарли, 7 лет</div></div>
       </div>
       <div class="review-card">
         <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
         <div class="review-card__text">&laquo;Боялась накормить щенка неправильно. Получила PDF с граммовками — всё разложено по полочкам. Поддержка отвечает быстро.&raquo;</div>
-        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1546238232-20216dec9f72?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Мария, метис Луна, щенок</div></div>
+        <div class="review-card__author"><span class="avatar-letter" style="background:#f59e0b;">М</span><div class="review-card__name">Мария, метис Луна, щенок</div></div>
       </div>
     </div>
   </div>
