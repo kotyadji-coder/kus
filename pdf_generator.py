@@ -146,6 +146,22 @@ def generate_html(result: DietResult) -> str:
     name_d = decline_name(dog.name, "datv")  # дательный (кому? Барону)
     name_a = decline_name(dog.name, "accs")  # винительный (кого? Барона)
 
+    # Сезонная пометка
+    _season = dog.season
+    if _season == "default":
+        _m = date.today().month
+        _season = "winter" if _m in (11, 12, 1, 2, 3) else "summer" if _m in (6, 7, 8) else "default"
+    season_note = ""
+    if _season == "winter":
+        season_note = " Учтена зимняя корректировка (+10% калорий)."
+    elif _season == "summer":
+        season_note = " Учтена летняя корректировка (−5% калорий)."
+    pregnancy_note = ""
+    if dog.pregnant:
+        pregnancy_note = " Рацион увеличен с учётом беременности."
+    elif dog.lactating:
+        pregnancy_note = " Рацион увеличен с учётом лактации."
+
     # Count total pages: cover + summary + menu pages + shopping + supplements + transition + memo + [ai analysis] + disclaimer
     menu_days = result.weekly_menu
     menu_page1 = menu_days[:4]
@@ -1298,7 +1314,7 @@ p {{ margin: 0; }}
 
   <div class="eyebrow">Сводка по рациону</div>
   <h2 class="section-title" style="margin-top: 4mm;">Что и сколько съедает {name} за день</h2>
-  <p class="section-sub">{getattr(result, 'ai_intro', '') or f'Рассчитано на основе целевого веса {result.ideal_weight_kg} кг и {ACTIVITY_LABELS.get(dog.activity, "средней").lower()} активности. Поделено на {result.meals_per_day} кормления.'}</p>
+  <p class="section-sub">{getattr(result, 'ai_intro', '') or f'Рассчитано на основе целевого веса {result.ideal_weight_kg} кг и {ACTIVITY_LABELS.get(dog.activity, "средней").lower()} активности. Поделено на {result.meals_per_day} кормления.{season_note}{pregnancy_note}'}</p>
 
   <div class="metric-grid">
     <div class="metric">

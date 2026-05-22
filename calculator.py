@@ -556,6 +556,77 @@ class DietCalculator:
                 "notes": "FortiFlora, Ветом 1.1, Pro-Kolin или аптечный Линекс.",
             })
 
+        # --- Определяем breed_info для дальнейших проверок ---
+        breed_info = self._breed_map.get(dog.breed)
+        size = breed_info.get("size", "medium") if breed_info else "medium"
+        is_large = size in ("large", "giant")
+        senior_age = (breed_info.get("senior_years", 8) if breed_info else 8) * 12
+        is_senior = dog.age_months >= senior_age
+        is_puppy = dog.age_months < 18
+
+        # Глюкозамин + Хондроитин — для крупных пород (взрослые), пожилых, при проблемах с суставами
+        needs_joints = is_senior or (is_large and dog.age_months >= 12)
+        if "суставы" in " ".join(dog.diagnoses).lower() or "артрит" in " ".join(dog.diagnoses).lower() or "дисплазия" in " ".join(dog.diagnoses).lower():
+            needs_joints = True
+        if breed_info and breed_info.get("obesity_prone") and dog.condition in ("chubby", "obese"):
+            needs_joints = True  # Лишний вес = нагрузка на суставы
+
+        if needs_joints:
+            # Дозировки: глюкозамин ~20 мг/кг, хондроитин ~15 мг/кг
+            gluc_mg = round(ideal_weight * 20 / 50) * 50  # округлить до 50
+            chond_mg = round(ideal_weight * 15 / 50) * 50
+            if gluc_mg < 250:
+                gluc_mg = 250
+            if chond_mg < 200:
+                chond_mg = 200
+            reason = "Поддержка суставов"
+            if is_senior:
+                reason = "Защита суставов в пожилом возрасте"
+            elif is_large:
+                reason = "Профилактика для крупной породы"
+            supps.append({
+                "name": "Глюкозамин + Хондроитин",
+                "dosage": f"{gluc_mg} + {chond_mg} мг/день",
+                "frequency": "Ежедневно, курсами по 2-3 месяца",
+                "notes": f"{reason}. Canina Petvital GAG, 8in1 Excel Glucosamine или аптечный «Артра».",
+            })
+
+        # Витамин C — щенки крупных пород (профилактика HOD), пожилые
+        if (is_puppy and is_large) or is_senior:
+            vit_c_mg = round(ideal_weight * 10 / 50) * 50
+            if vit_c_mg < 100:
+                vit_c_mg = 100
+            if vit_c_mg > 1000:
+                vit_c_mg = 1000
+            note = "Профилактика гипертрофической остеодистрофии (HOD) у щенков крупных пород." if is_puppy else "Антиоксидантная поддержка в пожилом возрасте."
+            supps.append({
+                "name": "Витамин C (аскорбиновая кислота)",
+                "dosage": f"{vit_c_mg} мг/день",
+                "frequency": "Ежедневно, с едой",
+                "notes": f"{note} Аптечная аскорбинка в порошке или таблетках.",
+            })
+
+        # Кальций дополнительный — щенки крупных пород на BARF (если Ca:P < 1.2)
+        if is_puppy and is_large and ca_p_ratio < 1.2 and dog.diet_type == "barf":
+            supps.append({
+                "name": "Кальций (цитрат или карбонат)",
+                "dosage": f"{round(ideal_weight * 50 / 100) * 100} мг/день",
+                "frequency": "Ежедневно, разделить на кормления",
+                "notes": "Щенку крупной породы критично не допустить дефицит кальция. Кальция цитрат усваивается лучше.",
+            })
+
+        # Цинк — крупные породы (часто дефицит), при проблемах с кожей/шерстью
+        if is_large or "дерматит" in " ".join(dog.diagnoses).lower() or "шерсть" in " ".join(dog.diagnoses).lower():
+            zn_mg = round(ideal_weight * 1)  # ~1 мг/кг
+            if zn_mg < 10:
+                zn_mg = 10
+            supps.append({
+                "name": "Цинк (хелат или пиколинат)",
+                "dosage": f"{zn_mg} мг/день",
+                "frequency": "Ежедневно, с едой",
+                "notes": "Крупные породы склонны к дефициту цинка. Улучшает кожу и шерсть. Аптечный цинк в хелатной форме.",
+            })
+
         return supps
 
     # --- Схема перевода ---

@@ -71,6 +71,8 @@ class OrderForm(BaseModel):
     age_months: int = Field(..., ge=1, le=300)
     sex: str = Field(..., pattern="^(male|female)$")
     neutered: bool
+    pregnant: bool = False
+    lactating: bool = False
     weight_kg: float = Field(..., gt=0, le=150)
 
     # Шаг 2: Рацион и активность
@@ -118,6 +120,8 @@ async def init_db():
                 age_months INTEGER,
                 sex TEXT,
                 neutered BOOLEAN,
+                pregnant BOOLEAN DEFAULT 0,
+                lactating BOOLEAN DEFAULT 0,
                 weight_kg REAL,
                 current_food TEXT,
                 current_food_other TEXT,
@@ -153,15 +157,15 @@ async def create_order(form: OrderForm, amount: float) -> int:
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute("""
             INSERT INTO orders (
-                dog_name, breed, age_months, sex, neutered, weight_kg,
+                dog_name, breed, age_months, sex, neutered, pregnant, lactating, weight_kg,
                 current_food, current_food_other, condition, activity,
                 diagnoses, stool, stool_other,
                 diet_type, budget, stop_products,
                 client_name, phone_or_telegram, email, telegram_user_id,
                 amount, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
         """, (
-            form.dog_name, form.breed, form.age_months, form.sex, form.neutered, form.weight_kg,
+            form.dog_name, form.breed, form.age_months, form.sex, form.neutered, form.pregnant, form.lactating, form.weight_kg,
             form.current_food.value, form.current_food_other, form.condition.value, form.activity.value,
             form.diagnoses, form.stool.value, form.stool_other,
             form.diet_type.value, form.budget.value if form.budget else None, form.stop_products,

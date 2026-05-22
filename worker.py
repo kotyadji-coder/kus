@@ -94,6 +94,8 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
         diet_type=order["diet_type"],
         budget=order.get("budget") or "market",
         stop_products=stop_products,
+        pregnant=bool(order.get("pregnant")),
+        lactating=bool(order.get("lactating")),
     )
 
     calc = DietCalculator()

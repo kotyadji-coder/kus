@@ -208,6 +208,23 @@
                 <input type="checkbox" id="neutered" name="neutered">
                 <label for="neutered" style="margin:0;font-weight:normal;font-size:15px;">Кастрирован / стерилизована</label>
             </div>
+            <div id="female-options" style="display:none;">
+                <div class="checkbox-row">
+                    <input type="checkbox" id="pregnant" name="pregnant">
+                    <label for="pregnant" style="margin:0;font-weight:normal;font-size:15px;">Беременна</label>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="lactating" name="lactating">
+                    <label for="lactating" style="margin:0;font-weight:normal;font-size:15px;">Кормит щенков (лактация)</label>
+                </div>
+            </div>
+            <script>
+            document.querySelectorAll('input[name="sex"]').forEach(r => {
+                r.addEventListener('change', () => {
+                    document.getElementById('female-options').style.display = r.value === 'female' && r.checked ? 'block' : 'none';
+                });
+            });
+            </script>
 
             <label for="weight_kg">Текущий вес (кг)</label>
             <input type="number" id="weight_kg" name="weight_kg" required min="0.5" max="150" step="0.1" placeholder="25">
