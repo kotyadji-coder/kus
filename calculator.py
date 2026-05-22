@@ -37,6 +37,9 @@ class DogProfile:
     diet_type: str = "barf"      # "barf" / "cooked"
     budget: str = "market"       # "supermarket" / "market" / "unlimited"
     stop_products: list[str] = field(default_factory=list)   # ["курица", "говядина", ...]
+    season: str = "default"      # "winter" / "summer" / "default" (auto)
+    pregnant: bool = False       # беременность
+    lactating: bool = False      # лактация
 
 
 # ---------------------------------------------------------------------------
@@ -74,6 +77,11 @@ class DietResult:
     supplements: list[dict]
     transition_plan: list[dict]
     warnings: list[str]
+    cost_per_day: float = 0.0       # руб/день
+    cost_per_month: float = 0.0     # руб/месяц
+    cooking_tips: list[str] = field(default_factory=list)  # советы по готовке (для cooked)
+    meal_prep: dict = field(default_factory=dict)  # подсказка по заморозке/контейнерам
+    puppy_next_recalc: str = ""     # когда пересчитать (для щенков)
 
 
 # ---------------------------------------------------------------------------
@@ -111,6 +119,16 @@ class DietCalculator:
         transition = self._calc_transition(dog)
         warnings = self._generate_warnings(dog, breed_info, ca_p_ratio)
         weekly_menu = self._generate_weekly_menu(dog, product_plan, meals_per_day)
+        cost_day = self._calc_cost(product_plan)
+        cooking_tips = self._calc_cooking_tips(dog, product_plan) if dog.diet_type == "cooked" else []
+        meal_prep = self._calc_meal_prep(dog, daily_grams, meals_per_day)
+        puppy_note = self._calc_puppy_recalc(dog, breed_info)
+
+        # Беременность/лактация — дополнительные предупреждения
+        if dog.pregnant:
+            warnings.append("Беременность: порции увеличены на 25%. В последние 2 недели перед родами аппетит может снизиться — кормите чаще и меньшими порциями.")
+        if dog.lactating:
+            warnings.append("Лактация: потребность в калориях удвоена. Обеспечьте постоянный доступ к воде. При большом помёте может потребоваться ещё больше еды.")
 
         return DietResult(
             dog=dog,
@@ -127,6 +145,11 @@ class DietCalculator:
             supplements=supplements,
             transition_plan=transition,
             warnings=warnings,
+            cost_per_day=round(cost_day, 0),
+            cost_per_month=round(cost_day * 30, 0),
+            cooking_tips=cooking_tips,
+            meal_prep=meal_prep,
+            puppy_next_recalc=puppy_note,
         )
 
     # --- Идеальный вес ---
@@ -201,6 +224,23 @@ class DietCalculator:
             coeff *= 0.8
         elif dog.condition == "thin":
             coeff *= 1.2
+
+        # Беременность / лактация
+        if dog.pregnant:
+            coeff *= 1.25  # +25% в последний триместр
+        elif dog.lactating:
+            coeff *= 2.0   # до x2 при лактации (зависит от количества щенков)
+
+        # Сезонная корректировка
+        season = dog.season
+        if season == "default":
+            from datetime import date
+            month = date.today().month
+            season = "winter" if month in (11, 12, 1, 2, 3) else "summer" if month in (6, 7, 8) else "default"
+        if season == "winter":
+            coeff *= 1.1   # +10% зимой
+        elif season == "summer":
+            coeff *= 0.95  # -5% летом (аппетит падает)
 
         return coeff
 
@@ -700,6 +740,68 @@ class DietCalculator:
         if grams < 30:
             return round(grams / 5) * 5  # до 5г: 5, 10, 15, 20, 25
         return round(grams / 10) * 10    # до 10г: 30, 40, 50, 60...
+
+    # --- Стоимость рациона ---
+
+    def _calc_cost(self, product_plan: dict) -> float:
+        """Стоимость рациона в рублях в день."""
+        total = 0.0
+        for group, products in product_plan.items():
+            for p in products:
+                product_info = self._all_products.get(p["product_id"])
+                if product_info and "price_per_kg" in product_info:
+                    total += p["grams"] / 1000 * product_info["price_per_kg"]
+        return total
+
+    # --- Рецепты для варёного рациона ---
+
+    def _calc_cooking_tips(self, dog: DogProfile, product_plan: dict) -> list[str]:
+        """Советы по приготовлению для варёного рациона."""
+        tips = []
+        tips.append("Мясо и субпродукты варите 20-30 минут на слабом огне. Не солите.")
+        tips.append("Овощи добавляйте в последние 5-7 минут или давайте сырыми, натёртыми на тёрке.")
+        tips.append("Бульон можно добавлять к порции — в нём остаются полезные вещества.")
+        tips.append("Печень варите отдельно, не более 15 минут — она быстро становится жёсткой.")
+        if any(p["product_id"].startswith("fish") or p.get("group") == "fish" for group in product_plan.values() for p in group):
+            tips.append("Рыбу варите 10-15 минут. Проверьте на кости перед подачей.")
+        tips.append("Готовую еду храните в холодильнике до 3 дней или замораживайте порционно.")
+        return tips
+
+    # --- Meal prep / контейнеры ---
+
+    def _calc_meal_prep(self, dog: DogProfile, daily_grams: float, meals_per_day: int) -> dict:
+        """Подсказка по заморозке и порционированию."""
+        portion_g = round(daily_grams / meals_per_day / 10) * 10
+        weekly_kg = round(daily_grams * 7 / 1000, 1)
+        containers = meals_per_day * 7
+        return {
+            "portion_grams": portion_g,
+            "containers_per_week": containers,
+            "weekly_total_kg": weekly_kg,
+            "tip": (
+                f"Разложите еду на неделю в {containers} контейнеров по ~{portion_g} г. "
+                f"Заморозьте. Размораживайте порцию в холодильнике за 12 часов до кормления."
+            ),
+        }
+
+    # --- Пересчёт для щенков ---
+
+    def _calc_puppy_recalc(self, dog: DogProfile, breed_info: Optional[dict]) -> str:
+        """Для щенков: когда пересчитать рацион."""
+        if dog.age_months >= 18:
+            return ""
+        if dog.age_months < 4:
+            return "Пересчитайте рацион через 2-3 недели — щенок быстро растёт."
+        elif dog.age_months < 6:
+            return "Пересчитайте рацион через месяц или при изменении веса на 1+ кг."
+        elif dog.age_months < 12:
+            adult_months = breed_info.get("adult_months", 12) if breed_info else 12
+            remaining = adult_months - dog.age_months
+            if remaining > 0:
+                return f"Пересчитайте через {remaining} мес., когда {dog.name} станет взрослой."
+            return "Пересчитайте рацион через 2-3 месяца — рост ещё продолжается."
+        else:
+            return "Собака почти взрослая. Пересчитайте при стабилизации веса."
 
     # --- Утилиты ---
 

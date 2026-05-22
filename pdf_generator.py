@@ -146,11 +146,14 @@ def generate_html(result: DietResult) -> str:
     name_d = decline_name(dog.name, "datv")  # дательный (кому? Барону)
     name_a = decline_name(dog.name, "accs")  # винительный (кого? Барона)
 
-    # Count total pages: cover + summary + menu pages + shopping + supplements + transition + memo + disclaimer
+    # Count total pages: cover + summary + menu pages + shopping + supplements + transition + memo + [ai analysis] + disclaimer
     menu_days = result.weekly_menu
     menu_page1 = menu_days[:4]
     menu_page2 = menu_days[4:]
-    total_pages = 9  # fixed layout like the design
+
+    ai_analysis_html = getattr(result, 'ai_analysis', '') or ''
+    has_ai_analysis = bool(ai_analysis_html)
+    total_pages = 10 if has_ai_analysis else 9
 
     # --- Distribution rows + stacked bar ---
     dist_items = [(g, grams) for g, grams in result.distribution.items() if grams > 0]
@@ -187,6 +190,16 @@ def generate_html(result: DietResult) -> str:
             dominant_group = GROUP_LABELS.get(group, group).split()[0].lower()
         cumulative += pct
     pie_gradient = ", ".join(pie_segments)
+
+    # --- Puppy recalc note ---
+    if getattr(result, 'puppy_next_recalc', ''):
+        result.warnings.append(result.puppy_next_recalc)
+
+    # --- Cooking tips (for cooked diet) ---
+    cooking_html = ""
+    if getattr(result, 'cooking_tips', []):
+        tips = "".join(f"<li>{t}</li>" for t in result.cooking_tips)
+        cooking_html = f'<div class="warn" style="background: var(--primary-softer); border-left-color: var(--primary);"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M6.34 6.34l2.83 2.83M2 12h4m-.34 5.66l2.83-2.83M12 18v4m3.66-6.17l2.83 2.83M18 12h4m-6.17-3.66l2.83-2.83"/></svg></div><div><strong>Советы по приготовлению</strong><ul style="margin:4px 0 0;padding-left:18px;font-size:9pt;line-height:1.5;">{tips}</ul></div></div>'
 
     # --- Warnings ---
     warnings_html = ""
@@ -1072,7 +1085,17 @@ p {{ margin: 0; }}
   display: inline-flex; align-items: center; justify-content: center;
 }}
 
-/* ===== PAGE 9 — Disclaimer / contacts =================================== */
+/* ===== PAGE 9 — AI Personalized Analysis ================================ */
+.ai-analysis {{}}
+.ai-analysis .insight {{ background: #fff; border: 1px solid var(--border-soft); border-radius: 14px; padding: 5mm 6mm; margin-bottom: 3mm; }}
+.ai-analysis .insight .tag {{ display: inline-block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 6px; margin-bottom: 2mm; }}
+.ai-analysis .insight .tag.breed {{ background: var(--primary-softer); color: var(--primary); }}
+.ai-analysis .insight .tag.health {{ background: #fef3c7; color: #92400e; }}
+.ai-analysis .insight .tag.nutrition {{ background: #dcfce7; color: #166534; }}
+.ai-analysis .insight .tag.lifestyle {{ background: #ede9fe; color: #5b21b6; }}
+.ai-analysis .insight p {{ font-size: 9.5pt; line-height: 1.55; color: var(--ink); margin: 0; }}
+
+/* ===== PAGE 10 — Disclaimer / contacts ================================== */
 .last-page {{ background: var(--bg-soft); }}
 .disclaimer-card {{
   background: #fff;
@@ -1176,7 +1199,7 @@ p {{ margin: 0; }}
   .cover .top-bar, .cover-photo, .cover-badge, .metric, .pie, .stack span,
   .warn, .day.special, .shop-group, .shop-tip, .supp .head .ico,
   .tl-step::before, .tl-warn, .support-strip, .hero-rec,
-  .check-row .v, .danger-row .x, .vet-row .ico {{
+  .check-row .v, .danger-row .x, .vet-row .ico, .ai-analysis .insight {{
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }}
@@ -1378,8 +1401,8 @@ p {{ margin: 0; }}
 
   <div class="shop-tip">
     <div>
-      <strong>Совет от Кусь</strong>
-      Разделите мясо на порции по 100–130&nbsp;г сразу после покупки и заморозьте. Размораживайте в холодильнике 12&nbsp;часов — не на столе. Кости давайте полу-размороженными.
+      <strong>{'Стоимость рациона: ~' + str(int(result.cost_per_day)) + ' руб/день · ~' + str(int(result.cost_per_month)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет от Кусь'}</strong>
+      {result.meal_prep.get('tip', '') if result.meal_prep else 'Разделите мясо на порции сразу после покупки и заморозьте. Размораживайте в холодильнике 12 часов — не на столе.'}
     </div>
   </div>
 
@@ -1423,6 +1446,8 @@ p {{ margin: 0; }}
     <div class="ico">{_SVG_WARN}</div>
     <div><strong style="display:block; font-weight:700; margin-bottom:2px;">Если диарея — вернитесь на шаг назад</strong>{transition_note if transition_note else "Не паникуйте: ЖКТ настраивается на новый тип пищи 7–14 дней. Уменьшите порцию вдвое на сутки, затем продолжайте схему с предыдущего этапа."}</div>
   </div>
+
+  {cooking_html}
 
   {_page_foot(7, total_pages, doc_id)}
 </section>
@@ -1469,8 +1494,23 @@ p {{ margin: 0; }}
   {_page_foot(8, total_pages, doc_id)}
 </section>
 
+{'<!-- ============================================================ -->' if has_ai_analysis else ''}
+{'<!-- PAGE 9 — AI PERSONALIZED ANALYSIS                            -->' if has_ai_analysis else ''}
+{'<!-- ============================================================ -->' if has_ai_analysis else ''}
+{f"""<section class="page ai-analysis">
+  {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · {doc_id}")}
+
+  <div class="eyebrow">Персональный анализ</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Рекомендации для {name_g}</h2>
+  <p class="section-sub">На основе породы, возраста, веса, активности и особенностей здоровья.</p>
+
+  {ai_analysis_html}
+
+  {_page_foot(9, total_pages, doc_id)}
+</section>""" if has_ai_analysis else ''}
+
 <!-- ============================================================ -->
-<!-- PAGE 9 — DISCLAIMER + CONTACTS                                -->
+<!-- PAGE {10 if has_ai_analysis else 9} — DISCLAIMER + CONTACTS                                -->
 <!-- ============================================================ -->
 <section class="page last-page">
   {_page_head("<strong>Дисклеймер и контакты</strong>")}
@@ -1517,7 +1557,7 @@ p {{ margin: 0; }}
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
-  {_page_foot(9, total_pages, doc_id)}
+  {_page_foot(10 if has_ai_analysis else 9, total_pages, doc_id)}
 </section>
 
 </body>

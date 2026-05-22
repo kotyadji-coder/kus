@@ -13,7 +13,8 @@
       "group": "muscle_meat",
       "notes": "Основа рациона. Лопатка, огузок.",
       "contraindications": [],
-      "common_allergen": true
+      "common_allergen": true,
+      "price_per_kg": 650
     },
     {
       "id": "turkey_breast",
@@ -28,7 +29,8 @@
       "group": "muscle_meat",
       "notes": "Диетическое мясо. Идеально при панкреатите.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 450
     },
     {
       "id": "turkey_thigh",
@@ -43,7 +45,8 @@
       "group": "muscle_meat",
       "notes": "Чуть жирнее грудки, но вкуснее для собаки.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 380
     },
     {
       "id": "chicken_breast",
@@ -58,7 +61,8 @@
       "group": "muscle_meat",
       "notes": "Частый аллерген! Использовать с осторожностью.",
       "contraindications": [],
-      "common_allergen": true
+      "common_allergen": true,
+      "price_per_kg": 280
     },
     {
       "id": "chicken_thigh",
@@ -73,7 +77,8 @@
       "group": "muscle_meat",
       "notes": "Частый аллерген!",
       "contraindications": [],
-      "common_allergen": true
+      "common_allergen": true,
+      "price_per_kg": 220
     },
     {
       "id": "rabbit",
@@ -88,7 +93,8 @@
       "group": "muscle_meat",
       "notes": "Гипоаллергенное мясо. Отлично при аллергиях.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 800
     },
     {
       "id": "lamb",
@@ -103,7 +109,8 @@
       "group": "muscle_meat",
       "notes": "Жирное мясо. Не при панкреатите.",
       "contraindications": ["pancreatitis"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 750
     },
     {
       "id": "horse",
@@ -118,7 +125,8 @@
       "group": "muscle_meat",
       "notes": "Диетическое, гипоаллергенное. Бывает сложно найти.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 550
     },
     {
       "id": "duck",
@@ -133,7 +141,8 @@
       "group": "muscle_meat",
       "notes": "Жирное мясо. Не при панкреатите.",
       "contraindications": ["pancreatitis"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 500
     },
     {
       "id": "venison",
@@ -148,7 +157,8 @@
       "group": "muscle_meat",
       "notes": "Экзотическое диетическое мясо. Гипоаллергенное.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 1200
     }
   ],
 
@@ -166,7 +176,8 @@
       "notes": "Основной источник Ca. Только сырые! Давать целиком, не рубить.",
       "contraindications": ["gastritis"],
       "common_allergen": true,
-      "bone_percent": 36
+      "bone_percent": 36,
+      "price_per_kg": 120
     },
     {
       "id": "chicken_backs",
@@ -181,7 +192,8 @@
       "notes": "Много кости, меньше мяса. Хороший источник Ca.",
       "contraindications": ["gastritis"],
       "common_allergen": true,
-      "bone_percent": 44
+      "bone_percent": 44,
+      "price_per_kg": 120
     },
     {
       "id": "duck_necks",
@@ -196,7 +208,8 @@
       "notes": "Альтернатива куриным шеям при аллергии на курицу.",
       "contraindications": ["gastritis"],
       "common_allergen": false,
-      "bone_percent": 35
+      "bone_percent": 35,
+      "price_per_kg": 200
     },
     {
       "id": "turkey_necks",
@@ -211,7 +224,8 @@
       "notes": "Крупнее куриных, подходят средним и крупным собакам.",
       "contraindications": ["gastritis"],
       "common_allergen": false,
-      "bone_percent": 38
+      "bone_percent": 38,
+      "price_per_kg": 180
     },
     {
       "id": "quail_whole",
@@ -226,7 +240,8 @@
       "notes": "Подходит мелким породам. Даётся целиком.",
       "contraindications": ["gastritis"],
       "common_allergen": false,
-      "bone_percent": 30
+      "bone_percent": 30,
+      "price_per_kg": 600
     }
   ],
 
@@ -246,7 +261,8 @@
       "max_percent": 5,
       "notes": "Источник витамина A, B12, железа. Не более 5% рациона!",
       "contraindications": ["liver_disease"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 300
     },
     {
       "id": "chicken_liver",
@@ -263,7 +279,8 @@
       "max_percent": 5,
       "notes": "Частый аллерген (курица). Источник витамина A.",
       "contraindications": ["liver_disease"],
-      "common_allergen": true
+      "common_allergen": true,
+      "price_per_kg": 180
     },
     {
       "id": "beef_heart",
@@ -280,7 +297,8 @@
       "max_percent": 10,
       "notes": "По сути мышечное мясо. Источник таурина и CoQ10.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 400
     },
     {
       "id": "chicken_hearts",
@@ -297,7 +315,8 @@
       "max_percent": 10,
       "notes": "Частый аллерген (курица). Жирнее говяжьего.",
       "contraindications": [],
-      "common_allergen": true
+      "common_allergen": true,
+      "price_per_kg": 280
     },
     {
       "id": "beef_tripe_green",
@@ -314,7 +333,8 @@
       "max_percent": 10,
       "notes": "Содержит пробиотики и ферменты. Вонючий, но полезный. Лучше сырой.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 250
     },
     {
       "id": "beef_kidney",
@@ -331,7 +351,8 @@
       "max_percent": 5,
       "notes": "Источник B12 и селена. Замочить перед подачей.",
       "contraindications": ["kidney_disease"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 200
     },
     {
       "id": "beef_lung",
@@ -348,7 +369,8 @@
       "max_percent": 5,
       "notes": "Низкокалорийное. Можно использовать как лакомство. Плохо усваивается в больших объёмах.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 150
     }
   ],
 
@@ -365,7 +387,8 @@
       "group": "vegetables",
       "notes": "Бета-каротин. Давать тёртой или слегка припущенной.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 60
     },
     {
       "id": "zucchini",
@@ -379,7 +402,8 @@
       "group": "vegetables",
       "notes": "Мягкий для ЖКТ. Идеален при гастрите.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 80
     },
     {
       "id": "pumpkin",
@@ -393,7 +417,8 @@
       "group": "vegetables",
       "notes": "Пребиотик. Отлично при проблемах со стулом (и понос, и запор).",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 70
     },
     {
       "id": "cucumber",
@@ -407,7 +432,8 @@
       "group": "vegetables",
       "notes": "Низкокалорийный. Хорош при ожирении.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 100
     },
     {
       "id": "broccoli",
@@ -421,7 +447,8 @@
       "group": "vegetables",
       "notes": "Не более 10% рациона (изотиоцианаты).",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 120
     },
     {
       "id": "green_beans",
@@ -435,7 +462,8 @@
       "group": "vegetables",
       "notes": "Хороша при ожирении — низкокалорийная.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 100
     },
     {
       "id": "apple",
@@ -449,7 +477,8 @@
       "group": "vegetables",
       "notes": "Источник пектина. Не более 5% рациона. Убирать семечки!",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 80
     }
   ],
 
@@ -466,7 +495,8 @@
       "group": "dairy",
       "notes": "Источник кальция и белка. Не жирный.",
       "contraindications": ["lactose_intolerance"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 350
     },
     {
       "id": "kefir",
@@ -480,7 +510,8 @@
       "group": "dairy",
       "notes": "Пробиотик. Хорошо для ЖКТ.",
       "contraindications": ["lactose_intolerance"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 100
     },
     {
       "id": "ryazhenka",
@@ -494,7 +525,8 @@
       "group": "dairy",
       "notes": "Альтернатива кефиру. Некоторые собаки любят больше.",
       "contraindications": ["lactose_intolerance"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 100
     }
   ],
 
@@ -512,7 +544,8 @@
       "dosage_per_kg": "1 мл на 5 кг веса",
       "notes": "Обязательная добавка. Шерсть, суставы, иммунитет.",
       "contraindications": ["pancreatitis_acute"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 500
     },
     {
       "id": "flaxseed_oil",
@@ -527,7 +560,8 @@
       "dosage_per_kg": "0.5 мл на 5 кг веса",
       "notes": "Растительная Омега-3 (ALA). Менее эффективна, чем рыбий жир.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 300
     },
     {
       "id": "olive_oil",
@@ -542,7 +576,8 @@
       "dosage_per_kg": "0.5 мл на 5 кг веса",
       "notes": "Можно чередовать с льняным.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 400
     },
     {
       "id": "bone_meal",
@@ -557,7 +592,8 @@
       "dosage_per_kg": "1 г на 1 кг массы тела",
       "notes": "ОБЯЗАТЕЛЬНО при варке (без костей). Ca:P = 2:1",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 150
     },
     {
       "id": "eggshell_powder",
@@ -572,7 +608,8 @@
       "dosage_per_kg": "0.5 ч.л. на 10 кг массы тела",
       "notes": "Альтернатива костной муке. Почти чистый кальций.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 80
     },
     {
       "id": "kelp",
@@ -587,7 +624,8 @@
       "dosage_per_kg": "1/4 ч.л. на 10 кг",
       "notes": "Источник йода и микроэлементов.",
       "contraindications": ["thyroid_disease"],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 200
     }
   ],
 
@@ -605,7 +643,8 @@
       "notes": "2-3 раза в неделю. Можно сырое или варёное.",
       "contraindications": [],
       "common_allergen": true,
-      "piece_grams": 60
+      "piece_grams": 60,
+      "price_per_kg": 150
     },
     {
       "id": "quail_egg",
@@ -620,7 +659,8 @@
       "notes": "2-5 шт 3 раза в неделю. Менее аллергенно, чем куриное.",
       "contraindications": [],
       "common_allergen": false,
-      "piece_grams": 10
+      "piece_grams": 10,
+      "price_per_kg": 400
     }
   ],
 
@@ -638,7 +678,8 @@
       "group": "fish",
       "notes": "1-2 раза в неделю вместо мяса. Источник Омега-3.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 800
     },
     {
       "id": "pollock",
@@ -653,7 +694,8 @@
       "group": "fish",
       "notes": "Диетическая рыба. Хороша при ожирении.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 350
     },
     {
       "id": "trout",
@@ -668,7 +710,8 @@
       "group": "fish",
       "notes": "Источник Омега-3. Давать без костей.",
       "contraindications": [],
-      "common_allergen": false
+      "common_allergen": false,
+      "price_per_kg": 700
     }
   ]
 }

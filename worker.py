@@ -77,7 +77,7 @@ async def process_order(order: dict):
 async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: list) -> str:
     from calculator import DietCalculator, DogProfile
     from pdf_generator import generate_pdf
-    from ai_adapter import generate_natural_intro, generate_natural_product_notes, generate_cover_image
+    from ai_adapter import generate_natural_intro, generate_natural_product_notes, generate_cover_image, generate_personal_analysis
 
     dog = DogProfile(
         name=order["dog_name"],
@@ -111,6 +111,28 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
          "condition": dog.condition, "activity": dog.activity,
          "diagnoses": diagnoses, "stop_products": stop_products},
         result.warnings
+    )
+
+    # AI персональный анализ
+    diet_summary = {
+        "ideal_weight_kg": result.ideal_weight_kg,
+        "daily_grams": result.daily_grams,
+        "mer_kcal": result.mer_kcal,
+        "ca_p_ratio": result.ca_p_ratio,
+        "meals_per_day": result.meals_per_day,
+        "diet_type": dog.diet_type,
+        "supplements": [s["name"] for s in result.supplements],
+        "warnings": result.warnings,
+        "cost_per_day": result.cost_per_day,
+        "cost_per_month": result.cost_per_month,
+    }
+    result.ai_analysis = await asyncio.to_thread(generate_personal_analysis,
+        {"name": dog.name, "breed": dog.breed, "weight_kg": dog.weight_kg,
+         "age_months": dog.age_months, "sex": dog.sex, "neutered": dog.neutered,
+         "condition": dog.condition, "activity": dog.activity,
+         "diagnoses": diagnoses, "stop_products": stop_products,
+         "pregnant": dog.pregnant, "lactating": dog.lactating},
+        diet_summary
     )
 
     # Обложка — иллюстрация собаки по породе
