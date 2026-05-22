@@ -11,6 +11,9 @@
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
         th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
         th { background: #055ba9; color: white; font-weight: 600; }
+        .admin-nav { display: flex; gap: 12px; margin-bottom: 20px; }
+        .admin-nav a { color: #055ba9; font-weight: 600; text-decoration: none; font-size: 14px; padding: 8px 16px; border-radius: 8px; background: #e6f0fa; }
+        .admin-nav a.active { background: #055ba9; color: #fff; }
         tr:hover { background: #f8f9fa; }
         .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .badge-new { background: #e8e8e8; color: #666; }
@@ -25,7 +28,12 @@
     </style>
 </head>
 <body>
-    <h1>Кусь — Заказы</h1>
+    <div class="admin-nav">
+        <a href="/admin" class="active">Заказы</a>
+        <a href="/admin/support">Поддержка</a>
+        <a href="/admin/evals">Эвалы</a>
+    </div>
+    <h1>Заказы</h1>
 
     <div class="stats">
         <div class="stat-card">
