@@ -70,13 +70,13 @@ async def cmd_start(message: Message):
 async def btn_order(message: Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(
-            text="Открыть анкету на сайте",
-            url=f"{BASE_URL}/order?tg={message.from_user.id}",
+            text="Открыть сайт",
+            url=BASE_URL,
         )],
     ])
     await message.answer(
-        "Заполните короткую анкету (5 шагов, ~2 минуты) — "
-        "и мы подготовим персональный PDF с рационом для вашей собаки.\n\n"
+        "На сайте вы можете узнать подробности и оформить подбор рациона — "
+        "сухого корма или натуралки.\n\n"
         "Результат придёт сюда, в этот чат.",
         reply_markup=keyboard,
     )
