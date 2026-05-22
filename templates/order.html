@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подбор рациона — Doggi</title>
+    <title>Подбор рациона — Кусь</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .logo { text-align: center; font-size: 24px; font-weight: bold; color: #055ba9; padding: 20px 0 10px; }
+        .logo { text-align: center; padding: 20px 0 10px; }
+        .logo a { text-decoration: none; color: #055ba9; font-size: 24px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 32px; height: 32px; border-radius: 8px; background: #055ba9; color: #fff; display: inline-flex; align-items: center; justify-content: center; }
 
         /* Progress bar */
         .progress { display: flex; gap: 6px; margin-bottom: 24px; }
@@ -21,7 +23,8 @@
         .step { display: none; }
         .step.active { display: block; }
 
-        h2 { font-size: 20px; color: #055ba9; margin-bottom: 16px; }
+        h2 { font-size: 20px; color: #055ba9; margin-bottom: 6px; }
+        .step-desc { font-size: 14px; color: #777; line-height: 1.5; margin-bottom: 18px; }
 
         /* Form elements */
         label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: #444; }
@@ -65,11 +68,21 @@
 
         /* Datalist */
         input[list] { cursor: text; }
+
+        /* Validation error */
+        .field-error { border-color: #e74c3c !important; }
+        .error-msg { font-size: 12px; color: #e74c3c; margin-top: 4px; display: none; }
+        .error-msg.visible { display: block; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="logo">DOGGI</div>
+    <div class="logo">
+        <a href="/">
+            <span class="logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+            Кусь
+        </a>
+    </div>
 
     <div class="progress">
         <div class="progress-dot active" data-step="1"></div>
@@ -78,7 +91,7 @@
         <div class="progress-dot" data-step="4"></div>
         <div class="progress-dot" data-step="5"></div>
     </div>
-    <div class="step-label" id="stepLabel">Шаг 1 из 5 — О собаке</div>
+    <div class="step-label" id="stepLabel">Шаг 1 из 5</div>
 
     <form id="orderForm" method="POST" action="/order">
         {% if telegram_user_id %}
@@ -87,7 +100,8 @@
 
         <!-- STEP 1: О собаке -->
         <div class="step active" data-step="1">
-            <h2>О вашей собаке</h2>
+            <h2>Расскажите о собаке</h2>
+            <p class="step-desc">Эти данные нужны для точного расчёта суточной нормы и подбора продуктов. Чем точнее — тем лучше результат.</p>
 
             <label for="dog_name">Кличка</label>
             <input type="text" id="dog_name" name="dog_name" required placeholder="Барон">
@@ -123,6 +137,7 @@
 
             <label for="weight_kg">Текущий вес (кг)</label>
             <input type="number" id="weight_kg" name="weight_kg" required min="0.5" max="150" step="0.1" placeholder="25">
+            <div class="hint">Если не знаете точно — приблизительно, это нормально</div>
 
             <div class="buttons">
                 <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
@@ -131,7 +146,8 @@
 
         <!-- STEP 2: Рацион и активность -->
         <div class="step" data-step="2">
-            <h2>Рацион и активность</h2>
+            <h2>Активность и кондиция</h2>
+            <p class="step-desc">Помогает рассчитать калорийность рациона. Порция для дивана и для охотника — разные вещи.</p>
 
             <label>Что ест сейчас?</label>
             <div class="cards single-col">
@@ -150,11 +166,11 @@
             <label>Кондиция (упитанность)</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="condition" value="thin" required>
-                    <div class="card"><div class="card-title">Худышка</div><div class="card-desc">Ребра и позвоночник сильно торчат</div></div></label>
+                    <div class="card"><div class="card-title">Худышка</div><div class="card-desc">Рёбра и позвоночник сильно торчат</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="athletic">
-                    <div class="card"><div class="card-title">Атлет</div><div class="card-desc">Ребра прощупываются, талия видна, вес идеальный</div></div></label>
+                    <div class="card"><div class="card-title">Атлет</div><div class="card-desc">Рёбра прощупываются, талия видна, вес идеальный</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="chubby">
-                    <div class="card"><div class="card-title">Пончик</div><div class="card-desc">Ребра найти сложно, талии почти нет</div></div></label>
+                    <div class="card"><div class="card-title">Пончик</div><div class="card-desc">Рёбра найти сложно, талии почти нет</div></div></label>
                 <label class="card-option"><input type="radio" name="condition" value="obese">
                     <div class="card"><div class="card-title">Колобок</div><div class="card-desc">Ожирение, собаке тяжело двигаться</div></div></label>
             </div>
@@ -179,21 +195,23 @@
 
         <!-- STEP 3: Здоровье -->
         <div class="step" data-step="3">
-            <h2>Здоровье и ЖКТ</h2>
+            <h2>Здоровье</h2>
+            <p class="step-desc">Если есть диагнозы или проблемы с ЖКТ — мы учтём это при подборе. Некоторые продукты и корма противопоказаны при определённых заболеваниях.</p>
 
             <label for="diagnoses">Есть ли подтверждённые диагнозы?</label>
             <textarea id="diagnoses" name="diagnoses" placeholder="Гастрит, панкреатит, аллергия... Если нет — оставьте пустым"></textarea>
+            <div class="hint">Не уверены — напишите как есть, мы разберёмся</div>
 
             <label>Как дела со стулом?</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="stool" value="good" required>
-                    <div class="card"><div class="card-title">Отличный</div></div></label>
+                    <div class="card"><div class="card-title">Отличный</div><div class="card-desc">Оформленный, 1-2 раза в день</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="loose">
                     <div class="card"><div class="card-title">Часто жидкий</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="constipation">
                     <div class="card"><div class="card-title">Бывают запоры</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="high_volume">
-                    <div class="card"><div class="card-title">Много выхода</div></div></label>
+                    <div class="card"><div class="card-title">Много и часто</div><div class="card-desc">Может говорить о плохом усвоении корма</div></div></label>
             </div>
 
             <div class="buttons">
@@ -202,22 +220,23 @@
             </div>
         </div>
 
-        <!-- STEP 4: Предпочтения -->
+        <!-- STEP 4: Что подбираем -->
         <div class="step" data-step="4">
-            <h2>Предпочтения по питанию</h2>
+            <h2>Что подбираем</h2>
+            <p class="step-desc">Выберите тип рациона. Вы получите персональный PDF-документ с полным расчётом и рекомендациями.</p>
 
-            <label>Тип питания</label>
+            <label>Тип рациона</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="diet_type" value="barf" required>
-                    <div class="card"><div class="card-title">Сырое (BARF) — 1 390 руб.</div><div class="card-desc">Сырое мясо, субпродукты, сырые мясные кости</div></div></label>
+                    <div class="card"><div class="card-title">Натуралка: сырое (BARF) — 1 390 руб.</div><div class="card-desc">Недельное меню с граммовками, список покупок, витамины, схема перевода</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="cooked">
-                    <div class="card"><div class="card-title">Варка — 1 390 руб.</div><div class="card-desc">Варёное/припущенное мясо</div></div></label>
+                    <div class="card"><div class="card-title">Натуралка: варка — 1 390 руб.</div><div class="card-desc">То же самое, но для термообработанного рациона (без костей)</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="dry">
-                    <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов с честным разбором состава</div></div></label>
+                    <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов в 3 ценовых категориях с честным разбором состава</div></div></label>
             </div>
 
             <div id="budgetSection" style="display:none;">
-                <label>Доступность продуктов</label>
+                <label>Где покупаете продукты?</label>
                 <div class="cards single-col">
                     <label class="card-option"><input type="radio" name="budget" value="supermarket">
                         <div class="card"><div class="card-title">Супермаркет</div><div class="card-desc">Курица, индейка, говядина</div></div></label>
@@ -228,8 +247,9 @@
                 </div>
             </div>
 
-            <label for="stop_products">Стоп-продукты</label>
-            <textarea id="stop_products" name="stop_products" placeholder="Аллергия, непереносимость, собака отказывается есть... Если нет — оставьте пустым"></textarea>
+            <label for="stop_products">Стоп-продукты (аллергия, непереносимость)</label>
+            <textarea id="stop_products" name="stop_products" placeholder="Курица, говядина... Если нет — оставьте пустым"></textarea>
+            <div class="hint">Эти продукты будут полностью исключены из рациона</div>
 
             <div class="buttons">
                 <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
@@ -239,20 +259,22 @@
 
         <!-- STEP 5: Контакты -->
         <div class="step" data-step="5">
-            <h2>Контакты</h2>
+            <h2>Куда отправить результат</h2>
+            <p class="step-desc">PDF придёт на email в течение нескольких минут после оплаты. В Telegram — сразу.</p>
 
             <label for="client_name">Ваше имя</label>
             <input type="text" id="client_name" name="client_name" required placeholder="Анна">
 
             <label for="phone_or_telegram">Телефон или Telegram</label>
             <input type="tel" id="phone_or_telegram" name="phone_or_telegram" required placeholder="+7-900-123-45-67 или @username">
+            <div class="hint">Для связи, если понадобится уточнить данные</div>
 
-            <label for="email">Email (для отправки PDF)</label>
+            <label for="email">Email</label>
             <input type="email" id="email" name="email" required placeholder="anna@mail.ru">
 
             <div class="consent">
                 Нажимая кнопку, вы даёте согласие на обработку персональных данных
-                и соглашаетесь c <a href="/privacy" target="_blank">политикой конфиденциальности</a> и <a href="/oferta" target="_blank">публичной офертой</a>.
+                и соглашаетесь с <a href="/privacy" target="_blank">политикой конфиденциальности</a> и <a href="/oferta" target="_blank">публичной офертой</a>.
             </div>
 
             <div class="buttons">
@@ -266,10 +288,54 @@
 <script>
     let currentStep = 1;
     const totalSteps = 5;
+    const STORAGE_KEY = 'kus_order_form';
+
     const stepLabels = [
-        '', 'Шаг 1 из 5 — О собаке', 'Шаг 2 из 5 — Рацион и активность',
-        'Шаг 3 из 5 — Здоровье', 'Шаг 4 из 5 — Предпочтения', 'Шаг 5 из 5 — Контакты'
+        '', 'Шаг 1 из 5', 'Шаг 2 из 5', 'Шаг 3 из 5', 'Шаг 4 из 5', 'Шаг 5 из 5'
     ];
+
+    // --- Save / Restore form data ---
+    function saveForm() {
+        const form = document.getElementById('orderForm');
+        const data = {};
+        for (const el of form.elements) {
+            if (!el.name || el.type === 'hidden') continue;
+            if (el.type === 'radio') {
+                if (el.checked) data[el.name] = el.value;
+            } else if (el.type === 'checkbox') {
+                data[el.name] = el.checked;
+            } else {
+                data[el.name] = el.value;
+            }
+        }
+        data._step = currentStep;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+    }
+
+    function restoreForm() {
+        let data;
+        try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return; }
+        if (!data) return;
+        const form = document.getElementById('orderForm');
+        for (const el of form.elements) {
+            if (!el.name || el.type === 'hidden' || !(el.name in data)) continue;
+            if (el.type === 'radio') {
+                el.checked = (el.value === data[el.name]);
+                if (el.checked) el.dispatchEvent(new Event('change', {bubbles: true}));
+            } else if (el.type === 'checkbox') {
+                el.checked = data[el.name];
+            } else {
+                el.value = data[el.name];
+            }
+        }
+        if (data._step && data._step > 1 && data._step <= totalSteps) {
+            showStep(data._step);
+        }
+    }
+
+    // Save on every input change
+    document.getElementById('orderForm').addEventListener('input', saveForm);
+    document.getElementById('orderForm').addEventListener('change', saveForm);
 
     function showStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -279,11 +345,11 @@
         });
         document.getElementById('stepLabel').textContent = stepLabels[n];
         currentStep = n;
+        saveForm();
         window.scrollTo(0, 0);
     }
 
     function nextStep() {
-        // Validate current step
         const step = document.querySelector(`.step[data-step="${currentStep}"]`);
         const inputs = step.querySelectorAll('[required]');
         let valid = true;
@@ -294,8 +360,8 @@
                 if (!checked) { valid = false; }
             } else if (!input.value.trim()) {
                 valid = false;
-                input.style.borderColor = '#e74c3c';
-                setTimeout(() => input.style.borderColor = '#ddd', 2000);
+                input.classList.add('field-error');
+                setTimeout(() => input.classList.remove('field-error'), 2000);
             }
         });
         if (!valid) return;
@@ -311,17 +377,20 @@
         r.addEventListener('change', () => {
             const budget = document.getElementById('budgetSection');
             budget.style.display = (r.value === 'barf' || r.value === 'cooked') ? 'block' : 'none';
-            // Update submit button text
             const btn = document.getElementById('submitBtn');
             btn.textContent = r.value === 'dry' ? 'Оплатить 990 руб.' : 'Оплатить 1 390 руб.';
         });
     });
 
-    // Prevent double submit
+    // Prevent double submit + clear storage on success
     document.getElementById('orderForm').addEventListener('submit', function() {
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('submitBtn').textContent = 'Отправляем...';
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     });
+
+    // Restore on page load
+    restoreForm();
 </script>
 </body>
 </html>
