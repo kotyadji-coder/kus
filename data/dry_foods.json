@@ -1,0 +1,6564 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "updated": "2026-05-20",
+    "price_categories": {
+      "budget": "до 400 руб/кг",
+      "mid": "400-800 руб/кг",
+      "premium": "от 800 руб/кг"
+    },
+    "notes": "Составы взяты с сайтов производителей. Цены — средние по маркетплейсам РФ (май 2026). Процент мяса — оценка на основе порядка ингредиентов и гарантированного анализа."
+  },
+  "foods": [
+    {
+      "id": "grandorf_lamb_rice_medium",
+      "brand": "Grandorf",
+      "name": "Adult Lamb & Rice Medium Breed",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 620,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 26%",
+        "дегидрированное мясо индейки 15%",
+        "цельный рис",
+        "жир индейки 14%",
+        "свежее мясо ягнёнка 3%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 55,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Два мясных ингредиента с указанием процентов",
+        "Один злак (рис) — нет splitting",
+        "Натуральные консерванты",
+        "Стабильные поставки в РФ"
+      ],
+      "cons": [
+        "Бывают перебои с отдельными вкусами",
+        "Цена выросла за последний год"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+lamb+rice+medium",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+lamb+rice",
+        "4paws": "4lapy.ru/search/?q=grandorf+lamb+rice"
+      }
+    },
+    {
+      "id": "grandorf_white_fish_adult",
+      "brand": "Grandorf",
+      "name": "Adult White Fish & Rice",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированная белая рыба 25%",
+        "цельный рис",
+        "жир индейки",
+        "дегидрированное мясо индейки 10%",
+        "свежая белая рыба 3%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 50,
+      "main_protein_sources": [
+        "белая рыба",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Рыба как основной белок — редкий аллерген",
+        "Хорошо для шерсти (Омега-3)",
+        "Умеренная калорийность"
+      ],
+      "cons": [
+        "Меньше мясного белка, чем в мясных формулах"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+white+fish",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+white+fish"
+      }
+    },
+    {
+      "id": "farmina_nd_lamb_blueberry_medium",
+      "brand": "Farmina N&D",
+      "name": "Ancestral Grain Lamb & Blueberry Adult Medium/Maxi",
+      "country": "Италия/Сербия",
+      "price_category": "premium",
+      "price_per_kg": 950,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 20%",
+        "дегидрированное мясо ягнёнка 20%",
+        "спельта 10%",
+        "овёс 10%",
+        "жир куриный 8%"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 60,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "спельта",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "splitting_detected": false,
+      "pros": [
+        "60% мяса ягнёнка",
+        "Древние злаки (спельта, овёс) — лучше кукурузы",
+        "Свежее + дегидрированное мясо",
+        "Итальянская рецептура"
+      ],
+      "cons": [
+        "Куриный жир — может не подойти при аллергии на курицу",
+        "Высокая цена"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=farmina+nd+lamb+blueberry",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+nd+lamb"
+      }
+    },
+    {
+      "id": "farmina_nd_pumpkin_lamb_gf",
+      "brand": "Farmina N&D",
+      "name": "Pumpkin Lamb & Blueberry Grain-Free Adult Medium/Maxi",
+      "country": "Италия/Сербия",
+      "price_category": "premium",
+      "price_per_kg": 1100,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 22%",
+        "дегидрированное мясо ягнёнка 20%",
+        "картофель",
+        "жир куриный",
+        "горох"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.8,
+      "meat_estimate_pct": 65,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "splitting_detected": false,
+      "pros": [
+        "Беззерновой",
+        "65% мяса",
+        "Тыква для пищеварения",
+        "Нет злаков-аллергенов"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Высокая цена",
+        "Картофель — спорный ингредиент"
+      ],
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "rice"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=farmina+nd+pumpkin+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+nd+pumpkin+lamb"
+      }
+    },
+    {
+      "id": "brit_care_lamb_rice_adult_l",
+      "brand": "Brit Care",
+      "name": "Adult Large Breed Lamb & Rice",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 520,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 23%",
+        "рис 20%",
+        "куриный жир (консервированный токоферолами)",
+        "сушёные яблоки",
+        "дегидрированное мясо лосося 5%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 40,
+      "main_protein_sources": [
+        "ягнёнок",
+        "лосось"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Хорошее соотношение цена/качество",
+        "Глюкозамин и хондроитин для суставов крупных пород",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Куриный жир — может быть триггером при аллергии на курицу",
+        "40% мяса — средний показатель"
+      ],
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+lamb+rice+large",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+lamb+large"
+      }
+    },
+    {
+      "id": "brit_care_salmon_potato_gf",
+      "brand": "Brit Care",
+      "name": "Adult Medium Breed Salmon & Potato Grain-Free",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 580,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированное мясо лосося 25%",
+        "картофель",
+        "куриный жир",
+        "сушёные яблоки",
+        "дегидрированное мясо лосося 5%"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 42,
+      "main_protein_sources": [
+        "лосось"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Беззерновой за среднюю цену",
+        "Лосось — отлично для шерсти",
+        "L-карнитин для контроля веса"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Картофель как основной углевод"
+      ],
+      "special_traits": [
+        "grain_free",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+salmon+potato",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+salmon+grain+free"
+      }
+    },
+    {
+      "id": "monge_speciality_lamb_rice",
+      "brand": "Monge",
+      "name": "Speciality Line Adult Lamb, Rice & Potato",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясо ягнёнка (мин. 10% свежего, мин. 26% дегидрированного)",
+        "рис",
+        "кукуруза",
+        "куриный жир",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Итальянское производство",
+        "Стабильный состав",
+        "Хорошая усвояемость"
+      ],
+      "cons": [
+        "Кукуруза в составе",
+        "38% мяса — мог бы быть выше за эту цену"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=monge+lamb+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=monge+lamb+rice"
+      }
+    },
+    {
+      "id": "karmy_maxi_adult",
+      "brand": "Karmy",
+      "name": "Maxi Adult Телятина",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 320,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированная телятина 22%",
+        "рис 18%",
+        "кукуруза",
+        "жир куриный",
+        "дегидрированная рыба 4%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "телятина",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Российское производство — стабильные поставки и цена",
+        "22% телятины — хорошо для бюджетного сегмента",
+        "Глюкозамин для суставов"
+      ],
+      "cons": [
+        "Кукуруза в составе",
+        "30% мяса — среднее значение",
+        "Куриный жир"
+      ],
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=karmy+maxi+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=karmy+maxi+adult"
+      }
+    },
+    {
+      "id": "karmy_hypoallergenic_lamb",
+      "brand": "Karmy",
+      "name": "Hypoallergenic Medium & Maxi Ягнёнок",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 350,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 24%",
+        "рис 22%",
+        "жир куриный",
+        "семена льна",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Один белок (ягнёнок) + рис — гипоаллергенная формула",
+        "Доступная цена",
+        "Российское производство"
+      ],
+      "cons": [
+        "Куриный жир может быть триггером",
+        "28% мяса — нижняя граница нормы"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=karmy+hypoallergenic+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=karmy+hypoallergenic+lamb"
+      }
+    },
+    {
+      "id": "gina_elite_duck_potato",
+      "brand": "Gina Elite",
+      "name": "Adult Dog Duck & Potato Grain-Free",
+      "country": "Канада/Россия",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо утки 20%",
+        "дегидрированное мясо утки 18%",
+        "картофель",
+        "горох",
+        "жир куриный"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 48,
+      "main_protein_sources": [
+        "утка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Утка — редкий белок, хорошо при аллергиях",
+        "Беззерновой",
+        "Стабильные поставки в РФ"
+      ],
+      "cons": [
+        "Куриный жир — может быть триггером",
+        "Горох в составе"
+      ],
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gina+elite+duck+potato",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gina+elite+duck"
+      }
+    },
+    {
+      "id": "alleva_holistic_lamb_medium",
+      "brand": "Alleva Holistic",
+      "name": "Adult Lamb & Venison Medium/Maxi",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 880,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 25%",
+        "дегидрированное мясо ягнёнка 15%",
+        "картофель",
+        "жир куриный",
+        "свежее мясо оленины 5%"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 58,
+      "main_protein_sources": [
+        "ягнёнок",
+        "оленина"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "splitting_detected": false,
+      "pros": [
+        "58% мяса — отличный показатель",
+        "Ягнёнок + оленина — необычное сочетание",
+        "Беззерновой",
+        "Aloe vera и юкка для пищеварения"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Цена чуть выше среднего"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=alleva+holistic+lamb+venison",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=alleva+holistic+lamb"
+      }
+    },
+    {
+      "id": "ownat_prime_lamb_rice",
+      "brand": "Ownat Prime",
+      "name": "Adult Lamb & Rice",
+      "country": "Испания",
+      "price_category": "mid",
+      "price_per_kg": 580,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированный ягнёнок 20%",
+        "рис 18%",
+        "кукуруза",
+        "куриный жир",
+        "свежий ягнёнок 5%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Испанское производство",
+        "Свежее мясо в составе",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Кукуруза в составе",
+        "35% мяса — средний показатель"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=ownat+prime+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=ownat+prime+lamb"
+      }
+    },
+    {
+      "id": "blitz_holistic_chicken_gf",
+      "brand": "Blitz Holistic",
+      "name": "Adult Dog Chicken & Fish Grain-Free",
+      "country": "Россия/Италия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 28%",
+        "картофель",
+        "жир куриный",
+        "дегидрированная рыба 5%",
+        "горох"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "курица",
+        "рыба"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Беззерновой за бюджетную цену — редкость",
+        "28% курицы — хорошо для бюджета",
+        "Российский бренд, стабильные поставки"
+      ],
+      "cons": [
+        "Курица — частый аллерген",
+        "Картофель и горох — бобовые"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=blitz+holistic+chicken",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=blitz+holistic+chicken"
+      }
+    },
+    {
+      "id": "blitz_holistic_turkey_duck_gf",
+      "brand": "Blitz Holistic",
+      "name": "Adult Dog Turkey & Duck Grain-Free Small Breeds",
+      "country": "Россия/Италия",
+      "price_category": "budget",
+      "price_per_kg": 390,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированная индейка 24%",
+        "картофель",
+        "дегидрированная утка 10%",
+        "жир куриный",
+        "горох"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 40,
+      "main_protein_sources": [
+        "индейка",
+        "утка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Без курицы в основном белке",
+        "Беззерновой за бюджетную цену",
+        "Хороший для мелких аллергиков"
+      ],
+      "cons": [
+        "Куриный жир всё же есть",
+        "Горох и картофель"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=blitz+holistic+turkey+duck",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=blitz+holistic+turkey+duck"
+      }
+    },
+    {
+      "id": "mealfeel_functional_lamb",
+      "brand": "Mealfeel",
+      "name": "Functional Nutrition Adult Lamb",
+      "country": "Бельгия",
+      "price_category": "budget",
+      "price_per_kg": 350,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 20%",
+        "рис 18%",
+        "кукуруза",
+        "куриный жир",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Бельгийское производство за бюджетную цену",
+        "Ягнёнок как основной белок",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "25% мяса — нижняя граница",
+        "Кукуруза"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=mealfeel+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=mealfeel+lamb"
+      }
+    },
+    {
+      "id": "primordial_puppy_chicken",
+      "brand": "Primordial",
+      "name": "Puppy Chicken & Sea Fish Grain-Free",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 950,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежая курица 14%",
+        "дегидрированная курица 14%",
+        "картофель",
+        "куриный жир",
+        "свежая морская рыба 8%"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 20,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 55,
+      "main_protein_sources": [
+        "курица",
+        "морская рыба"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "55% мяса — отлично для щенков",
+        "Беззерновой",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Курица — аллерген",
+        "Высокая цена"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=primordial+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=primordial+puppy"
+      }
+    },
+    {
+      "id": "grandorf_puppy_lamb_rice",
+      "brand": "Grandorf",
+      "name": "Puppy Lamb & Rice All Breeds",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 25%",
+        "цельный рис",
+        "дегидрированное мясо индейки 14%",
+        "жир индейки",
+        "свежее мясо ягнёнка 3%"
+      ],
+      "protein_pct": 29,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 55,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Гипоаллергенный",
+        "55% мяса",
+        "Хороший для растущего организма"
+      ],
+      "cons": [
+        "Не самая низкая цена для щенячьего корма"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+puppy+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+puppy+lamb"
+      }
+    },
+    {
+      "id": "brit_care_puppy_lamb_rice",
+      "brand": "Brit Care",
+      "name": "Puppy Lamb & Rice",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 530,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 25%",
+        "рис 20%",
+        "куриный жир",
+        "дегидрированное мясо лосося 5%",
+        "сушёные яблоки"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "ягнёнок",
+        "лосось"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Хорошее соотношение цена/качество для щенков",
+        "Лосось для развития мозга"
+      ],
+      "cons": [
+        "Куриный жир",
+        "38% мяса — средний показатель"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+puppy+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+puppy+lamb"
+      }
+    },
+    {
+      "id": "karmy_mini_adult",
+      "brand": "Karmy",
+      "name": "Mini Adult Индейка",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 330,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированная индейка 21%",
+        "рис",
+        "кукуруза",
+        "жир куриный",
+        "дегидрированная рыба 3%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "индейка",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Мелкая гранула для маленьких собак",
+        "Индейка — менее аллергенна, чем курица",
+        "Доступная цена"
+      ],
+      "cons": [
+        "Кукуруза",
+        "28% мяса — невысокий показатель"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=karmy+mini+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=karmy+mini+adult"
+      }
+    },
+    {
+      "id": "karmy_puppy_medium",
+      "brand": "Karmy",
+      "name": "Medium Puppy Индейка",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 340,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированная индейка 25%",
+        "рис",
+        "кукуруза",
+        "жир куриный",
+        "дегидрированная рыба 4%"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 32,
+      "main_protein_sources": [
+        "индейка",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "25% индейки — хорошо для бюджета",
+        "Стабильные поставки",
+        "DHA для щенков"
+      ],
+      "cons": [
+        "Кукуруза",
+        "Куриный жир"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=karmy+puppy+medium",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=karmy+puppy+medium"
+      }
+    },
+    {
+      "id": "grandorf_mini_lamb",
+      "brand": "Grandorf",
+      "name": "Adult Mini Lamb & Rice",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 700,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 26%",
+        "дегидрированное мясо индейки 15%",
+        "цельный рис",
+        "жир индейки 14%",
+        "свежее мясо ягнёнка 3%"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 17,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 55,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Мелкая гранула",
+        "55% мяса — отлично для мини",
+        "Гипоаллергенный"
+      ],
+      "cons": [
+        "Цена выше средней для мелких пород"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+mini+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+mini+lamb"
+      }
+    },
+    {
+      "id": "farmina_nd_chicken_pomegranate_mini",
+      "brand": "Farmina N&D",
+      "name": "Ancestral Grain Chicken & Pomegranate Adult Mini",
+      "country": "Италия/Сербия",
+      "price_category": "premium",
+      "price_per_kg": 1000,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо курицы 22%",
+        "дегидрированное мясо курицы 20%",
+        "спельта 10%",
+        "овёс 10%",
+        "куриный жир 8%"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 20,
+      "fiber_pct": 2,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 62,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "спельта",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "splitting_detected": false,
+      "pros": [
+        "62% мяса",
+        "Древние злаки",
+        "Мелкая гранула для мини пород"
+      ],
+      "cons": [
+        "Курица — аллерген",
+        "Высокая цена"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=farmina+nd+chicken+mini",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+nd+chicken+mini"
+      }
+    },
+    {
+      "id": "grandorf_senior",
+      "brand": "Grandorf",
+      "name": "Senior Turkey & Rice All Breeds",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо индейки 28%",
+        "цельный рис",
+        "дегидрированное мясо ягнёнка 12%",
+        "жир индейки",
+        "свежее мясо индейки 3%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 50,
+      "main_protein_sources": [
+        "индейка",
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Пониженная калорийность для пожилых",
+        "L-карнитин для обмена веществ",
+        "Глюкозамин и хондроитин"
+      ],
+      "cons": [],
+      "special_traits": [
+        "hypoallergenic",
+        "joint_support",
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+senior+turkey",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+senior+turkey"
+      }
+    },
+    {
+      "id": "brit_care_weight_loss",
+      "brand": "Brit Care",
+      "name": "Dog Show Champion Weight Loss Rabbit",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult",
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо кролика 22%",
+        "рис 18%",
+        "куриный жир",
+        "дегидрированное мясо лосося 5%",
+        "сушёные яблоки"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 11,
+      "fiber_pct": 4,
+      "ash_pct": 7,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "кролик",
+        "лосось"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Пониженная жирность (11%)",
+        "Кролик — гипоаллергенный белок",
+        "L-карнитин для сжигания жира"
+      ],
+      "cons": [
+        "Куриный жир",
+        "35% мяса"
+      ],
+      "special_traits": [
+        "weight_control",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+weight+loss+rabbit",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+weight+loss"
+      }
+    },
+    {
+      "id": "savarra_lamb_rice",
+      "brand": "Savarra",
+      "name": "Adult Lamb with Rice",
+      "country": "Великобритания",
+      "price_category": "mid",
+      "price_per_kg": 500,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 22%",
+        "дегидрированное мясо ягнёнка 18%",
+        "коричневый рис",
+        "овёс",
+        "жир индейки"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 45,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "коричневый рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "45% ягнёнка за приемлемую цену",
+        "Коричневый рис + овёс — хорошие злаки",
+        "Жир индейки вместо куриного"
+      ],
+      "cons": [
+        "Два злака в составе"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=savarra+lamb+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=savarra+lamb+rice"
+      }
+    },
+    {
+      "id": "primordial_lamb_tuna",
+      "brand": "Primordial",
+      "name": "Adult Lamb & Tuna Grain-Free",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 900,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежий ягнёнок 15%",
+        "дегидрированная индейка 15%",
+        "горох",
+        "дегидрированный тунец 10%",
+        "куриный жир"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 55,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка",
+        "тунец"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "splitting_detected": false,
+      "pros": [
+        "55% мяса и рыбы",
+        "Беззерновой",
+        "3 источника белка",
+        "Стабильные поставки из Италии"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох в составе"
+      ],
+      "special_traits": [
+        "grain_free",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=primordial+lamb+tuna",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=primordial+lamb+tuna"
+      }
+    },
+    {
+      "id": "prolife_sensitive_lamb",
+      "brand": "Prolife",
+      "name": "Sensitive Adult Lamb & Rice Medium/Large",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 20%",
+        "дегидрированное мясо ягнёнка 18%",
+        "рис 14%",
+        "жир лосося",
+        "кукурузный глютен 4%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 48,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "48% ягнёнка",
+        "Жир лосося вместо куриного — для шерсти",
+        "Один мясной белок — гипоаллергенный",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Кукурузный глютен 4% — небольшой, но есть"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=prolife+sensitive+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=prolife+sensitive+lamb"
+      }
+    },
+    {
+      "id": "landor_lamb_rice_large",
+      "brand": "Landor",
+      "name": "Adult Large Breed Lamb & Rice",
+      "country": "Испания",
+      "price_category": "mid",
+      "price_per_kg": 550,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 22%",
+        "рис 20%",
+        "жир куриный",
+        "дегидрированная рыба 5%",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 32,
+      "main_protein_sources": [
+        "ягнёнок",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Испанское производство",
+        "Глюкозамин и хондроитин для крупных пород",
+        "Пониженная жирность (13%)",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "32% мяса — средний показатель",
+        "Куриный жир"
+      ],
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=landor+lamb+rice+large",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=landor+lamb+rice+large"
+      }
+    },
+    {
+      "id": "nutri_free_salmon",
+      "brand": "Nutri Free",
+      "name": "Adult Salmon Grain-Free",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированный лосось 22%",
+        "картофель",
+        "горох",
+        "жир куриный",
+        "дегидрированная сельдь 5%"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "лосось",
+        "сельдь"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Беззерновой в бюджетном сегменте",
+        "Рыба — редкий аллерген",
+        "Хорошо для шерсти"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Картофель и горох",
+        "30% рыбы — средний показатель"
+      ],
+      "special_traits": [
+        "grain_free",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=nutri+free+salmon",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=nutri+free+salmon"
+      }
+    },
+    {
+      "id": "probalance_immuno_adult",
+      "brand": "ProBalance",
+      "name": "Immuno Adult Beef",
+      "country": "Россия (Дания рецептура)",
+      "price_category": "budget",
+      "price_per_kg": 250,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо птицы",
+        "рис",
+        "ячмень",
+        "жир куриный",
+        "дегидрированное мясо (говядина) 4%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "птица",
+        "говядина"
+      ],
+      "grain_sources": [
+        "рис",
+        "ячмень"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Очень доступная цена",
+        "Датская рецептура",
+        "Продаётся во всех магазинах и маркетплейсах"
+      ],
+      "cons": [
+        "Мясо птицы без уточнения вида",
+        "22% мяса — нижняя граница",
+        "Ячмень в составе"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=probalance+immuno",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=probalance+immuno"
+      }
+    },
+    {
+      "id": "savita_lamb_rice",
+      "brand": "Savita",
+      "name": "Adult Lamb & Rice",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 370,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 24%",
+        "рис 20%",
+        "жир куриный",
+        "пульпа сахарной свёклы",
+        "дегидрированная рыба 3%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "ягнёнок",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "24% ягнёнка — хорошо для бюджета",
+        "Один злак (рис)",
+        "Российское производство, стабильные поставки"
+      ],
+      "cons": [
+        "Куриный жир",
+        "30% мяса — средний показатель"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=savita+lamb+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=savita+lamb+rice"
+      }
+    },
+    {
+      "id": "organix_lamb_adult",
+      "brand": "Organix",
+      "name": "Adult Dog Lamb & Rice",
+      "country": "Нидерланды",
+      "price_category": "budget",
+      "price_per_kg": 340,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 18%",
+        "рис",
+        "маис (кукуруза)",
+        "жир куриный",
+        "дегидрированная рыба 4%"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "ягнёнок",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Голландское производство",
+        "Доступная цена",
+        "Широко представлен в зоомагазинах"
+      ],
+      "cons": [
+        "Кукуруза в составе",
+        "25% мяса — нижняя граница",
+        "18% ягнёнка — маловато"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=organix+lamb+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=organix+lamb+rice"
+      }
+    },
+    {
+      "id": "winner_meat_adult_medium",
+      "brand": "Winner",
+      "name": "Meat Adult Medium Breed Курица",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 280,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежая курица 18%",
+        "дегидрированное мясо курицы 15%",
+        "кукуруза",
+        "пшеница",
+        "жир куриный"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": true,
+      "pros": [
+        "Свежее мясо в составе",
+        "35% курицы — неплохо для бюджета",
+        "Продаётся везде"
+      ],
+      "cons": [
+        "Пшеница и кукуруза — splitting (два злака занижают позицию)",
+        "Курица — частый аллерген",
+        "Два аллергенных злака"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=winner+meat+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=winner+meat+adult"
+      }
+    },
+    {
+      "id": "sirius_lamb_rice",
+      "brand": "Sirius",
+      "name": "Adult Ягнёнок и рис",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 230,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мука из мяса ягнёнка 20%",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "жир куриный"
+      ],
+      "protein_pct": 22,
+      "fat_pct": 12,
+      "fiber_pct": 4,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": true,
+      "pros": [
+        "Самый доступный корм с ягнёнком",
+        "Продаётся в каждом магазине и на маркетплейсах"
+      ],
+      "cons": [
+        "Splitting: 3 злака (рис + пшеница + кукуруза) — злаков больше, чем мяса",
+        "22% мяса — минимум",
+        "Мука из мяса — менее качественная форма"
+      ],
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=sirius+lamb+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=sirius+lamb+rice"
+      }
+    },
+    {
+      "id": "karmy_sensitive_salmon",
+      "brand": "Karmy",
+      "name": "Sensitive Medium & Maxi Лосось",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 360,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированный лосось 22%",
+        "рис 20%",
+        "жир куриный",
+        "пульпа сахарной свёклы",
+        "дегидрированная рыба 4%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 13,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "лосось",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "splitting_detected": false,
+      "pros": [
+        "Рыба как основной белок — хорошо при аллергиях на мясо",
+        "Один злак (рис)",
+        "Доступная цена"
+      ],
+      "cons": [
+        "Куриный жир",
+        "30% рыбы — средний показатель"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=karmy+sensitive+salmon",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=karmy+sensitive+salmon"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+mini+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+mini+adult"
+      },
+      "id": "rc_shn_mini_adult",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Mini Adult",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "животные жиры"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Самый популярный бренд в РФ — легко найти везде",
+        "Производство в России — стабильные поставки",
+        "Подробные рекомендации по порциям на упаковке"
+      ],
+      "cons": [
+        "Мясо: ~20% — «белки птицы» без уточнения вида и процента",
+        "Splitting: 3 злака (рис + пшеница + кукуруза) — злаков значительно больше мяса",
+        "Высокая цена за средний состав — платите за бренд",
+        "«Животные жиры» без уточнения источника"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+medium+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+medium+adult"
+      },
+      "id": "rc_shn_medium_adult",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Medium Adult",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "животные жиры"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Самый популярный бренд в РФ — легко найти везде",
+        "Производство в России — стабильные поставки",
+        "Подробные рекомендации по порциям на упаковке"
+      ],
+      "cons": [
+        "Мясо: ~20% — «белки птицы» без уточнения вида и процента",
+        "Splitting: 3 злака (рис + пшеница + кукуруза) — злаков значительно больше мяса",
+        "Высокая цена за средний состав — платите за бренд",
+        "«Животные жиры» без уточнения источника"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+maxi+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+maxi+adult"
+      },
+      "id": "rc_shn_maxi_adult",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Maxi Adult",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 580,
+      "size_suitable": [
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "животные жиры"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Самый популярный бренд в РФ — легко найти везде",
+        "Производство в России — стабильные поставки",
+        "Подробные рекомендации по порциям на упаковке"
+      ],
+      "cons": [
+        "Мясо: ~20% — «белки птицы» без уточнения вида и процента",
+        "Splitting: 3 злака (рис + пшеница + кукуруза) — злаков значительно больше мяса",
+        "Высокая цена за средний состав — платите за бренд",
+        "«Животные жиры» без уточнения источника"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+giant+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+giant+adult"
+      },
+      "id": "rc_shn_giant_adult",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Giant Adult",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "животные жиры"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Самый популярный бренд в РФ — легко найти везде",
+        "Производство в России — стабильные поставки",
+        "Подробные рекомендации по порциям на упаковке"
+      ],
+      "cons": [
+        "Мясо: ~20% — «белки птицы» без уточнения вида и процента",
+        "Splitting: 3 злака (рис + пшеница + кукуруза) — злаков значительно больше мяса",
+        "Высокая цена за средний состав — платите за бренд",
+        "«Животные жиры» без уточнения источника"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+mini+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+mini+puppy"
+      },
+      "id": "rc_shn_mini_puppy",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Mini Puppy",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 750,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "животные жиры",
+        "кукуруза",
+        "пшеничная мука"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 20,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Популярный выбор для щенков",
+        "Легко купить в любом магазине",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "«Белки птицы» без указания процента",
+        "Высокая цена относительно состава"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+medium+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+medium+puppy"
+      },
+      "id": "rc_shn_medium_puppy",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Medium Puppy",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "животные жиры",
+        "кукуруза",
+        "пшеничная мука"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 20,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Популярный выбор для щенков",
+        "Легко купить в любом магазине",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "«Белки птицы» без указания процента",
+        "Высокая цена относительно состава"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+maxi+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+maxi+puppy"
+      },
+      "id": "rc_shn_maxi_puppy",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Maxi Puppy",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "животные жиры",
+        "кукуруза",
+        "пшеничная мука"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 20,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Популярный выбор для щенков",
+        "Легко купить в любом магазине",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "«Белки птицы» без указания процента",
+        "Высокая цена относительно состава"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+size+health+nutrition+mini+ageing+12+",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+size+health+nutrition+mini+ageing+12+"
+      },
+      "id": "rc_shn_mini_ageing",
+      "brand": "Royal Canin",
+      "name": "Size Health Nutrition Mini Ageing 12+",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 780,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированные белки животного происхождения (птица)",
+        "рис",
+        "пшеничная мука",
+        "кукуруза",
+        "животные жиры"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 14,
+      "fiber_pct": 4,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Адаптирован для пожилых мелких собак",
+        "Антиоксиданты для иммунитета"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Низкий процент мяса",
+        "Высокая цена за состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+care+dermacomfort+mini",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+care+dermacomfort+mini"
+      },
+      "id": "rc_dermacomfort_mini",
+      "brand": "Royal Canin",
+      "name": "Care Dermacomfort Mini",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "premium",
+      "price_per_kg": 800,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рис",
+        "дегидрированные белки животного происхождения (птица)",
+        "животные жиры",
+        "пшеничная мука",
+        "кукуруза"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Позиционируется для чувствительной кожи",
+        "EPA и DHA для шерсти"
+      ],
+      "cons": [
+        "Рис НА ПЕРВОМ месте — мяса ещё меньше, чем в обычной линейке",
+        "Всего ~18% мясных ингредиентов",
+        "Цена выше обычной линейки за худший состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+care+dermacomfort+medium",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+care+dermacomfort+medium"
+      },
+      "id": "rc_dermacomfort_medium",
+      "brand": "Royal Canin",
+      "name": "Care Dermacomfort Medium",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рис",
+        "дегидрированные белки животного происхождения (птица)",
+        "животные жиры",
+        "пшеничная мука",
+        "кукуруза"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Позиционируется для чувствительной кожи",
+        "EPA и DHA для шерсти"
+      ],
+      "cons": [
+        "Рис НА ПЕРВОМ месте — мяса ещё меньше, чем в обычной линейке",
+        "Всего ~18% мясных ингредиентов",
+        "Цена выше обычной линейки за худший состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+care+dermacomfort+maxi",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+care+dermacomfort+maxi"
+      },
+      "id": "rc_dermacomfort_maxi",
+      "brand": "Royal Canin",
+      "name": "Care Dermacomfort Maxi",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рис",
+        "дегидрированные белки животного происхождения (птица)",
+        "животные жиры",
+        "пшеничная мука",
+        "кукуруза"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Позиционируется для чувствительной кожи",
+        "EPA и DHA для шерсти"
+      ],
+      "cons": [
+        "Рис НА ПЕРВОМ месте — мяса ещё меньше, чем в обычной линейке",
+        "Всего ~18% мясных ингредиентов",
+        "Цена выше обычной линейки за худший состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+care+digestive+medium",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+care+digestive+medium"
+      },
+      "id": "rc_digestive_medium",
+      "brand": "Royal Canin",
+      "name": "Care Digestive Medium",
+      "country": "Россия (франц. рецептура)",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рис",
+        "дегидрированные белки животного происхождения (птица)",
+        "животные жиры",
+        "пшеничная мука",
+        "гидролизат белков животного происхождения"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 5,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Повышенное содержание клетчатки для ЖКТ",
+        "Пребиотики (FOS)"
+      ],
+      "cons": [
+        "Рис на первом месте — мяса мало",
+        "Гидролизат белков — переработка неизвестного сырья",
+        "Пшеничная мука"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optibalance+adult+small+&+mini+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optibalance+adult+small+&+mini+с+курицей"
+      },
+      "id": "proplan_small_adult_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiBalance Adult Small & Mini с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 14%",
+        "пшеница",
+        "кукуруза",
+        "сухой белок птицы",
+        "рис 4%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Курица 14% — хотя бы указан процент",
+        "Широко доступен",
+        "Производство в РФ"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис = злаков ~60%",
+        "«Сухой белок птицы» — неясный ингредиент",
+        "Курица — частый аллерген",
+        "Много злаков за эту цену"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy",
+        "wheat"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optistart+puppy+small+&+mini+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optistart+puppy+small+&+mini+с+курицей"
+      },
+      "id": "proplan_small_puppy_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiStart Puppy Small & Mini с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 17%",
+        "рис 7%",
+        "кукуруза",
+        "сухой белок птицы",
+        "животный жир"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 19,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чуть больше курицы, чем во взрослом (17%)",
+        "DHA для развития мозга",
+        "Широко доступен"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optibalance+adult+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optibalance+adult+medium+с+курицей"
+      },
+      "id": "proplan_medium_adult_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiBalance Adult Medium с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 14%",
+        "пшеница",
+        "кукуруза",
+        "сухой белок птицы",
+        "рис 4%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Курица 14% — хотя бы указан процент",
+        "Широко доступен",
+        "Производство в РФ"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис = злаков ~60%",
+        "«Сухой белок птицы» — неясный ингредиент",
+        "Курица — частый аллерген",
+        "Много злаков за эту цену"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy",
+        "wheat"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optistart+puppy+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optistart+puppy+medium+с+курицей"
+      },
+      "id": "proplan_medium_puppy_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiStart Puppy Medium с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 640,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 17%",
+        "рис 7%",
+        "кукуруза",
+        "сухой белок птицы",
+        "животный жир"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 19,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чуть больше курицы, чем во взрослом (17%)",
+        "DHA для развития мозга",
+        "Широко доступен"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optibalance+adult+large+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optibalance+adult+large+с+курицей"
+      },
+      "id": "proplan_large_adult_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiBalance Adult Large с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 14%",
+        "пшеница",
+        "кукуруза",
+        "сухой белок птицы",
+        "рис 4%"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Курица 14% — хотя бы указан процент",
+        "Широко доступен",
+        "Производство в РФ"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис = злаков ~60%",
+        "«Сухой белок птицы» — неясный ингредиент",
+        "Курица — частый аллерген",
+        "Много злаков за эту цену"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy",
+        "wheat"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+optistart+puppy+large+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+optistart+puppy+large+с+курицей"
+      },
+      "id": "proplan_large_puppy_chicken",
+      "brand": "Pro Plan",
+      "name": "OptiStart Puppy Large с курицей",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 17%",
+        "рис 7%",
+        "кукуруза",
+        "сухой белок птицы",
+        "животный жир"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 19,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "курица",
+        "птица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чуть больше курицы, чем во взрослом (17%)",
+        "DHA для развития мозга",
+        "Широко доступен"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+sensitive+skin+adult+small+&+mini+с+лососем",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+sensitive+skin+adult+small+&+mini+с+лососем"
+      },
+      "id": "proplan_small_sensitive_salmon",
+      "brand": "Pro Plan",
+      "name": "Sensitive Skin Adult Small & Mini с лососем",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "лосось 14%",
+        "рис 14%",
+        "кукуруза",
+        "сухой белок рыбы",
+        "жир куриный"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "лосось",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Лосось 14% — указан процент",
+        "Для чувствительной кожи"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Куриный жир — может быть триггером",
+        "22% рыбных ингредиентов — немного"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+sensitive+skin+adult+medium+с+лососем",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+sensitive+skin+adult+medium+с+лососем"
+      },
+      "id": "proplan_medium_sensitive_salmon",
+      "brand": "Pro Plan",
+      "name": "Sensitive Skin Adult Medium с лососем",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "лосось 14%",
+        "рис 14%",
+        "кукуруза",
+        "сухой белок рыбы",
+        "жир куриный"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "лосось",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Лосось 14% — указан процент",
+        "Для чувствительной кожи"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Куриный жир — может быть триггером",
+        "22% рыбных ингредиентов — немного"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+sensitive+skin+adult+large+с+лососем",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+sensitive+skin+adult+large+с+лососем"
+      },
+      "id": "proplan_large_sensitive_salmon",
+      "brand": "Pro Plan",
+      "name": "Sensitive Skin Adult Large с лососем",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "лосось 14%",
+        "рис 14%",
+        "кукуруза",
+        "сухой белок рыбы",
+        "жир куриный"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "лосось",
+        "рыба"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Лосось 14% — указан процент",
+        "Для чувствительной кожи"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза",
+        "Куриный жир — может быть триггером",
+        "22% рыбных ингредиентов — немного"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy",
+        "wheat"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+sensitive+digestion+adult+medium+с+ягнёнком",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+sensitive+digestion+adult+medium+с+ягнёнком"
+      },
+      "id": "proplan_medium_sensitive_digest_lamb",
+      "brand": "Pro Plan",
+      "name": "Sensitive Digestion Adult Medium с ягнёнком",
+      "country": "Россия (швейц. рецептура Purina)",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "ягнёнок 14%",
+        "рис 14%",
+        "кукуруза",
+        "сухой белок птицы",
+        "кукурузный глютен"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "ягнёнок",
+        "птица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Ягнёнок — менее аллергенный белок",
+        "Для чувствительного пищеварения"
+      ],
+      "cons": [
+        "Splitting: рис + кукуруза + кукурузный глютен",
+        "«Сухой белок птицы» — непонятный ингредиент наряду с ягнёнком",
+        "Всего 14% ягнёнка — мало для заявленного вкуса"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+adult+small+&+mini+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+adult+small+&+mini+с+курицей"
+      },
+      "id": "hills_small_adult_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Adult Small & Mini с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 750,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 14.5,
+      "fiber_pct": 2,
+      "ash_pct": 6,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Известный бренд с ветеринарными исследованиями",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "КУКУРУЗА НА ПЕРВОМ МЕСТЕ — злаков больше, чем мяса",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "«Мука из мяса» — не самая качественная форма",
+        "Курица — аллерген",
+        "Высокая цена за зерновой состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+puppy+small+&+mini+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+puppy+small+&+mini+с+курицей"
+      },
+      "id": "hills_small_puppy_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Puppy Small & Mini с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 800,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 17,
+      "fiber_pct": 2,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Оптимальный кальций для растущих щенков",
+        "DHA для мозга"
+      ],
+      "cons": [
+        "Кукуруза на первом месте",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "Курица — аллерген"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+adult+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+adult+medium+с+курицей"
+      },
+      "id": "hills_medium_adult_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Adult Medium с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 14.5,
+      "fiber_pct": 2,
+      "ash_pct": 6,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Известный бренд с ветеринарными исследованиями",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "КУКУРУЗА НА ПЕРВОМ МЕСТЕ — злаков больше, чем мяса",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "«Мука из мяса» — не самая качественная форма",
+        "Курица — аллерген",
+        "Высокая цена за зерновой состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+puppy+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+puppy+medium+с+курицей"
+      },
+      "id": "hills_medium_puppy_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Puppy Medium с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 730,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 17,
+      "fiber_pct": 2,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Оптимальный кальций для растущих щенков",
+        "DHA для мозга"
+      ],
+      "cons": [
+        "Кукуруза на первом месте",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "Курица — аллерген"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+adult+large+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+adult+large+с+курицей"
+      },
+      "id": "hills_large_adult_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Adult Large с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 620,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 14.5,
+      "fiber_pct": 2,
+      "ash_pct": 6,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Известный бренд с ветеринарными исследованиями",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "КУКУРУЗА НА ПЕРВОМ МЕСТЕ — злаков больше, чем мяса",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "«Мука из мяса» — не самая качественная форма",
+        "Курица — аллерген",
+        "Высокая цена за зерновой состав"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+puppy+large+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+puppy+large+с+курицей"
+      },
+      "id": "hills_large_puppy_chicken",
+      "brand": "Hills",
+      "name": "Science Plan Puppy Large с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 670,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "пшеница",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 17,
+      "fiber_pct": 2,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Оптимальный кальций для растущих щенков",
+        "DHA для мозга"
+      ],
+      "cons": [
+        "Кукуруза на первом месте",
+        "Splitting: кукуруза + пшеница + кукурузный глютен",
+        "Курица — аллерген"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "soy",
+        "wheat"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+sensitive+stomach+&+skin+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+sensitive+stomach+&+skin+medium+с+курицей"
+      },
+      "id": "hills_sensitive_stomach_medium",
+      "brand": "Hills",
+      "name": "Science Plan Sensitive Stomach & Skin Medium с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "животный жир",
+        "рис",
+        "мука из кукурузного глютена"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 6,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Позиционируется для чувствительного ЖКТ и кожи",
+        "Жирные кислоты Омега-6"
+      ],
+      "cons": [
+        "Кукуруза на первом месте в корме для «чувствительных» собак",
+        "Курица — аллерген, а корм для «чувствительных»",
+        "Splitting: кукуруза + кукурузный глютен"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+science+plan+light+adult+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+science+plan+light+adult+medium+с+курицей"
+      },
+      "id": "hills_light_medium",
+      "brand": "Hills",
+      "name": "Science Plan Light Adult Medium с курицей",
+      "country": "Чехия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 700,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "мука из мяса курицы и индейки",
+        "пшеница",
+        "мука из кукурузного глютена",
+        "целлюлоза"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 9,
+      "fiber_pct": 12,
+      "ash_pct": 5.5,
+      "meat_estimate_pct": 16,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность (9%)",
+        "L-карнитин",
+        "12% клетчатки — чувство сытости"
+      ],
+      "cons": [
+        "Целлюлоза — наполнитель без питательной ценности",
+        "Кукуруза на первом месте",
+        "Всего ~16% мяса"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=eukanuba+adult+small+breed+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=eukanuba+adult+small+breed+с+курицей"
+      },
+      "id": "eukanuba_small_adult",
+      "brand": "Eukanuba",
+      "name": "Adult Small Breed с курицей",
+      "country": "Россия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо птицы (курица, индейка) 22%",
+        "пшеница",
+        "кукуруза",
+        "жир животный",
+        "рис 4%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 26,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "22% птицы — указан процент",
+        "Глюкозамин и хондроитин",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=eukanuba+adult+medium+breed+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=eukanuba+adult+medium+breed+с+курицей"
+      },
+      "id": "eukanuba_medium_adult",
+      "brand": "Eukanuba",
+      "name": "Adult Medium Breed с курицей",
+      "country": "Россия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 620,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо птицы (курица, индейка) 22%",
+        "пшеница",
+        "кукуруза",
+        "жир животный",
+        "рис 4%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 26,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "22% птицы — указан процент",
+        "Глюкозамин и хондроитин",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=eukanuba+adult+large+breed+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=eukanuba+adult+large+breed+с+курицей"
+      },
+      "id": "eukanuba_large_adult",
+      "brand": "Eukanuba",
+      "name": "Adult Large Breed с курицей",
+      "country": "Россия/Нидерланды",
+      "price_category": "mid",
+      "price_per_kg": 580,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо птицы (курица, индейка) 22%",
+        "пшеница",
+        "кукуруза",
+        "жир животный",
+        "рис 4%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 26,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "22% птицы — указан процент",
+        "Глюкозамин и хондроитин",
+        "Стабильные поставки"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза + рис",
+        "Курица — аллерген",
+        "Животный жир без уточнения"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=dog+chow+adult+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=dog+chow+adult+с+курицей"
+      },
+      "id": "dog_chow_adult_chicken",
+      "brand": "Dog Chow",
+      "name": "Adult с курицей",
+      "country": "Россия (Purina)",
+      "price_category": "budget",
+      "price_per_kg": 200,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки (пшеница)",
+        "мясо и продукты переработки мяса (курица мин. 4%)",
+        "продукты переработки сырья растительного происхождения",
+        "масла и жиры",
+        "овощи"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 10,
+      "main_protein_sources": [
+        "курица (мин. 4%)"
+      ],
+      "grain_sources": [
+        "пшеница"
+      ],
+      "preservatives": "консерванты (не уточнены)",
+      "pros": [
+        "Самый дешёвый корм на рынке",
+        "Продаётся в каждом супермаркете"
+      ],
+      "cons": [
+        "Всего 4% курицы — остальной «белок» из злаков и растительных отходов",
+        "«Продукты переработки мяса» — перья, клювы, лапы",
+        "Злаки на первом месте без уточнения процента",
+        "Консерванты не уточнены"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=dog+chow+puppy+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=dog+chow+puppy+с+курицей"
+      },
+      "id": "dog_chow_puppy_chicken",
+      "brand": "Dog Chow",
+      "name": "Puppy с курицей",
+      "country": "Россия (Purina)",
+      "price_category": "budget",
+      "price_per_kg": 220,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки (пшеница)",
+        "мясо и продукты переработки мяса (курица мин. 4%)",
+        "масла и жиры",
+        "продукты переработки сырья растительного происхождения",
+        "овощи"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 10,
+      "main_protein_sources": [
+        "курица (мин. 4%)"
+      ],
+      "grain_sources": [
+        "пшеница"
+      ],
+      "preservatives": "консерванты (не уточнены)",
+      "pros": [
+        "Очень дешёвый"
+      ],
+      "cons": [
+        "4% курицы — критически мало для растущего щенка",
+        "Основа — злаки и растительные отходы",
+        "Не рекомендуем для щенков"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=purina+one+adult+small+с+говядиной+и+рисом",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=purina+one+adult+small+с+говядиной+и+рисом"
+      },
+      "id": "purina_one_small_adult",
+      "brand": "Purina ONE",
+      "name": "Adult Small с говядиной и рисом",
+      "country": "Россия (Purina)",
+      "price_category": "budget",
+      "price_per_kg": 450,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "говядина 15%",
+        "пшеница",
+        "сухой белок птицы",
+        "кукуруза",
+        "животный жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 2,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "говядина",
+        "птица"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Говядина 15% — указан процент",
+        "Доступнее Pro Plan при похожем составе"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза",
+        "«Сухой белок птицы» — непонятный ингредиент",
+        "20% мяса — мало"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=purina+one+adult+medium/large+с+говядиной+и+рисом",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=purina+one+adult+medium/large+с+говядиной+и+рисом"
+      },
+      "id": "purina_one_medium_adult",
+      "brand": "Purina ONE",
+      "name": "Adult Medium/Large с говядиной и рисом",
+      "country": "Россия (Purina)",
+      "price_category": "budget",
+      "price_per_kg": 400,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "говядина 15%",
+        "пшеница",
+        "сухой белок птицы",
+        "кукуруза",
+        "животный жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 2,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "говядина",
+        "птица"
+      ],
+      "grain_sources": [
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Говядина 15% — указан процент",
+        "Доступнее Pro Plan при похожем составе"
+      ],
+      "cons": [
+        "Splitting: пшеница + кукуруза",
+        "«Сухой белок птицы» — непонятный ингредиент",
+        "20% мяса — мало"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+mini+adult+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+mini+adult+lamb"
+      },
+      "id": "brit_care_mini_lamb",
+      "brand": "Brit Care",
+      "name": "Mini Adult Lamb",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 25%",
+        "жёлтый горох",
+        "куриный жир",
+        "дегидрированное мясо лосося 5%",
+        "нут"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "ягнёнок",
+        "лосось"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Беззерновой для мелких",
+        "Мелкая гранула",
+        "Ягнёнок — гипоаллергенный"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Бобовые в основе (горох, нут)"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=monge+speciality+line+puppy+&+junior+lamb+&+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=monge+speciality+line+puppy+&+junior+lamb+&+rice"
+      },
+      "id": "monge_medium_puppy",
+      "brand": "Monge",
+      "name": "Speciality Line Puppy & Junior Lamb & Rice",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 590,
+      "size_suitable": [
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясо ягнёнка (мин. 10% свежего, мин. 18% дегидрированного)",
+        "рис",
+        "кукуруза",
+        "куриный жир",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Итальянское производство",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Кукуруза",
+        "Куриный жир"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=farmina+n&d+ancestral+grain+lamb+&+blueberry+adult+mini",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+n&d+ancestral+grain+lamb+&+blueberry+adult+mini"
+      },
+      "id": "farmina_nd_lamb_blueberry_mini",
+      "brand": "Farmina N&D",
+      "name": "Ancestral Grain Lamb & Blueberry Adult Mini",
+      "country": "Италия/Сербия",
+      "price_category": "premium",
+      "price_per_kg": 1050,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 20%",
+        "дегидрированное мясо ягнёнка 20%",
+        "спельта 10%",
+        "овёс 10%",
+        "жир куриный 8%"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 60,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "спельта",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "pros": [
+        "60% ягнёнка",
+        "Древние злаки — лучше кукурузы",
+        "Мелкая гранула"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Высокая цена"
+      ]
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic",
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+adult+large+breed+lamb+&+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+adult+large+breed+lamb+&+rice"
+      },
+      "id": "grandorf_lamb_rice_large",
+      "brand": "Grandorf",
+      "name": "Adult Large Breed Lamb & Rice",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 24%",
+        "дегидрированное мясо индейки 15%",
+        "цельный рис",
+        "жир индейки",
+        "свежее мясо ягнёнка 3%"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 13,
+      "fiber_pct": 3.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 52,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "pros": [
+        "52% мяса",
+        "Глюкозамин и хондроитин для суставов",
+        "Пониженная жирность (13%) для крупных"
+      ],
+      "cons": []
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=blitz+sensitive+adult+lamb+&+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=blitz+sensitive+adult+lamb+&+rice"
+      },
+      "id": "blitz_sensitive_lamb_rice",
+      "brand": "Blitz Sensitive",
+      "name": "Adult Lamb & Rice",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 320,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 20%",
+        "рис 18%",
+        "кукуруза",
+        "жир куриный",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 24,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Ягнёнок + рис — базовая гипоаллергенная формула",
+        "Доступная цена",
+        "Российский бренд"
+      ],
+      "cons": [
+        "Кукуруза",
+        "24% мяса — нижняя граница",
+        "Куриный жир"
+      ]
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_s_adult_chicken",
+      "brand": "Brit Premium",
+      "name": "Adult S с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 15%",
+        "кукуруза",
+        "пшеница",
+        "куриный жир",
+        "рис"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство за бюджетную цену",
+        "15% курицы — указан процент"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген",
+        "20% мяса"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+adult+s+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+adult+s+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_m_adult_chicken",
+      "brand": "Brit Premium",
+      "name": "Adult M с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 350,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 15%",
+        "кукуруза",
+        "пшеница",
+        "куриный жир",
+        "рис"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство за бюджетную цену",
+        "15% курицы — указан процент"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген",
+        "20% мяса"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+adult+m+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+adult+m+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_l_adult_chicken",
+      "brand": "Brit Premium",
+      "name": "Adult L с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 320,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 15%",
+        "кукуруза",
+        "пшеница",
+        "куриный жир",
+        "рис"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство за бюджетную цену",
+        "15% курицы — указан процент"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген",
+        "20% мяса"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+adult+l+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+adult+l+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_s_puppy_chicken",
+      "brand": "Brit Premium",
+      "name": "Puppy S с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 400,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 18%",
+        "рис",
+        "кукуруза",
+        "куриный жир",
+        "пшеница"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство",
+        "18% курицы — неплохо для бюджета"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+puppy+s+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+puppy+s+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_m_puppy_chicken",
+      "brand": "Brit Premium",
+      "name": "Puppy M с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 370,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 18%",
+        "рис",
+        "кукуруза",
+        "куриный жир",
+        "пшеница"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство",
+        "18% курицы — неплохо для бюджета"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+puppy+m+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+puppy+m+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_l_puppy_chicken",
+      "brand": "Brit Premium",
+      "name": "Puppy L с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 340,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 18%",
+        "рис",
+        "кукуруза",
+        "куриный жир",
+        "пшеница"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Чешское производство",
+        "18% курицы — неплохо для бюджета"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "Курица — аллерген"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+puppy+l+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+puppy+l+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "brit_prem_lamb_rice",
+      "brand": "Brit Premium",
+      "name": "Adult Lamb & Rice Sensitive",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 370,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "ягнёнок 15%",
+        "рис 15%",
+        "кукуруза",
+        "куриный жир",
+        "пульпа сахарной свёклы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Ягнёнок + рис — гипоаллергенная формула",
+        "Чешское производство"
+      ],
+      "cons": [
+        "Кукуруза",
+        "18% мяса — мало",
+        "Куриный жир"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+adult+lamb+%26+rice+sensitive",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+adult+lamb+%26+rice+sensitive"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_light",
+      "brand": "Brit Premium",
+      "name": "Adult Light с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 350,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 12%",
+        "рис",
+        "кукуруза",
+        "пшеница",
+        "куриный жир"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 9,
+      "fiber_pct": 5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 16,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность (9%)",
+        "L-карнитин для сжигания жира"
+      ],
+      "cons": [
+        "12% курицы — мало",
+        "Splitting: 3 злака"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+adult+light+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+adult+light+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "brit_prem_senior",
+      "brand": "Brit Premium",
+      "name": "Senior S+M с курицей",
+      "country": "Чехия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "курица 15%",
+        "рис",
+        "кукуруза",
+        "пшеница",
+        "куриный жир"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 11,
+      "fiber_pct": 4,
+      "ash_pct": 7,
+      "meat_estimate_pct": 18,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Адаптирован для пожилых",
+        "Пониженная жирность"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "18% мяса"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+senior+s+m+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+senior+s+m+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "carnilove_lamb_wild_boar",
+      "brand": "Carnilove",
+      "name": "Adult Lamb & Wild Boar",
+      "country": "Чехия",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "мука из мяса ягнёнка 22%",
+        "жёлтый горох",
+        "мука из мяса дикого кабана 10%",
+        "куриный жир",
+        "тапиока"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 45,
+      "main_protein_sources": [
+        "ягнёнок",
+        "дикий кабан"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы)",
+      "pros": [
+        "Ягнёнок + дикий кабан — необычный состав",
+        "Беззерновой",
+        "45% мяса"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох в основе"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=carnilove+adult+lamb+%26+wild+boar",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=carnilove+adult+lamb+%26+wild+boar"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "skin_coat",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "id": "carnilove_salmon",
+      "brand": "Carnilove",
+      "name": "Adult Salmon",
+      "country": "Чехия",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "мука из мяса лосося 25%",
+        "жёлтый горох",
+        "куриный жир",
+        "тапиока",
+        "мука из сельди 5%"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 16,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 42,
+      "main_protein_sources": [
+        "лосось",
+        "сельдь"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы)",
+      "pros": [
+        "Рыба — редкий аллерген",
+        "Беззерновой",
+        "Отлично для шерсти"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох в основе"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=carnilove+adult+salmon",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=carnilove+adult+salmon"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "id": "carnilove_duck_pheasant",
+      "brand": "Carnilove",
+      "name": "Adult Duck & Pheasant",
+      "country": "Чехия",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "мука из мяса утки 18%",
+        "жёлтый горох",
+        "мука из мяса фазана 14%",
+        "куриный жир",
+        "тапиока"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 17,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 44,
+      "main_protein_sources": [
+        "утка",
+        "фазан"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Утка + фазан — экзотические белки",
+        "Беззерновой",
+        "44% мяса"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=carnilove+adult+duck+%26+pheasant",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=carnilove+adult+duck+%26+pheasant"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "carnilove_puppy_salmon_turkey",
+      "brand": "Carnilove",
+      "name": "Puppy Salmon & Turkey",
+      "country": "Чехия",
+      "price_category": "premium",
+      "price_per_kg": 900,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "мука из мяса лосося 22%",
+        "жёлтый горох",
+        "мука из мяса индейки 12%",
+        "куриный жир",
+        "тапиока"
+      ],
+      "protein_pct": 34,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 46,
+      "main_protein_sources": [
+        "лосось",
+        "индейка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Беззерновой для щенков",
+        "46% мяса и рыбы",
+        "DHA для развития мозга"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Высокая цена"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=carnilove+puppy+salmon+%26+turkey",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=carnilove+puppy+salmon+%26+turkey"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "carnilove_large_breed_lamb",
+      "brand": "Carnilove",
+      "name": "Adult Large Breed Lamb & Wild Boar",
+      "country": "Чехия",
+      "price_category": "premium",
+      "price_per_kg": 820,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "мука из мяса ягнёнка 20%",
+        "жёлтый горох",
+        "мука из мяса дикого кабана 10%",
+        "куриный жир",
+        "тапиока"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 42,
+      "main_protein_sources": [
+        "ягнёнок",
+        "дикий кабан"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность для крупных",
+        "Глюкозамин и хондроитин",
+        "Беззерновой"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=carnilove+adult+large+breed+lamb+%26+wild+boar",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=carnilove+adult+large+breed+lamb+%26+wild+boar"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "skin_coat",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "id": "wellness_core_ocean",
+      "brand": "Wellness CORE",
+      "name": "Ocean Adult Salmon & Tuna",
+      "country": "США/Бельгия",
+      "price_category": "premium",
+      "price_per_kg": 950,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированный лосось 22%",
+        "картофель",
+        "горох",
+        "дегидрированный тунец 10%",
+        "жир куриный"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 14,
+      "fiber_pct": 4,
+      "ash_pct": 8,
+      "meat_estimate_pct": 45,
+      "main_protein_sources": [
+        "лосось",
+        "тунец"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Рыба — отлично для шерсти",
+        "Беззерновой",
+        "45% рыбных ингредиентов",
+        "Пробиотики в составе"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Высокая зольность (8%)"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=wellness+core+ocean+adult+salmon+%26+tuna",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=wellness+core+ocean+adult+salmon+%26+tuna"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "joint_support"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "wellness_core_turkey",
+      "brand": "Wellness CORE",
+      "name": "Adult Turkey & Chicken",
+      "country": "США/Бельгия",
+      "price_category": "premium",
+      "price_per_kg": 950,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированная индейка 20%",
+        "горох",
+        "дегидрированная курица 14%",
+        "куриный жир",
+        "картофель"
+      ],
+      "protein_pct": 34,
+      "fat_pct": 16,
+      "fiber_pct": 4,
+      "ash_pct": 8,
+      "meat_estimate_pct": 50,
+      "main_protein_sources": [
+        "индейка",
+        "курица"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "50% мяса",
+        "Беззерновой",
+        "Пробиотики",
+        "Глюкозамин"
+      ],
+      "cons": [
+        "Содержит курицу",
+        "Горох"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=wellness+core+adult+turkey+%26+chicken",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=wellness+core+adult+turkey+%26+chicken"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "wellness_core_small_breed",
+      "brand": "Wellness CORE",
+      "name": "Small Breed Turkey & Chicken",
+      "country": "США/Бельгия",
+      "price_category": "premium",
+      "price_per_kg": 1050,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированная индейка 22%",
+        "горох",
+        "дегидрированная курица 14%",
+        "куриный жир",
+        "картофель"
+      ],
+      "protein_pct": 36,
+      "fat_pct": 18,
+      "fiber_pct": 4,
+      "ash_pct": 8,
+      "meat_estimate_pct": 52,
+      "main_protein_sources": [
+        "индейка",
+        "курица"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "52% мяса",
+        "Мелкая гранула",
+        "Беззерновой"
+      ],
+      "cons": [
+        "Содержит курицу",
+        "Высокая цена"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=wellness+core+small+breed+turkey+%26+chicken",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=wellness+core+small+breed+turkey+%26+chicken"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic",
+        "single_protein"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "belcando_finest_lamb",
+      "brand": "Belcando",
+      "name": "Finest GF Lamb",
+      "country": "Германия",
+      "price_category": "premium",
+      "price_per_kg": 900,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 20%",
+        "мука из мяса ягнёнка 17%",
+        "картофельный крахмал",
+        "горох",
+        "жир домашней птицы"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 45,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы)",
+      "pros": [
+        "Немецкое качество",
+        "45% ягнёнка — один белок",
+        "Беззерновой",
+        "Мелкая гранула"
+      ],
+      "cons": [
+        "Жир птицы без уточнения",
+        "Картофельный крахмал"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=belcando+finest+gf+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=belcando+finest+gf+lamb"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "belcando_adult_lamb_rice",
+      "brand": "Belcando",
+      "name": "Adult Lamb & Rice",
+      "country": "Германия",
+      "price_category": "mid",
+      "price_per_kg": 700,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мука из мяса ягнёнка 17%",
+        "рис 17%",
+        "овёс",
+        "жир домашней птицы",
+        "мука из виноградной косточки"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "pros": [
+        "Немецкое производство",
+        "Рис + овёс — хорошие злаки",
+        "Гипоаллергенный"
+      ],
+      "cons": [
+        "28% мяса — средний показатель",
+        "Жир птицы без уточнения"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=belcando+adult+lamb+%26+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=belcando+adult+lamb+%26+rice"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "mera_pure_sensitive_lamb_rice",
+      "brand": "Mera",
+      "name": "Pure Sensitive Lamb & Rice",
+      "country": "Германия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясо ягнёнка (дегидрированное) 17.5%",
+        "рис 17.5%",
+        "кукуруза",
+        "жир птицы",
+        "рисовый белок"
+      ],
+      "protein_pct": 22.5,
+      "fat_pct": 12,
+      "fiber_pct": 2,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Немецкое производство",
+        "Один мясной белок",
+        "Пониженная зольность (6.5%)"
+      ],
+      "cons": [
+        "Кукуруза",
+        "25% мяса — невысокий",
+        "Рисовый белок — растительный добавочный белок"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=mera+pure+sensitive+lamb+%26+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=mera+pure+sensitive+lamb+%26+rice"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef",
+        "chicken"
+      ],
+      "id": "mera_pure_sensitive_turkey",
+      "brand": "Mera",
+      "name": "Pure Sensitive Turkey",
+      "country": "Германия",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясо индейки (дегидрированное) 20%",
+        "рис 20%",
+        "кукуруза",
+        "жир птицы",
+        "свекольная пульпа"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 12.5,
+      "fiber_pct": 2,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 26,
+      "main_protein_sources": [
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Немецкое производство",
+        "Индейка — менее аллергенна",
+        "Пониженная зольность"
+      ],
+      "cons": [
+        "Кукуруза",
+        "26% мяса — невысокий"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=mera+pure+sensitive+turkey",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=mera+pure+sensitive+turkey"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "trainer_fitness3_lamb_rice_medium",
+      "brand": "Trainer",
+      "name": "Fitness3 Adult Medium/Maxi Lamb & Rice",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 720,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 14%",
+        "рис",
+        "дегидрированное мясо ягнёнка 14%",
+        "кукуруза",
+        "жир куриный"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 13,
+      "fiber_pct": 2.5,
+      "ash_pct": 6.5,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "28% ягнёнка (свежее + дегидр.)",
+        "Итальянское производство",
+        "Один мясной белок"
+      ],
+      "cons": [
+        "Кукуруза",
+        "Куриный жир"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=trainer+fitness3+adult+medium/maxi+lamb+%26+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=trainer+fitness3+adult+medium/maxi+lamb+%26+rice"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "trainer_natural_medium_chicken",
+      "brand": "Trainer",
+      "name": "Natural Adult Medium с курицей",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежая курица 20%",
+        "рис",
+        "дегидрированная курица 10%",
+        "кукуруза",
+        "куриный жир"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "30% курицы",
+        "Свежее мясо на первом месте",
+        "Итальянское производство"
+      ],
+      "cons": [
+        "Курица — аллерген",
+        "Кукуруза"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=trainer+natural+adult+medium+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=trainer+natural+adult+medium+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "skin_coat",
+        "hypoallergenic",
+        "single_protein"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "barking_heads_bad_hair_day_lamb",
+      "brand": "Barking Heads",
+      "name": "Bad Hair Day (Lamb)",
+      "country": "Великобритания",
+      "price_category": "premium",
+      "price_per_kg": 880,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 26%",
+        "сушёное мясо ягнёнка 20%",
+        "овёс",
+        "рис",
+        "жир лосося"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 52,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "овёс",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "52% ягнёнка",
+        "Жир лосося (не куриный!) — для шерсти",
+        "Один мясной белок",
+        "Забавный дизайн"
+      ],
+      "cons": [
+        "Высокая зольность (8%)",
+        "Два злака"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=barking+heads+bad+hair+day+(lamb)",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=barking+heads+bad+hair+day+(lamb)"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "barking_heads_bowl_lickin_chicken",
+      "brand": "Barking Heads",
+      "name": "Bowl Lickin' Chicken",
+      "country": "Великобритания",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежая курица 22%",
+        "сушёная курица 18%",
+        "овёс",
+        "рис",
+        "жир куриный"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 50,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "овёс",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "50% курицы",
+        "Свежее + сушёное мясо",
+        "Овёс + рис — хорошие злаки"
+      ],
+      "cons": [
+        "Курица — аллерген",
+        "Высокая зольность"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=barking+heads+bowl+lickin'+chicken",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=barking+heads+bowl+lickin'+chicken"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "weight_control",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "barking_heads_fat_dog_slim",
+      "brand": "Barking Heads",
+      "name": "Fat Dog Slim (Light)",
+      "country": "Великобритания",
+      "price_category": "premium",
+      "price_per_kg": 880,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежая форель 22%",
+        "сушёная курица 15%",
+        "овёс",
+        "рис",
+        "жир куриный"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 9,
+      "fiber_pct": 5,
+      "ash_pct": 8,
+      "meat_estimate_pct": 45,
+      "main_protein_sources": [
+        "форель",
+        "курица"
+      ],
+      "grain_sources": [
+        "овёс",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность (9%)",
+        "Форель — Омега-3 для шерсти",
+        "45% мяса и рыбы"
+      ],
+      "cons": [
+        "Содержит курицу",
+        "Высокая зольность"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=barking+heads+fat+dog+slim+(light)",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=barking+heads+fat+dog+slim+(light)"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "barking_heads_puppy_days",
+      "brand": "Barking Heads",
+      "name": "Puppy Days (Chicken)",
+      "country": "Великобритания",
+      "price_category": "premium",
+      "price_per_kg": 920,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежая курица 22%",
+        "сушёная курица 16%",
+        "овёс",
+        "рис",
+        "жир лосося"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 48,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "овёс",
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "48% курицы",
+        "Жир лосося — DHA для мозга",
+        "Овёс + рис"
+      ],
+      "cons": [
+        "Курица — аллерген"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=barking+heads+puppy+days+(chicken)",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=barking+heads+puppy+days+(chicken)"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "alleva_holistic_chicken_duck",
+      "brand": "Alleva Holistic",
+      "name": "Adult Chicken & Duck Medium/Maxi",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 850,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо курицы 25%",
+        "дегидрированная курица 15%",
+        "картофель",
+        "куриный жир",
+        "свежая утка 5%"
+      ],
+      "protein_pct": 30,
+      "fat_pct": 18,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 58,
+      "main_protein_sources": [
+        "курица",
+        "утка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы, экстракт розмарина)",
+      "pros": [
+        "58% мяса",
+        "Беззерновой",
+        "Свежее мясо на первом месте"
+      ],
+      "cons": [
+        "Курица — аллерген",
+        "Куриный жир"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=alleva+holistic+adult+chicken+%26+duck+medium/maxi",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=alleva+holistic+adult+chicken+%26+duck+medium/maxi"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "alleva_holistic_puppy_chicken",
+      "brand": "Alleva Holistic",
+      "name": "Puppy Chicken & Duck Medium/Maxi",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 900,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежее мясо курицы 25%",
+        "дегидрированная курица 15%",
+        "картофель",
+        "куриный жир",
+        "свежая утка 5%"
+      ],
+      "protein_pct": 32,
+      "fat_pct": 20,
+      "fiber_pct": 2.5,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 58,
+      "main_protein_sources": [
+        "курица",
+        "утка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "58% мяса",
+        "Беззерновой",
+        "DHA для развития"
+      ],
+      "cons": [
+        "Курица — аллерген"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=alleva+holistic+puppy+chicken+%26+duck+medium/maxi",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=alleva+holistic+puppy+chicken+%26+duck+medium/maxi"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "wheat",
+        "soy",
+        "beef"
+      ],
+      "id": "alleva_equilibrium_lamb",
+      "brand": "Alleva Equilibrium",
+      "name": "Sensitive Lamb Medium/Maxi",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 700,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "свежее мясо ягнёнка 18%",
+        "рис",
+        "дегидрированное мясо ягнёнка 14%",
+        "кукуруза",
+        "куриный жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 14,
+      "fiber_pct": 2.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "32% ягнёнка",
+        "Итальянское производство",
+        "Один мясной белок"
+      ],
+      "cons": [
+        "Кукуруза",
+        "Куриный жир"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=alleva+equilibrium+sensitive+lamb+medium/maxi",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=alleva+equilibrium+sensitive+lamb+medium/maxi"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "hypoallergenic",
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "id": "grandorf_indoor_lamb",
+      "brand": "Grandorf",
+      "name": "Indoor Lamb & Rice",
+      "country": "Бельгия",
+      "price_category": "mid",
+      "price_per_kg": 650,
+      "size_suitable": [
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 25%",
+        "дегидрированное мясо индейки 13%",
+        "цельный рис",
+        "жир индейки",
+        "L-карнитин"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 12,
+      "fiber_pct": 3.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 50,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность (12%)",
+        "50% мяса",
+        "L-карнитин для контроля веса"
+      ],
+      "cons": [],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=grandorf+indoor+lamb+%26+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=grandorf+indoor+lamb+%26+rice"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "joint_support",
+        "weight_control"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "id": "brit_care_senior_lamb",
+      "brand": "Brit Care",
+      "name": "Senior Lamb & Rice",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 550,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка 22%",
+        "рис 18%",
+        "куриный жир",
+        "дегидрированное мясо лосося 5%",
+        "сушёные яблоки"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 11,
+      "fiber_pct": 3.5,
+      "ash_pct": 7,
+      "meat_estimate_pct": 34,
+      "main_protein_sources": [
+        "ягнёнок",
+        "лосось"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Пониженная жирность",
+        "Глюкозамин и хондроитин",
+        "Один злак (рис)"
+      ],
+      "cons": [
+        "Куриный жир",
+        "34% мяса — средний"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+care+senior+lamb+%26+rice",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+care+senior+lamb+%26+rice"
+      }
+    },
+    {
+      "splitting_detected": false,
+      "availability_ru": "stable",
+      "special_traits": [
+        "grain_free",
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "corn",
+        "wheat",
+        "soy",
+        "beef",
+        "lamb"
+      ],
+      "id": "monge_bwild_gf_duck",
+      "brand": "Monge",
+      "name": "BWild Grain Free Adult Duck",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 680,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "свежая утка 10%",
+        "дегидрированная утка 20%",
+        "картофель",
+        "горох",
+        "куриный жир"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 7.5,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "утка"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные",
+      "pros": [
+        "Утка — редкий белок",
+        "Беззерновой",
+        "Итальянское производство"
+      ],
+      "cons": [
+        "Куриный жир",
+        "Горох и картофель"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=monge+bwild+grain+free+adult+duck",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=monge+bwild+grain+free+adult+duck"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "sirius_adult_chicken",
+      "brand": "Sirius",
+      "name": "Adult с курицей",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 210,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мука из мяса птицы 25%",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "жир куриный"
+      ],
+      "protein_pct": 23,
+      "fat_pct": 12,
+      "fiber_pct": 4,
+      "ash_pct": 8,
+      "meat_estimate_pct": 25,
+      "main_protein_sources": [
+        "птица (без уточнения)"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Самый дешёвый корм с 25% мяса",
+        "Продаётся везде"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "«Мука из мяса птицы» без уточнения вида",
+        "Высокая зольность (8%)"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=sirius+adult+с+курицей",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=sirius+adult+с+курицей"
+      }
+    },
+    {
+      "splitting_detected": true,
+      "availability_ru": "stable",
+      "special_traits": [],
+      "allergens_absent": [
+        "soy"
+      ],
+      "id": "sirius_puppy",
+      "brand": "Sirius",
+      "name": "Puppy с ягнёнком и рисом",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 230,
+      "size_suitable": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мука из мяса ягнёнка 18%",
+        "рис",
+        "пшеница",
+        "кукуруза",
+        "жир куриный"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 14,
+      "fiber_pct": 3.5,
+      "ash_pct": 8,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "пшеница",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные",
+      "pros": [
+        "Очень доступный корм для щенков",
+        "Ягнёнок — менее аллергенный"
+      ],
+      "cons": [
+        "Splitting: 3 злака",
+        "22% мяса — мало для щенка"
+      ],
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=sirius+puppy+с+ягнёнком+и+рисом",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=sirius+puppy+с+ягнёнком+и+рисом"
+      }
+    }
+  ]
+}

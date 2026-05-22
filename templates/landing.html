@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кусь — Подбор рациона для собаки | Doggi</title>
+<meta name="description" content="Персональный подбор рациона для собаки: натуралка или сухой корм. Расчёт на основе ветеринарных норм. От 990 руб.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #055ba9;
+  --primary-dark: #04467f;
+  --primary-soft: #e6f0fa;
+  --primary-softer: #f3f8fd;
+  --accent: #f59e0b;
+  --accent-deep: #d97706;
+  --accent-soft: #fef3c7;
+  --ink: #0b1726;
+  --ink-soft: #475569;
+  --ink-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-soft: #eef2f7;
+  --bg: #ffffff;
+  --bg-soft: #f7f9fc;
+  --bg-warm: #fdfbf7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Golos Text', system-ui, sans-serif; color: var(--ink); background: #fff; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+a { color: var(--primary); text-decoration: none; }
+
+/* Layout */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+@media (min-width: 768px) { .container { padding: 0 80px; } }
+.section { padding: 64px 0; }
+@media (min-width: 768px) { .section { padding: 110px 0; } }
+.section--gray { background: var(--bg-soft); }
+.section-eyebrow { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--primary); background: var(--primary-soft); padding: 6px 12px; border-radius: 100px; margin-bottom: 16px; }
+.section-title { font-size: 30px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; color: var(--ink); text-wrap: balance; }
+@media (min-width: 768px) { .section-title { font-size: 48px; } }
+.section-sub { margin-top: 14px; font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 640px; }
+@media (min-width: 768px) { .section-sub { font-size: 18px; } }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 22px; font-size: 15px; font-weight: 700; font-family: inherit; border: none; border-radius: 12px; cursor: pointer; transition: transform 0.15s, opacity 0.15s; text-decoration: none; }
+.btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.btn--primary { color: #fff; background: var(--primary); box-shadow: 0 10px 24px -10px rgba(5,91,169,0.4); }
+.btn--accent { color: #fff; background: var(--accent); box-shadow: 0 10px 24px -8px rgba(245,158,11,0.55); }
+.btn--ghost { color: var(--ink); background: transparent; border: 1.5px solid var(--border); }
+.btn--white { color: var(--primary); background: #fff; }
+.btn--large { padding: 18px 30px; font-size: 17px; }
+.btn--full { width: 100%; }
+
+/* Header */
+.header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-soft); }
+.header__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; max-width: 1200px; margin: 0 auto; }
+@media (min-width: 768px) { .header__inner { padding: 18px 80px; } }
+.logo { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; text-decoration: none; }
+.logo__icon { width: 32px; height: 32px; border-radius: 10px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.header__nav { display: none; gap: 28px; }
+@media (min-width: 768px) { .header__nav { display: flex; } }
+.header__nav a { font-size: 15px; color: var(--ink-soft); font-weight: 500; }
+.header__actions { display: flex; align-items: center; gap: 10px; }
+
+/* Hero */
+.hero { padding: 40px 0 64px; }
+@media (min-width: 768px) { .hero { padding: 80px 0 110px; } }
+.hero__grid { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
+@media (min-width: 768px) { .hero__grid { grid-template-columns: 1.1fr 1fr; gap: 64px; } }
+.hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.035em; line-height: 0.98; }
+@media (min-width: 768px) { .hero h1 { font-size: 76px; } }
+.hero h1 span { color: var(--primary); }
+.hero__text { margin-top: 20px; font-size: 17px; line-height: 1.5; color: var(--ink-soft); max-width: 520px; }
+@media (min-width: 768px) { .hero__text { margin-top: 28px; font-size: 20px; } }
+.hero__buttons { display: flex; gap: 12px; margin-top: 28px; flex-direction: column; }
+@media (min-width: 768px) { .hero__buttons { flex-direction: row; margin-top: 36px; } }
+.hero__social { margin-top: 32px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hero__avatars { display: flex; }
+.hero__avatars img { width: 36px; height: 36px; border-radius: 18px; border: 2px solid #fff; object-fit: cover; }
+.hero__avatars img + img { margin-left: -10px; }
+.hero__stars { display: flex; gap: 2px; color: var(--accent); }
+.hero__image { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm)); }
+@media (min-width: 768px) { .hero__image { aspect-ratio: 5/6; } }
+.hero__image img { width: 100%; height: 100%; object-fit: cover; }
+.hero__badge { position: absolute; left: 16px; bottom: 16px; background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); border-radius: 16px; padding: 14px 18px; box-shadow: 0 16px 40px -12px rgba(11,23,38,0.25); display: flex; align-items: center; gap: 12px; }
+@media (min-width: 768px) { .hero__badge { left: 24px; bottom: 24px; } }
+.hero__badge-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+
+/* Problem cards */
+.problems__grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) { .problems__grid { grid-template-columns: repeat(4, 1fr); } }
+.problem-card { background: #fff; border: 1px solid var(--border-soft); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.problem-card__icon { width: 48px; height: 48px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.problem-card__title { font-size: 17px; font-weight: 700; }
+.problem-card__text { font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
+
+/* Who we are */
+.who__grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+@media (min-width: 768px) { .who__grid { grid-template-columns: 1fr 1.4fr; gap: 64px; } }
+.who__left { position: static; }
+@media (min-width: 768px) { .who__left { position: sticky; top: 120px; } }
+.who-card { padding: 22px; border: 1px solid var(--border-soft); border-radius: 18px; background: #fff; display: flex; gap: 18px; }
+.who-card__icon { flex: 0 0 auto; width: 52px; height: 52px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+.who-card__title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.who-card__text { font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+.who__cred { padding: 22px; background: var(--primary); border-radius: 18px; color: #fff; display: flex; gap: 14px; align-items: center; font-size: 15px; font-weight: 500; line-height: 1.5; }
+
+/* Services */
+.services__grid { display: flex; gap: 20px; flex-direction: column; }
+@media (min-width: 768px) { .services__grid { flex-direction: row; } }
+.service-card { flex: 1; background: #fff; border: 1.5px solid var(--border-soft); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; }
+@media (min-width: 768px) { .service-card { padding: 36px; } }
+.service-card--highlight { border-color: var(--primary); box-shadow: 0 20px 50px -20px rgba(5,91,169,0.25); }
+.service-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.service-card__icon { width: 64px; height: 64px; border-radius: 16px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+.service-card__price { text-align: right; }
+.service-card__price-label { font-size: 12px; color: var(--ink-light); }
+.service-card__price-value { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+@media (min-width: 768px) { .service-card__price-value { font-size: 40px; } }
+.service-card__price-currency { font-size: 0.45em; color: var(--ink-soft); font-weight: 600; margin-left: 4px; }
+.service-card h3 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 22px; }
+@media (min-width: 768px) { .service-card h3 { font-size: 28px; } }
+.service-card__list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; flex: 1; }
+.service-card__list li { display: flex; gap: 12px; font-size: 14.5px; line-height: 1.5; }
+.service-card__check { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; border-radius: 11px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+.services__note { text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--ink-soft); }
+
+/* PDF mockup */
+.whatyouget__grid { display: grid; grid-template-columns: 1fr; gap: 36px; align-items: center; }
+@media (min-width: 768px) { .whatyouget__grid { grid-template-columns: 1fr 1fr; gap: 80px; } }
+.whatyouget__cols { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 28px; }
+@media (min-width: 768px) { .whatyouget__cols { grid-template-columns: 1fr 1fr; } }
+.whatyouget__col { padding: 18px; background: var(--bg-soft); border-radius: 16px; border: 1px solid var(--border-soft); }
+.whatyouget__col-kicker { font-size: 12px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.whatyouget__col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.whatyouget__col li { font-size: 13.5px; display: flex; gap: 8px; line-height: 1.4; }
+.pdf-mockup { background: #1f2937; border-radius: 28px; padding: 14px; box-shadow: 0 40px 80px -30px rgba(11,23,38,0.4); max-width: 460px; margin: 0 auto; }
+@media (min-width: 768px) { .pdf-mockup { transform: rotate(-2deg); } }
+.pdf-mockup__inner { background: #fff; border-radius: 16px; padding: 22px; aspect-ratio: 3/4; overflow: hidden; position: relative; }
+.pdf-mockup__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.pdf-mockup__divider { height: 1px; background: var(--border-soft); margin-bottom: 14px; }
+.pdf-mockup__stat { background: var(--primary-soft); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.pdf-mockup__row { display: flex; justify-content: space-between; font-size: 11.5px; padding: 5px 0; border-bottom: 1px dashed var(--border-soft); }
+.pdf-mockup__row:last-child { border-bottom: none; }
+.pdf-mockup__footer { position: absolute; bottom: 16px; right: 16px; left: 16px; font-size: 9px; color: var(--ink-light); text-align: center; }
+
+/* How we work */
+.steps__grid { display: flex; flex-direction: column; gap: 16px; position: relative; }
+@media (min-width: 768px) { .steps__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+.step { display: flex; gap: 16px; align-items: flex-start; position: relative; z-index: 1; }
+@media (min-width: 768px) { .step { flex-direction: column; gap: 18px; } }
+.step__icon { flex: 0 0 auto; width: 56px; height: 56px; border-radius: 16px; background: #fff; border: 2px solid var(--primary); color: var(--primary); display: flex; align-items: center; justify-content: center; position: relative; }
+@media (min-width: 768px) { .step__icon { width: 72px; height: 72px; border-radius: 20px; } }
+.step__num { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; border-radius: 13px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+.step__title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.step__text { font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
+
+/* Testimonials */
+.stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; padding: 18px; background: var(--primary); border-radius: 20px; color: #fff; }
+@media (min-width: 768px) { .stats-bar { gap: 20px; padding: 28px 36px; margin-bottom: 36px; } }
+.stats-bar__num { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+@media (min-width: 768px) { .stats-bar__num { font-size: 40px; } }
+.stats-bar__label { font-size: 12px; opacity: 0.8; margin-top: 6px; }
+@media (min-width: 768px) { .stats-bar__label { font-size: 14px; } }
+.reviews__grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) { .reviews__grid { grid-template-columns: repeat(3, 1fr); } }
+.review-card { padding: 22px; background: #fff; border: 1px solid var(--border-soft); border-radius: 18px; display: flex; flex-direction: column; gap: 14px; }
+.review-card__stars { display: flex; gap: 2px; color: var(--accent); }
+.review-card__text { font-size: 15px; line-height: 1.55; flex: 1; }
+.review-card__author { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.review-card__avatar { width: 40px; height: 40px; border-radius: 20px; object-fit: cover; flex: 0 0 auto; }
+.review-card__name { font-size: 13.5px; font-weight: 600; }
+
+/* FAQ */
+.faq__grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+@media (min-width: 768px) { .faq__grid { grid-template-columns: 1fr 1.6fr; gap: 64px; } }
+.faq__left { position: static; }
+@media (min-width: 768px) { .faq__left { position: sticky; top: 120px; } }
+.faq__items { display: flex; flex-direction: column; gap: 10px; }
+.faq-item { background: #fff; border: 1px solid var(--border-soft); border-radius: 14px; overflow: hidden; transition: border-color 0.15s; }
+.faq-item.open { border-color: var(--primary); }
+.faq-item__q { width: 100%; padding: 18px 20px; background: transparent; border: none; text-align: left; cursor: pointer; font-family: inherit; font-size: 16px; font-weight: 600; color: var(--ink); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+@media (min-width: 768px) { .faq-item__q { padding: 20px 24px; font-size: 17px; } }
+.faq-item__arrow { flex: 0 0 auto; transition: transform 0.2s; color: var(--ink-soft); }
+.faq-item.open .faq-item__arrow { transform: rotate(180deg); color: var(--primary); }
+.faq-item__a { padding: 0 20px 20px; font-size: 15px; line-height: 1.6; color: var(--ink-soft); display: none; }
+@media (min-width: 768px) { .faq-item__a { padding: 0 24px 22px; } }
+.faq-item.open .faq-item__a { display: block; }
+
+/* Final CTA */
+.final-cta { position: relative; border-radius: 28px; overflow: hidden; padding: 36px 24px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+@media (min-width: 768px) { .final-cta { padding: 80px 64px; } }
+.final-cta__bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=1400&q=80&auto=format&fit=crop') center/cover; opacity: 0.18; mix-blend-mode: overlay; }
+.final-cta__content { position: relative; max-width: 720px; }
+.final-cta__buttons { display: flex; gap: 12px; margin-top: 32px; flex-direction: column; }
+@media (min-width: 768px) { .final-cta__buttons { flex-direction: row; } }
+
+/* Footer */
+.footer { background: var(--ink); color: #fff; padding: 40px 0 28px; }
+@media (min-width: 768px) { .footer { padding: 64px 0 40px; } }
+.footer__grid { display: grid; grid-template-columns: 1fr; gap: 32px; padding-bottom: 36px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+@media (min-width: 768px) { .footer__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; } }
+.footer__desc { margin-top: 16px; font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,0.7); max-width: 320px; }
+.footer__socials { display: flex; gap: 10px; margin-top: 20px; }
+.footer__social { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.08); color: #fff; display: flex; align-items: center; justify-content: center; }
+.footer__heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+.footer__links { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.footer__links a { color: rgba(255,255,255,0.85); }
+.footer__bottom { padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-direction: column; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.5); }
+@media (min-width: 768px) { .footer__bottom { flex-direction: row; } }
+
+/* SVG icons inline */
+.icon { display: inline-block; vertical-align: middle; }
+
+/* Star SVG */
+.star-svg { fill: var(--accent); }
+.check-svg { stroke: var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header__inner">
+    <a href="/" class="logo">
+      <span class="logo__icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg>
+      </span>
+      Кусь
+    </a>
+    <nav class="header__nav">
+      <a href="#services">Сухой корм</a>
+      <a href="#services">Натуралка</a>
+      <a href="#how">Как мы работаем</a>
+      <a href="#footer">Контакты</a>
+    </nav>
+    <div class="header__actions">
+      <a href="https://t.me/doggi_kus_bot" class="btn btn--primary" style="padding:9px 14px;font-size:13px;gap:7px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
+        Чат-бот Кусь
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div>
+        <div class="section-eyebrow"><span style="color:var(--accent-deep)">&#9679;</span> Уже 1 200+ собак на правильном рационе</div>
+        <h1>Кормите собаку<br><span>правильно</span></h1>
+        <p class="hero__text">Поможем подобрать идеальный рацион — сухой корм или натуралку. Без гугла, без калькулятора, без риска ошибиться.</p>
+        <div class="hero__buttons">
+          <a href="/order" class="btn btn--accent btn--large btn--full">Подобрать рацион &rarr;</a>
+          <a href="#how" class="btn btn--ghost">Как мы работаем</a>
+        </div>
+        <div class="hero__social">
+          <div class="hero__avatars">
+            <img src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
+            <img src="https://images.unsplash.com/photo-1583511655802-41f30aef99a2?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
+            <img src="https://images.unsplash.com/photo-1546238232-20216dec9f72?w=200&q=80&auto=format&fit=crop&crop=faces" alt="">
+          </div>
+          <div>
+            <div class="hero__stars">
+              <svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg>
+            </div>
+            <div style="font-size:13px;color:var(--ink-soft);margin-top:2px;">4,9 из 5 — по 340+ отзывам</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__image">
+        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80&auto=format&fit=crop" alt="Счастливая собака ест из миски" loading="lazy">
+        <div class="hero__badge">
+          <div class="hero__badge-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink)">В кинологии с 2005</div>
+            <div style="font-size:12px;color:var(--ink-soft)">Проверено ветеринарами и диетологами</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS -->
+<section class="section section--gray">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="section-eyebrow">Знакомо?</div>
+      <h2 class="section-title" style="text-align:center;">Если хоть одно — это про вас,<br>мы поможем</h2>
+    </div>
+    <div class="problems__grid">
+      <div class="problem-card">
+        <div class="problem-card__icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c2-1 4-2 7-2s5 1 7 2"/><path d="M9 7l1.5 2M14.5 7L13 9M11.5 6v2"/><path d="M7 14c0-3 2-5 5-5s5 2 5 5"/><path d="M16 18l1.5 2M8 18l-1.5 2"/></svg></div>
+        <div class="problem-card__title">Аллергия и зуд</div>
+        <div class="problem-card__text">Собака чешется, шерсть тусклая, уши красные. Вы перепробовали 5 кормов — ничего не помогает.</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M7 21h10"/><path d="M3 8h18"/><path d="M6 8l-3 5a3 3 0 006 0L6 8z"/><path d="M18 8l-3 5a3 3 0 006 0L18 8z"/></svg></div>
+        <div class="problem-card__title">Страх навредить</div>
+        <div class="problem-card__text">Хотите перевести на натуралку, но боитесь. Сколько мяса? Какие кости? А витамины?</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18l-1.5 7.5a2 2 0 01-2 1.5h-11a2 2 0 01-2-1.5L3 11z"/><path d="M5 11c0-2.5 3-4 7-4s7 1.5 7 4"/></svg></div>
+        <div class="problem-card__title">Отказ от еды</div>
+        <div class="problem-card__text">Купили дорогой корм по совету блогера — собака понюхала и ушла. Деньги на ветер.</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card__icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M15.5 15.5L20 20"/><path d="M9 11h4M11 9v4"/></svg></div>
+        <div class="problem-card__title">Обман на этикетке</div>
+        <div class="problem-card__text">&laquo;С ягнёнком и рисом&raquo; — а на деле кукуруза, перья и ароматизаторы.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO WE ARE -->
+<section class="section">
+  <div class="container">
+    <div class="who__grid">
+      <div class="who__left">
+        <div class="section-eyebrow">О нас</div>
+        <h2 class="section-title">Почему нам<br>доверяют тысячи владельцев</h2>
+        <p class="section-sub">Мы не теоретики, начитавшиеся форумов. Мы в кинологии с 2005 года и знаем эту &laquo;кухню&raquo; изнутри.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="who-card">
+          <div class="who-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 001 1h12a1 1 0 001-1v-9"/><path d="M10 20v-5h4v5"/></svg></div>
+          <div><div class="who-card__title">Свой центр дрессировки и питомник</div><div class="who-card__text">Мы вырастили поколения здоровых собак. Каждый рацион проверен на практике.</div></div>
+        </div>
+        <div class="who-card">
+          <div class="who-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="1.5"/><path d="M3 11h18"/><path d="M7 15h3M14 15h3"/></svg></div>
+          <div><div class="who-card__title">Зоогостиница и сеть груминг-салонов</div><div class="who-card__text">Видим сотни собак на разных типах питания и знаем, что работает.</div></div>
+        </div>
+        <div class="who-card">
+          <div class="who-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-4h16l1 4"/><path d="M4 9v11a1 1 0 001 1h14a1 1 0 001-1V9"/><path d="M3 9h18"/><path d="M9 21v-6h6v6"/></svg></div>
+          <div><div class="who-card__title">Опыт управления зоомагазином</div><div class="who-card__text">Знаем рынок кормов изнутри: какие бренды честные, а какие платят за полку.</div></div>
+        </div>
+        <div class="who__cred">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          <div>Все рекомендации основаны на совместной работе с ветеринарами и диетологами.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="section section--gray">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="section-eyebrow">Услуги</div>
+      <h2 class="section-title" style="text-align:center;">Выберите свой вариант</h2>
+      <p class="section-sub" style="text-align:center;margin-left:auto;margin-right:auto;">Две проверенные программы. Одна цена, один результат — здоровая собака на правильном рационе.</p>
+    </div>
+    <div class="services__grid">
+      <div class="service-card">
+        <div class="service-card__header">
+          <div class="service-card__icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9c-1 0-2 .8-2 2.5C3 16 7 20 12 20s9-4 9-8.5c0-1.7-1-2.5-2-2.5-1 0-1.5.7-2.5.7S15 8 12 8s-3.5 1.7-4.5 1.7S6 9 5 9z"/><circle cx="9" cy="13" r=".8" fill="currentColor"/><circle cx="13" cy="14" r=".8" fill="currentColor"/><circle cx="16" cy="12" r=".8" fill="currentColor"/></svg></div>
+          <div class="service-card__price"><div class="service-card__price-label">от</div><div class="service-card__price-value">990<span class="service-card__price-currency">&#8381;</span></div></div>
+        </div>
+        <h3>Подбор сухого корма</h3>
+        <ul class="service-card__list">
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Анализ текущего корма</strong> — <span style="color:var(--ink-soft)">разберём состав</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Персональный ТОП-9</strong> — <span style="color:var(--ink-soft)">в 3 ценовых категориях</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Прямые ссылки на покупку</strong> — <span style="color:var(--ink-soft)">кликнули и заказали</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Инструкция по переходу</strong> — <span style="color:var(--ink-soft)">без срывов ЖКТ</span></span></li>
+        </ul>
+        <a href="/order" class="btn btn--accent btn--large btn--full">Подобрать корм — 990 &#8381;</a>
+      </div>
+      <div class="service-card service-card--highlight">
+        <div class="service-card__header">
+          <div class="service-card__icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 17.5c-2.5-2.5-2.5-7 .5-10s7.5-3 10-.5c2 2 1.5 5-.5 7s-5 2.5-7 .5z"/><circle cx="9" cy="14" r="1.2"/><path d="M5.5 18.5l-2 2"/><path d="M16 7c-1 1-1 3 0 4"/></svg></div>
+          <div class="service-card__price"><div class="service-card__price-label">от</div><div class="service-card__price-value">1 390<span class="service-card__price-currency">&#8381;</span></div></div>
+        </div>
+        <h3>Расчёт натурального рациона</h3>
+        <ul class="service-card__list">
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Индивидуальные граммовки</strong> — <span style="color:var(--ink-soft)">на каждое кормление</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>BARF или варка</strong> — <span style="color:var(--ink-soft)">как удобнее вам</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Баланс Ca/P и витаминов</strong> — <span style="color:var(--ink-soft)">уже рассчитан</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Схема перевода с сушки</strong> — <span style="color:var(--ink-soft)">пошагово, мягко</span></span></li>
+          <li><span class="service-card__check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span><span><strong>Советы по закупкам</strong> — <span style="color:var(--ink-soft)">где выгоднее покупать</span></span></li>
+        </ul>
+        <a href="/order" class="btn btn--accent btn--large btn--full">Рассчитать рацион — 1 390 &#8381;</a>
+      </div>
+    </div>
+    <div class="services__note">Оплата онлайн &middot; Результат в течение 3 рабочих дней &middot; Поддержка 7 дней после получения</div>
+  </div>
+</section>
+
+<!-- HOW WE WORK -->
+<section id="how" class="section section--gray">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="section-eyebrow">Процесс</div>
+      <h2 class="section-title" style="text-align:center;">Как это работает</h2>
+    </div>
+    <div class="steps__grid">
+      <div class="step">
+        <div class="step__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 11h6M9 14h6M9 17h4"/></svg><span class="step__num">1</span></div>
+        <div><div class="step__title">Заполняете анкету</div><div class="step__text">Порода, возраст, вес, активность, аллергии. Займёт 3 минуты.</div></div>
+      </div>
+      <div class="step">
+        <div class="step__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-1.5-1.5-4-1.5-5 .5S5 9 6 10c-1 1.5-.5 3.5 1 4 0 1.5 1.5 3 3.5 2.5.5 1.5 2.5 1.5 3 0"/><path d="M12 5c1.5-1.5 4-1.5 5 .5s2 3.5 1 4.5c1 1.5.5 3.5-1 4 0 1.5-1.5 3-3.5 2.5"/><path d="M12 5v13"/></svg><span class="step__num">2</span></div>
+        <div><div class="step__title">Мы анализируем</div><div class="step__text">Рассчитываем рацион на основе ветеринарных норм и актуального рынка.</div></div>
+      </div>
+      <div class="step">
+        <div class="step__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1 1 0 00-1 1v16a1 1 0 001 1h10a1 1 0 001-1V7l-4-4z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 16h6M9 10h3"/></svg><span class="step__num">3</span></div>
+        <div><div class="step__title">Получаете PDF</div><div class="step__text">Готовый документ с конкретными продуктами и граммовками. Никакой воды.</div></div>
+      </div>
+      <div class="step">
+        <div class="step__icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c0 4-4 7-9 7-1.2 0-2.3-.2-3.4-.5L3 20l1.5-4.5C3.5 14.5 3 13.3 3 12c0-4 4-7 9-7s9 3 9 7z"/><circle cx="9" cy="12" r=".8" fill="currentColor"/><circle cx="12" cy="12" r=".8" fill="currentColor"/><circle cx="15" cy="12" r=".8" fill="currentColor"/></svg><span class="step__num">4</span></div>
+        <div><div class="step__title">Поддержка 7 дней</div><div class="step__text">Задаёте вопросы, уточняете, корректируем рацион. Мы рядом.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="section-eyebrow">Отзывы</div>
+      <h2 class="section-title" style="text-align:center;">Что говорят клиенты</h2>
+    </div>
+    <div class="stats-bar">
+      <div><div class="stats-bar__num">1 200+</div><div class="stats-bar__label">рационов рассчитано</div></div>
+      <div style="text-align:center;"><div class="stats-bar__num">4,9</div><div class="stats-bar__label">средняя оценка</div></div>
+      <div style="text-align:right;"><div class="stats-bar__num">7 дней</div><div class="stats-bar__label">поддержка после</div></div>
+    </div>
+    <div class="reviews__grid">
+      <div class="review-card">
+        <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
+        <div class="review-card__text">&laquo;Перевели Барона на натуралку по вашему расчёту. Через месяц ушла перхоть, шерсть блестит, на прогулке другой пёс.&raquo;</div>
+        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1551717743-49959800b1f6?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Анна, лабрадор Барон, 4 года</div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
+        <div class="review-card__text">&laquo;У Чарли годами был жидкий стул. Подобрали корм — впервые за всё время нормально. Спасибо за конкретные ссылки.&raquo;</div>
+        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1583511655802-41f30aef99a2?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Дмитрий, такса Чарли, 7 лет</div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-card__stars"><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" class="star-svg"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14l-5-4.5L9.5 9 12 3z"/></svg></div>
+        <div class="review-card__text">&laquo;Боялась накормить щенка неправильно. Получила PDF с граммовками — всё разложено по полочкам. Поддержка отвечает быстро.&raquo;</div>
+        <div class="review-card__author"><img class="review-card__avatar" src="https://images.unsplash.com/photo-1546238232-20216dec9f72?w=200&q=80&auto=format&fit=crop&crop=faces" alt=""><div class="review-card__name">Мария, метис Луна, щенок</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section--gray">
+  <div class="container">
+    <div class="faq__grid">
+      <div class="faq__left">
+        <div class="section-eyebrow">FAQ</div>
+        <h2 class="section-title">Частые<br>вопросы</h2>
+        <p class="section-sub">Не нашли ответ? Напишите в Telegram-бот — ответим за 15 минут.</p>
+      </div>
+      <div class="faq__items">
+        <div class="faq-item open" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Это подходит для щенков? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Да. Для щенков особенно важно правильное питание — они растут, и рацион нужно пересчитывать. Мы учитываем возраст и породу.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">А если у собаки аллергия? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Это как раз наша специализация. В анкете указываете известные аллергены — мы подберём рацион, исключающий их.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Как быстро я получу результат? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">В течение 3 рабочих дней. Обычно быстрее.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Можно ли задать вопросы после? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Да, у вас 7 дней поддержки после получения PDF. Пишите в Telegram — ответим.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">Чем это лучше бесплатных таблиц? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">Бесплатные таблицы — общие. Мы делаем расчёт под конкретную собаку: вес, возраст, активность, аллергии, бюджет. Плюс поддержка.</div>
+        </div>
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-item__q">А если рацион не подойдёт? <svg class="faq-item__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          <div class="faq-item__a">У вас 7 дней поддержки — скорректируем. Такое бывает редко, потому что мы учитываем все параметры заранее.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section">
+  <div class="container">
+    <div class="final-cta">
+      <div class="final-cta__bg"></div>
+      <div class="final-cta__content">
+        <h2 class="section-title" style="color:#fff;font-size:30px;">Хватит гадать —<br>дайте собаке лучшее</h2>
+        <p style="margin-top:16px;font-size:16px;line-height:1.5;color:rgba(255,255,255,0.85);max-width:580px;">Стоимость подбора — дешевле одного визита к ветеринару. А результат — на всю жизнь.</p>
+        <div class="final-cta__buttons">
+          <a href="/order" class="btn btn--white btn--large">Подбор сухого корма — 990 &#8381;</a>
+          <a href="/order" class="btn btn--accent btn--large">Расчёт натуралки — 1 390 &#8381;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer" class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a href="/" class="logo" style="color:#fff;">
+          <span class="logo__icon" style="background:#fff;color:var(--primary);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+          Кусь
+        </a>
+        <p class="footer__desc">Подбор рациона для собак от практиков с 20+ лет в кинологии. На основе совместной работы с ветеринарами и диетологами.</p>
+        <div class="footer__socials">
+          <a href="https://t.me/doggi_kus_bot" class="footer__social"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg></a>
+          <a href="tel:+79581114200" class="footer__social"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a1 1 0 01-1 1A16 16 0 014 5a1 1 0 011-1z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__heading">Контакты</div>
+        <div class="footer__links">
+          <div>площадь Ленина, 3<br>Архангельск</div>
+          <div>ежедневно 10:00-20:00</div>
+          <div>+7 958 111 42 00</div>
+        </div>
+      </div>
+      <div>
+        <div class="footer__heading">Услуги Doggi</div>
+        <div class="footer__links">
+          <a href="/order">Подбор рациона</a>
+          <a href="https://doggi.ru">Дрессировка</a>
+          <a href="https://doggi.ru">Зоогостиница</a>
+          <a href="https://doggi.ru">Груминг Pet Spa</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer__heading">Правовое</div>
+        <div class="footer__links">
+          <a href="/oferta">Публичная оферта</a>
+          <a href="/privacy">Политика конфиденциальности</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div>&copy; 2025 ИП Мищенко А.Е. &middot; ИНН 290127785634 &middot; ОГРНИП 316290100081421</div>
+      <div>kus.dogfine.ru</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

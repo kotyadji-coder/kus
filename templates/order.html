@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подбор рациона — Doggi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .logo { text-align: center; font-size: 24px; font-weight: bold; color: #055ba9; padding: 20px 0 10px; }
+
+        /* Progress bar */
+        .progress { display: flex; gap: 6px; margin-bottom: 24px; }
+        .progress-dot { flex: 1; height: 4px; border-radius: 2px; background: #ddd; transition: background 0.3s; }
+        .progress-dot.active { background: #055ba9; }
+        .step-label { text-align: center; font-size: 13px; color: #888; margin-bottom: 16px; }
+
+        /* Steps */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        h2 { font-size: 20px; color: #055ba9; margin-bottom: 16px; }
+
+        /* Form elements */
+        label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: #444; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="tel"],
+        select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 16px; background: white; -webkit-appearance: none;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #055ba9; box-shadow: 0 0 0 3px rgba(5,91,169,0.1); }
+        textarea { resize: vertical; min-height: 60px; }
+        .hint { font-size: 12px; color: #999; margin-top: 4px; }
+
+        /* Card selectors */
+        .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; }
+        .cards.single-col { grid-template-columns: 1fr; }
+        .card-option { position: relative; }
+        .card-option input { position: absolute; opacity: 0; }
+        .card-option .card {
+            border: 2px solid #e0e0e0; border-radius: 10px; padding: 14px;
+            cursor: pointer; transition: all 0.2s; background: white;
+        }
+        .card-option input:checked + .card { border-color: #055ba9; background: #f0f6ff; }
+        .card .card-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .card .card-desc { font-size: 12px; color: #777; line-height: 1.4; }
+
+        /* Buttons */
+        .buttons { display: flex; gap: 10px; margin-top: 24px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-back { background: #e8e8e8; color: #555; }
+        .btn-next { background: #055ba9; color: white; }
+        .btn-submit { background: #e8751a; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        /* Checkbox */
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+        .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; }
+
+        .consent { font-size: 12px; color: #999; margin-top: 16px; }
+        .consent a { color: #055ba9; }
+
+        /* Datalist */
+        input[list] { cursor: text; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">DOGGI</div>
+
+    <div class="progress">
+        <div class="progress-dot active" data-step="1"></div>
+        <div class="progress-dot" data-step="2"></div>
+        <div class="progress-dot" data-step="3"></div>
+        <div class="progress-dot" data-step="4"></div>
+        <div class="progress-dot" data-step="5"></div>
+    </div>
+    <div class="step-label" id="stepLabel">Шаг 1 из 5 — О собаке</div>
+
+    <form id="orderForm" method="POST" action="/order">
+        {% if telegram_user_id %}
+        <input type="hidden" name="telegram_user_id" value="{{ telegram_user_id }}">
+        {% endif %}
+
+        <!-- STEP 1: О собаке -->
+        <div class="step active" data-step="1">
+            <h2>О вашей собаке</h2>
+
+            <label for="dog_name">Кличка</label>
+            <input type="text" id="dog_name" name="dog_name" required placeholder="Барон">
+
+            <label for="breed">Порода</label>
+            <input type="text" id="breed" name="breed" list="breedList" required placeholder="Начните вводить...">
+            <datalist id="breedList">
+                {% for b in breeds %}
+                <option value="{{ b }}">
+                {% endfor %}
+            </datalist>
+
+            <label for="age_months">Возраст (в месяцах)</label>
+            <input type="number" id="age_months" name="age_months" required min="1" max="300" placeholder="36">
+            <div class="hint">1 год = 12, 2 года = 24, 3 года = 36</div>
+
+            <label>Пол</label>
+            <div class="cards">
+                <label class="card-option">
+                    <input type="radio" name="sex" value="male" required>
+                    <div class="card"><div class="card-title">Мальчик</div></div>
+                </label>
+                <label class="card-option">
+                    <input type="radio" name="sex" value="female">
+                    <div class="card"><div class="card-title">Девочка</div></div>
+                </label>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="neutered" name="neutered">
+                <label for="neutered" style="margin:0;font-weight:normal;">Кастрирован / стерилизована</label>
+            </div>
+
+            <label for="weight_kg">Текущий вес (кг)</label>
+            <input type="number" id="weight_kg" name="weight_kg" required min="0.5" max="150" step="0.1" placeholder="25">
+
+            <div class="buttons">
+                <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Рацион и активность -->
+        <div class="step" data-step="2">
+            <h2>Рацион и активность</h2>
+
+            <label>Что ест сейчас?</label>
+            <div class="cards single-col">
+                <label class="card-option"><input type="radio" name="current_food" value="dry" required>
+                    <div class="card"><div class="card-title">Сухой корм</div></div></label>
+                <label class="card-option"><input type="radio" name="current_food" value="porridge">
+                    <div class="card"><div class="card-title">Каши с мясом</div></div></label>
+                <label class="card-option"><input type="radio" name="current_food" value="natural">
+                    <div class="card"><div class="card-title">Натуралка</div></div></label>
+                <label class="card-option"><input type="radio" name="current_food" value="table">
+                    <div class="card"><div class="card-title">Еда со стола</div></div></label>
+                <label class="card-option"><input type="radio" name="current_food" value="mixed">
+                    <div class="card"><div class="card-title">Смешанное (корм + обычная еда)</div></div></label>
+            </div>
+
+            <label>Кондиция (упитанность)</label>
+            <div class="cards single-col">
+                <label class="card-option"><input type="radio" name="condition" value="thin" required>
+                    <div class="card"><div class="card-title">Худышка</div><div class="card-desc">Ребра и позвоночник сильно торчат</div></div></label>
+                <label class="card-option"><input type="radio" name="condition" value="athletic">
+                    <div class="card"><div class="card-title">Атлет</div><div class="card-desc">Ребра прощупываются, талия видна, вес идеальный</div></div></label>
+                <label class="card-option"><input type="radio" name="condition" value="chubby">
+                    <div class="card"><div class="card-title">Пончик</div><div class="card-desc">Ребра найти сложно, талии почти нет</div></div></label>
+                <label class="card-option"><input type="radio" name="condition" value="obese">
+                    <div class="card"><div class="card-title">Колобок</div><div class="card-desc">Ожирение, собаке тяжело двигаться</div></div></label>
+            </div>
+
+            <label>Активность</label>
+            <div class="cards single-col">
+                <label class="card-option"><input type="radio" name="activity" value="lazy" required>
+                    <div class="card"><div class="card-title">Ленивая</div><div class="card-desc">Гуляем мало, в основном спит</div></div></label>
+                <label class="card-option"><input type="radio" name="activity" value="moderate">
+                    <div class="card"><div class="card-title">Средняя</div><div class="card-desc">2-3 прогулки, игры с мячом</div></div></label>
+                <label class="card-option"><input type="radio" name="activity" value="high">
+                    <div class="card"><div class="card-title">Высокая</div><div class="card-desc">Спорт, охота, рабочая собака</div></div></label>
+                <label class="card-option"><input type="radio" name="activity" value="puppy">
+                    <div class="card"><div class="card-title">Растущий организм</div><div class="card-desc">Активный щенок</div></div></label>
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
+                <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Здоровье -->
+        <div class="step" data-step="3">
+            <h2>Здоровье и ЖКТ</h2>
+
+            <label for="diagnoses">Есть ли подтверждённые диагнозы?</label>
+            <textarea id="diagnoses" name="diagnoses" placeholder="Гастрит, панкреатит, аллергия... Если нет — оставьте пустым"></textarea>
+
+            <label>Как дела со стулом?</label>
+            <div class="cards single-col">
+                <label class="card-option"><input type="radio" name="stool" value="good" required>
+                    <div class="card"><div class="card-title">Отличный</div></div></label>
+                <label class="card-option"><input type="radio" name="stool" value="loose">
+                    <div class="card"><div class="card-title">Часто жидкий</div></div></label>
+                <label class="card-option"><input type="radio" name="stool" value="constipation">
+                    <div class="card"><div class="card-title">Бывают запоры</div></div></label>
+                <label class="card-option"><input type="radio" name="stool" value="high_volume">
+                    <div class="card"><div class="card-title">Много выхода</div></div></label>
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
+                <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Предпочтения -->
+        <div class="step" data-step="4">
+            <h2>Предпочтения по питанию</h2>
+
+            <label>Тип питания</label>
+            <div class="cards single-col">
+                <label class="card-option"><input type="radio" name="diet_type" value="barf" required>
+                    <div class="card"><div class="card-title">Сырое (BARF) — 1 390 руб.</div><div class="card-desc">Сырое мясо, субпродукты, сырые мясные кости</div></div></label>
+                <label class="card-option"><input type="radio" name="diet_type" value="cooked">
+                    <div class="card"><div class="card-title">Варка — 1 390 руб.</div><div class="card-desc">Варёное/припущенное мясо</div></div></label>
+                <label class="card-option"><input type="radio" name="diet_type" value="dry">
+                    <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов с честным разбором состава</div></div></label>
+            </div>
+
+            <div id="budgetSection" style="display:none;">
+                <label>Доступность продуктов</label>
+                <div class="cards single-col">
+                    <label class="card-option"><input type="radio" name="budget" value="supermarket">
+                        <div class="card"><div class="card-title">Супермаркет</div><div class="card-desc">Курица, индейка, говядина</div></div></label>
+                    <label class="card-option"><input type="radio" name="budget" value="market">
+                        <div class="card"><div class="card-title">Рынок / мясные магазины</div><div class="card-desc">Рубец, лёгкие, печень, разные виды мяса</div></div></label>
+                    <label class="card-option"><input type="radio" name="budget" value="unlimited">
+                        <div class="card"><div class="card-title">Не ограничено</div><div class="card-desc">Кролик, утка, лосось и т.д.</div></div></label>
+                </div>
+            </div>
+
+            <label for="stop_products">Стоп-продукты</label>
+            <textarea id="stop_products" name="stop_products" placeholder="Аллергия, непереносимость, собака отказывается есть... Если нет — оставьте пустым"></textarea>
+
+            <div class="buttons">
+                <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
+                <button type="button" class="btn btn-next" onclick="nextStep()">Далее</button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Контакты -->
+        <div class="step" data-step="5">
+            <h2>Контакты</h2>
+
+            <label for="client_name">Ваше имя</label>
+            <input type="text" id="client_name" name="client_name" required placeholder="Анна">
+
+            <label for="phone_or_telegram">Телефон или Telegram</label>
+            <input type="tel" id="phone_or_telegram" name="phone_or_telegram" required placeholder="+7-900-123-45-67 или @username">
+
+            <label for="email">Email (для отправки PDF)</label>
+            <input type="email" id="email" name="email" required placeholder="anna@mail.ru">
+
+            <div class="consent">
+                Нажимая кнопку, вы даёте согласие на обработку персональных данных
+                и соглашаетесь c <a href="/privacy" target="_blank">политикой конфиденциальности</a> и <a href="/oferta" target="_blank">публичной офертой</a>.
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>
+                <button type="submit" class="btn btn-submit" id="submitBtn">Оплатить и получить</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 5;
+    const stepLabels = [
+        '', 'Шаг 1 из 5 — О собаке', 'Шаг 2 из 5 — Рацион и активность',
+        'Шаг 3 из 5 — Здоровье', 'Шаг 4 из 5 — Предпочтения', 'Шаг 5 из 5 — Контакты'
+    ];
+
+    function showStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+        document.querySelectorAll('.progress-dot').forEach(d => {
+            d.classList.toggle('active', parseInt(d.dataset.step) <= n);
+        });
+        document.getElementById('stepLabel').textContent = stepLabels[n];
+        currentStep = n;
+        window.scrollTo(0, 0);
+    }
+
+    function nextStep() {
+        // Validate current step
+        const step = document.querySelector(`.step[data-step="${currentStep}"]`);
+        const inputs = step.querySelectorAll('[required]');
+        let valid = true;
+        inputs.forEach(input => {
+            if (input.type === 'radio') {
+                const name = input.name;
+                const checked = step.querySelector(`input[name="${name}"]:checked`);
+                if (!checked) { valid = false; }
+            } else if (!input.value.trim()) {
+                valid = false;
+                input.style.borderColor = '#e74c3c';
+                setTimeout(() => input.style.borderColor = '#ddd', 2000);
+            }
+        });
+        if (!valid) return;
+        if (currentStep < totalSteps) showStep(currentStep + 1);
+    }
+
+    function prevStep() {
+        if (currentStep > 1) showStep(currentStep - 1);
+    }
+
+    // Show/hide budget section based on diet_type
+    document.querySelectorAll('input[name="diet_type"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const budget = document.getElementById('budgetSection');
+            budget.style.display = (r.value === 'barf' || r.value === 'cooked') ? 'block' : 'none';
+            // Update submit button text
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = r.value === 'dry' ? 'Оплатить 990 руб.' : 'Оплатить 1 390 руб.';
+        });
+    });
+
+    // Prevent double submit
+    document.getElementById('orderForm').addEventListener('submit', function() {
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').textContent = 'Отправляем...';
+    });
+</script>
+</body>
+</html>
