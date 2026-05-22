@@ -114,9 +114,37 @@
                 {% endfor %}
             </datalist>
 
-            <label for="age_months">Возраст (в месяцах)</label>
-            <input type="number" id="age_months" name="age_months" required min="1" max="300" placeholder="36">
-            <div class="hint">1 год = 12, 2 года = 24, 3 года = 36</div>
+            <label for="age_months">Возраст</label>
+            <select id="age_months" name="age_months" required>
+                <option value="" disabled selected>Выберите возраст</option>
+                <option value="2">2 месяца</option>
+                <option value="3">3 месяца</option>
+                <option value="4">4 месяца</option>
+                <option value="5">5 месяцев</option>
+                <option value="6">6 месяцев</option>
+                <option value="7">7 месяцев</option>
+                <option value="8">8 месяцев</option>
+                <option value="9">9 месяцев</option>
+                <option value="10">10 месяцев</option>
+                <option value="11">11 месяцев</option>
+                <option value="12">1 год</option>
+                <option value="18">1.5 года</option>
+                <option value="24">2 года</option>
+                <option value="30">2.5 года</option>
+                <option value="36">3 года</option>
+                <option value="48">4 года</option>
+                <option value="60">5 лет</option>
+                <option value="72">6 лет</option>
+                <option value="84">7 лет</option>
+                <option value="96">8 лет</option>
+                <option value="108">9 лет</option>
+                <option value="120">10 лет</option>
+                <option value="132">11 лет</option>
+                <option value="144">12 лет</option>
+                <option value="156">13 лет</option>
+                <option value="168">14 лет</option>
+                <option value="180">15+ лет</option>
+            </select>
 
             <label>Пол</label>
             <div class="cards">
