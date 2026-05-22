@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Статус заказа — Doggi</title>
+    <title>Статус заказа — Кусь</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
@@ -19,11 +20,12 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .contacts { margin-top: 30px; font-size: 13px; color: #aaa; }
         .contacts a { color: #055ba9; }
+        .tg-btn { display: inline-flex; align-items: center; gap: 8px; background: #055ba9; color: #fff; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; text-decoration: none; margin-top: 16px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="logo">DOGGI</div>
+    <div class="logo">Кусь</div>
     <div class="status-card">
         <div class="dog-name">{{ order.dog_name }}</div>
         <div class="breed">{{ order.breed }}</div>
@@ -37,15 +39,33 @@
                 <div class="spinner"></div>
                 <div class="status-text">Готовим рацион...</div>
                 <div class="status-desc">AI анализирует данные и рассчитывает персональный план.<br>Обычно это занимает 1-2 минуты.</div>
+                {% if not order.telegram_user_id %}
+                <div style="margin-top:20px;background:#f0f6ff;border-radius:12px;padding:16px;text-align:left;">
+                    <div style="font-weight:700;font-size:14px;color:#055ba9;margin-bottom:6px;">Получить PDF в Telegram</div>
+                    <div style="font-size:13px;color:#666;line-height:1.5;margin-bottom:10px;">Напишите боту /start — и рацион придёт в чат автоматически. Там же 7 дней поддержки.</div>
+                    <a href="https://t.me/doggifood_bot" target="_blank" class="tg-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
+                        Открыть @doggifood_bot
+                    </a>
+                </div>
+                {% endif %}
             {% elif order.status == 'done' %}
                 <div class="status-icon">&#10004;</div>
                 <div class="status-text">Готово!</div>
                 <div class="status-desc">
-                    PDF отправлен на {{ order.email }}
-                    {% if order.telegram_user_id %}<br>и в Telegram{% endif %}.
-                    <br><br>Не получили? Напишите нам в <a href="https://t.me/doggifood_bot">Telegram</a>.
+                    {% if order.telegram_user_id %}PDF отправлен в Telegram.{% endif %}
+                    {% if order.email %}{% if order.telegram_user_id %}<br>Копия отправлена на {{ order.email }}.{% else %}PDF отправлен на {{ order.email }}.{% endif %}{% endif %}
+                    {% if not order.telegram_user_id and not order.email %}
+                    PDF готов. Напишите нам в <a href="https://t.me/doggifood_bot">Telegram</a> для получения.
+                    {% endif %}
                     <br><br>У вас 7 дней поддержки — задавайте любые вопросы!
                 </div>
+                {% if not order.telegram_user_id %}
+                <a href="https://t.me/doggifood_bot" target="_blank" class="tg-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
+                    Получить в Telegram
+                </a>
+                {% endif %}
             {% elif order.status == 'error' %}
                 <div class="status-icon">&#9888;</div>
                 <div class="status-text">Что-то пошло не так</div>
@@ -61,7 +81,6 @@
 
 {% if order.status in ('new', 'paid', 'processing') %}
 <script>
-    // Поллинг статуса каждые 5 секунд
     setInterval(async () => {
         try {
             const resp = await fetch('/api/order/{{ order.id }}/status');

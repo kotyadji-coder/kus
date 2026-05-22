@@ -349,6 +349,32 @@
             <h2>Куда отправить результат</h2>
             <p class="step-desc">PDF придёт в Telegram обычно в течение 2 часов, но не более 3 рабочих дней.</p>
 
+            <div id="tgConnectBlock" style="background:#f0f6ff;border:1.5px solid #055ba9;border-radius:12px;padding:16px;margin-bottom:16px;display:none;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:#055ba9;color:#fff;display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-weight:700;font-size:15px;color:#055ba9;">Подключите Telegram-бот</div>
+                        <div style="font-size:12px;color:#666;">Чтобы получить PDF прямо в Telegram</div>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;">Нажмите кнопку, напишите боту <strong>/start</strong> — и мы автоматически отправим готовый рацион в чат. Там же 7 дней поддержки.</p>
+                <a href="https://t.me/doggifood_bot" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#055ba9;color:#fff;font-weight:600;font-size:14px;padding:10px 20px;border-radius:10px;text-decoration:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
+                    Открыть @doggifood_bot
+                </a>
+            </div>
+
+            <div id="tgConnectedBlock" style="background:#dcfce7;border:1.5px solid #16a34a;border-radius:12px;padding:14px;margin-bottom:16px;display:none;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </div>
+                    <div style="font-size:14px;font-weight:600;color:#16a34a;">Telegram подключён — PDF придёт автоматически</div>
+                </div>
+            </div>
+
             <label for="client_name">Ваше имя</label>
             <input type="text" id="client_name" name="client_name" required placeholder="Анна">
 
@@ -503,6 +529,16 @@
     });
 
     restoreForm();
+
+    // Show Telegram connect/connected block on step 5
+    (function() {
+        var hasTg = document.querySelector('input[name="telegram_user_id"]');
+        if (hasTg && hasTg.value) {
+            document.getElementById('tgConnectedBlock').style.display = 'block';
+        } else {
+            document.getElementById('tgConnectBlock').style.display = 'block';
+        }
+    })();
 </script>
 </body>
 </html>
