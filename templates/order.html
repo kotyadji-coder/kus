@@ -263,7 +263,7 @@
                 <label class="card-option"><input type="radio" name="diet_type" value="dry">
                     <div class="card"><div class="card-title">Подбор сухого корма — 990 руб.</div><div class="card-desc">ТОП-9 кормов в 3 ценовых категориях с честным разбором состава</div></div></label>
                 <label class="card-option"><input type="radio" name="diet_type" value="combo">
-                    <div class="card" style="border-color:#f59e0b;"><div class="card-title">Оба: натуралка + сухой корм — 2 380 руб.</div><div class="card-desc">Получите оба PDF — и рацион натуралки, и подбор лучших кормов</div></div></label>
+                    <div class="card" style="border-color:#f59e0b;"><div class="card-title">Оба: натуралка + сухой корм — 1 950 руб.</div><div class="card-desc">Получите оба PDF — и рацион натуралки, и подбор лучших кормов</div></div></label>
             </div>
 
             <div id="comboSubSection" style="display:none;">
@@ -452,7 +452,7 @@
             budget.style.display = needsNatural ? 'block' : 'none';
             combo.style.display = r.value === 'combo' ? 'block' : 'none';
             const btn = document.getElementById('submitBtn');
-            const prices = {dry: '990', barf: '1 390', cooked: '1 390', combo: '2 380'};
+            const prices = {dry: '990', barf: '1 390', cooked: '1 390', combo: '1 950'};
             btn.textContent = 'Оплатить ' + (prices[r.value] || '1 390') + ' руб.';
         });
     });

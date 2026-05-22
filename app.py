@@ -31,8 +31,8 @@ PRICES = {
     "barf": 1390,
     "cooked": 1390,
     "dry": 990,
-    "barf_and_dry": 2380,
-    "cooked_and_dry": 2380,
+    "barf_and_dry": 1950,
+    "cooked_and_dry": 1950,
 }
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
