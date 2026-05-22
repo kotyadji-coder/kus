@@ -5,6 +5,7 @@ import os
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart, Command
 from aiogram.types import (
+    BotCommand,
     CallbackQuery, Message,
     InlineKeyboardButton, InlineKeyboardMarkup,
     ReplyKeyboardMarkup, KeyboardButton,
@@ -150,9 +151,9 @@ async def admin_reply(message: Message):
 
 # ─── Все остальные сообщения — пересылка в поддержку ─────────────────────────
 
-@dp.message(F.chat.id != ADMIN_ID)
+@dp.message()
 async def user_message(message: Message):
-    """Любое текстовое сообщение от пользователя пересылается админу."""
+    """Любое текстовое сообщение — fallback."""
     user = message.from_user
     user_id = user.id
 
@@ -205,8 +206,19 @@ async def send_scheduled_messages():
             first_name = user["first_name"] or ""
             text = msgs[step].format(first_name=first_name)
 
+            # Последнее сообщение — продающее, добавляем кнопку
+            reply_markup = None
+            if step == len(msgs) - 1:
+                price = "1 390 ₽" if track == "natural" else "990 ₽"
+                reply_markup = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(
+                        text=f"Подобрать рацион — {price}",
+                        url=BASE_URL,
+                    )],
+                ])
+
             try:
-                await bot.send_message(user["user_id"], text)
+                await bot.send_message(user["user_id"], text, reply_markup=reply_markup)
                 await increment_step(user["user_id"])
                 log.info(f"Sent step {step + 1} to user {user['user_id']} ({track})")
             except Exception as e:
@@ -227,6 +239,10 @@ async def main():
     )
     scheduler.start()
     log.info(f"Scheduler started. Interval: {MESSAGE_INTERVAL_HOURS}h")
+
+    await bot.set_my_commands([
+        BotCommand(command="start", description="Начать / Главное меню"),
+    ])
 
     await dp.start_polling(bot)
 

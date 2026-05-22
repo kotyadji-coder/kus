@@ -308,16 +308,18 @@ a { color: var(--primary); text-decoration: none; }
           </div>
         </div>
       </div>
-      <div class="hero__image">
-        <img src="/static/hero.jpg" alt="Собака с двумя мисками — натуралка и сухой корм" loading="lazy">
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border-soft);border-radius:14px;padding:12px 16px;margin-top:12px;">
-        <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      <div style="position:relative;">
+        <div class="hero__image">
+          <img src="/static/hero.jpg" alt="Собака с двумя мисками — натуралка и сухой корм" loading="lazy">
         </div>
-        <div>
-          <div style="font-size:14px;font-weight:700;color:var(--ink);">В кинологии с 2005</div>
-          <div style="font-size:12px;color:var(--ink-soft);">Проверено ветеринарами и диетологами</div>
+        <div style="position:relative;z-index:2;margin:-28px 16px 0;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.6);border-radius:14px;padding:12px 16px;box-shadow:0 4px 16px -4px rgba(0,0,0,0.1);">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink);">В кинологии с 2005</div>
+            <div style="font-size:12px;color:var(--ink-soft);">Проверено ветеринарами и диетологами</div>
+          </div>
         </div>
       </div>
     </div>
@@ -398,7 +400,7 @@ a { color: var(--primary); text-decoration: none; }
     <div style="position:relative;">
       <div id="pdfSlider" style="display:flex;gap:16px;overflow-x:auto;padding:4px 0 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;">
         <style>#pdfSlider::-webkit-scrollbar{display:none;}</style>
-        <div style="flex:0 0 auto;scroll-snap-align:start;text-align:center;"><img src="/static/pdf-pages/page_1.png" alt="Обложка" style="width:160px;height:auto;border-radius:8px;box-shadow:0 6px 24px -6px rgba(0,0,0,0.15);border:1px solid #e2e8f0;" loading="lazy"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;">Обложка</div><div style="font-size:11px;color:var(--ink-soft);">Кличка, порода, AI-фото</div></div>
+        <div style="flex:0 0 auto;scroll-snap-align:start;text-align:center;"><img src="/static/pdf-pages/page_1.png" alt="Обложка" style="width:160px;height:auto;border-radius:8px;box-shadow:0 6px 24px -6px rgba(0,0,0,0.15);border:1px solid #e2e8f0;" loading="lazy"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;">Досье питомца</div><div style="font-size:11px;color:var(--ink-soft);">Порода, возраст, вес, активность</div></div>
         <div style="flex:0 0 auto;scroll-snap-align:start;text-align:center;"><img src="/static/pdf-pages/page_2.png" alt="Сводка" style="width:160px;height:auto;border-radius:8px;box-shadow:0 6px 24px -6px rgba(0,0,0,0.15);border:1px solid #e2e8f0;" loading="lazy"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;">Сводка</div><div style="font-size:11px;color:var(--ink-soft);">Нормы, калории, баланс</div></div>
         <div style="flex:0 0 auto;scroll-snap-align:start;text-align:center;"><img src="/static/pdf-pages/page_3.png" alt="Меню Пн-Чт" style="width:160px;height:auto;border-radius:8px;box-shadow:0 6px 24px -6px rgba(0,0,0,0.15);border:1px solid #e2e8f0;" loading="lazy"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;">Меню, стр. 1</div><div style="font-size:11px;color:var(--ink-soft);">Пн — Чт с граммовками</div></div>
         <div style="flex:0 0 auto;scroll-snap-align:start;text-align:center;"><img src="/static/pdf-pages/page_4.png" alt="Меню Пт-Вс" style="width:160px;height:auto;border-radius:8px;box-shadow:0 6px 24px -6px rgba(0,0,0,0.15);border:1px solid #e2e8f0;" loading="lazy"><div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:8px;">Меню, стр. 2</div><div style="font-size:11px;color:var(--ink-soft);">Пт — Вс + рыбные дни</div></div>

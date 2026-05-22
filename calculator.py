@@ -117,9 +117,9 @@ class DietCalculator:
             ideal_weight_kg=round(ideal_weight, 1),
             rer_kcal=round(rer, 0),
             mer_kcal=round(mer, 0),
-            daily_grams=round(daily_grams, 0),
+            daily_grams=round(daily_grams / 5) * 5,
             meals_per_day=meals_per_day,
-            distribution={k: round(v, 0) for k, v in distribution.items()},
+            distribution=distribution,
             ca_total_mg=round(ca_total, 0),
             p_total_mg=round(p_total, 0),
             ca_p_ratio=round(ca_p_ratio, 2),
@@ -290,7 +290,7 @@ class DietCalculator:
             dist["muscle_meat"] = 0.50
             dist["vegetables"] = 0.18
 
-        return {k: round(v * daily_grams, 1) for k, v in dist.items()}
+        return {k: self._round_g(v * daily_grams) for k, v in dist.items()}
 
     # --- Подбор конкретных продуктов ---
 

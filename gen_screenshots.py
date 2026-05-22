@@ -13,6 +13,17 @@ dog = DogProfile(
     budget="market", stop_products=["курица"],
 )
 result = calc.calculate(dog)
+
+# Generate cover image for the demo dog
+from ai_adapter import generate_cover_image
+print("Generating cover image...")
+cover_b64 = generate_cover_image(dog.breed, dog.name)
+if cover_b64:
+    result.cover_image_b64 = cover_b64
+    print("  Cover image ready")
+else:
+    print("  WARNING: cover image generation failed, cover will have no photo")
+
 html = generate_html(result)
 
 pages = re.findall(r'<section class="page.*?</section>', html, re.DOTALL)

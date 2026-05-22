@@ -422,6 +422,7 @@ html, body {{
   background: #fff;
   position: relative;
   padding: 18mm 16mm 14mm;
+  box-sizing: border-box;
   box-shadow: 0 12px 32px -16px rgba(11,23,38,0.25);
   overflow: hidden;
   page-break-after: always;
@@ -1164,9 +1165,12 @@ p {{ margin: 0; }}
     margin: 0;
     box-shadow: none;
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
+    max-height: 297mm;
+    overflow: hidden;
     zoom: 1 !important;
     padding: 18mm 16mm 14mm;
+    box-sizing: border-box;
   }}
   .page:last-of-type {{ page-break-after: auto; }}
   .cover .top-bar, .cover-photo, .cover-badge, .metric, .pie, .stack span,
