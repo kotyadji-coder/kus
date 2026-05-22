@@ -133,7 +133,8 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
          "age_months": dog.age_months, "sex": dog.sex, "neutered": dog.neutered,
          "condition": dog.condition, "activity": dog.activity,
          "diagnoses": diagnoses, "stop_products": stop_products,
-         "pregnant": dog.pregnant, "lactating": dog.lactating},
+         "pregnant": dog.pregnant, "lactating": dog.lactating,
+         "stool": dog.stool, "diet_type": dog.diet_type},
         diet_summary
     )
 

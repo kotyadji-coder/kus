@@ -95,6 +95,8 @@
         /* Checkbox */
         .checkbox-row { display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 12px 14px; background: #f8f9fb; border-radius: 10px; }
         .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #055ba9; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #f8f9fb; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .checkbox-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: #055ba9; }
 
         .consent { font-size: 12px; color: #999; margin-top: 16px; line-height: 1.5; }
         .consent a { color: #055ba9; }
@@ -289,9 +291,20 @@
             <h2>Здоровье</h2>
             <p class="step-desc">Некоторые продукты и корма противопоказаны при определённых заболеваниях. Учтём это при подборе.</p>
 
-            <label for="diagnoses">Есть ли диагнозы?</label>
-            <textarea id="diagnoses" name="diagnoses" placeholder="Гастрит, панкреатит, аллергия... Если нет — оставьте пустым"></textarea>
-            <div class="hint">Не уверены — напишите как есть, мы разберёмся</div>
+            <label>Есть ли проблемы со здоровьем?</label>
+            <div class="hint" style="margin-bottom:8px;">Отметьте всё, что есть. Это влияет на подбор продуктов и добавок.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <label class="checkbox-label"><input type="checkbox" name="diag_allergy" value="аллергия"> Аллергия</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_gastritis" value="гастрит"> Гастрит</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_pancreatitis" value="панкреатит"> Панкреатит</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_joints" value="суставы"> Суставы / дисплазия</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_kidney" value="мкб"> Почки / МКБ</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_liver" value="печень"> Печень</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_skin" value="дерматит"> Кожа / шерсть</label>
+                <label class="checkbox-label"><input type="checkbox" name="diag_lactose" value="лактоза"> Непереносимость лактозы</label>
+            </div>
+            <label for="diagnoses" style="margin-top:10px;">Другие диагнозы</label>
+            <textarea id="diagnoses" name="diagnoses" placeholder="Если есть что-то ещё — напишите. Если нет — оставьте пустым" rows="2"></textarea>
 
             <label>Как дела со стулом?</label>
             <div class="cards single-col">
@@ -538,6 +551,14 @@
     });
 
     document.getElementById('orderForm').addEventListener('submit', function() {
+        // Собираем чекбоксы диагнозов в текстовое поле
+        var diagChecks = document.querySelectorAll('input[name^="diag_"]:checked');
+        var diagText = document.getElementById('diagnoses');
+        var parts = [];
+        diagChecks.forEach(function(c) { parts.push(c.value); });
+        if (diagText.value.trim()) parts.push(diagText.value.trim());
+        diagText.value = parts.join(', ');
+
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('submitBtn').textContent = 'Отправляем...';
         try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}

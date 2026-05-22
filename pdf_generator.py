@@ -849,11 +849,11 @@ p {{ margin: 0; }}
 .shop-grid {{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4mm;
+  gap: 3mm;
 }}
 .shop-group {{
-  border-radius: 12px;
-  padding: 5mm;
+  border-radius: 10px;
+  padding: 4mm;
   page-break-inside: avoid;
   break-inside: avoid;
 }}
@@ -878,10 +878,11 @@ p {{ margin: 0; }}
 
 .shop-item {{
   display: grid;
-  grid-template-columns: 14px 1fr auto;
+  grid-template-columns: 12px 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 4px 0;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 9.5pt;
   font-size: 10pt;
   border-bottom: 1px dashed rgba(11,23,38,0.08);
 }}
@@ -896,11 +897,12 @@ p {{ margin: 0; }}
 .shop-item .g {{ font-weight: 700; font-feature-settings: "tnum"; }}
 
 .shop-tip {{
-  margin-top: 5mm;
+  margin-top: 3mm;
   background: var(--primary);
   color: #fff;
-  border-radius: 12px;
-  padding: 5mm 6mm;
+  border-radius: 10px;
+  padding: 4mm 5mm;
+  font-size: 9pt;
   display: flex; gap: 10px;
   align-items: flex-start;
   font-size: 10pt;
@@ -1417,8 +1419,8 @@ p {{ margin: 0; }}
 
   <div class="shop-tip">
     <div>
-      <strong>{'Стоимость рациона: ~' + str(int(result.cost_per_day)) + ' руб/день · ~' + str(int(result.cost_per_month)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет от Кусь'}</strong>
-      {result.meal_prep.get('tip', '') if result.meal_prep else 'Разделите мясо на порции сразу после покупки и заморозьте. Размораживайте в холодильнике 12 часов — не на столе.'}
+      <strong>{'Стоимость рациона: ≈' + str(int(round(result.cost_per_day / 50) * 50)) + ' руб/день · ≈' + str(int(round(result.cost_per_month / 500) * 500)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет от Кусь'}</strong>
+      {(result.meal_prep.get('tip', '') + ' Цены ориентировочные — зависят от региона и магазина.') if result.cost_per_day > 0 else 'Разделите мясо на порции сразу после покупки и заморозьте. Размораживайте в холодильнике 12 часов — не на столе.'}
     </div>
   </div>
 
