@@ -268,6 +268,21 @@ async def order_status(request: Request, order_id: int):
     })
 
 
+@app.get("/order/{order_id}/download")
+async def order_download(order_id: int):
+    """Скачать готовый PDF."""
+    from fastapi.responses import FileResponse
+    order = await get_order(order_id)
+    if not order or order["status"] != "done" or not order.get("pdf_path"):
+        raise HTTPException(status_code=404, detail="PDF not found")
+    pdf_path = order["pdf_path"]
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF file not found")
+    dog_name = order["dog_name"].replace(" ", "_")
+    filename = f"Kus_{dog_name}.pdf"
+    return FileResponse(pdf_path, filename=filename, media_type="application/pdf")
+
+
 @app.get("/api/order/{order_id}/status")
 async def order_status_api(order_id: int):
     """API для AJAX-поллинга статуса."""

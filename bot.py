@@ -64,6 +64,9 @@ async def cmd_start(message: Message):
     # Показываем persistent-меню
     await message.answer("Выберите действие:", reply_markup=main_menu_keyboard())
 
+    # Проверяем, есть ли недоставленные заказы — отправляем PDF
+    await _deliver_pending_orders(message.from_user.id)
+
 
 # ─── Кнопка «Подобрать рацион» ───────────────────────────────────────────────
 
@@ -188,6 +191,39 @@ async def user_message(message: Message):
         "Вопрос отправлен. Ожидайте ответа — обычно в течение 15 минут.",
         reply_markup=main_menu_keyboard(),
     )
+
+
+# ─── Автодоставка PDF для пользователей, написавших позже ─────────────────────
+
+async def _deliver_pending_orders(telegram_user_id: int):
+    """Если есть готовые заказы без доставки — отправляем PDF."""
+    from models import get_undelivered_orders, update_order
+    try:
+        orders = await get_undelivered_orders()
+        for order in orders:
+            pdf_path = order.get("pdf_path")
+            if not pdf_path or not os.path.exists(pdf_path):
+                continue
+            diet_type = order["diet_type"]
+            diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
+            caption = (
+                f"Вот ваш персональный {diet_label} для {order['dog_name']}!\n\n"
+                f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
+            )
+            import aiohttp
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
+            async with aiohttp.ClientSession() as session:
+                with open(pdf_path, "rb") as f:
+                    form = aiohttp.FormData()
+                    form.add_field("chat_id", str(telegram_user_id))
+                    form.add_field("caption", caption)
+                    form.add_field("document", f, filename=os.path.basename(pdf_path))
+                    async with session.post(url, data=form) as resp:
+                        if resp.status == 200:
+                            await update_order(order["id"], telegram_user_id=telegram_user_id)
+                            log.info(f"Delivered pending order #{order['id']} to {telegram_user_id}")
+    except Exception as e:
+        log.error(f"Error delivering pending orders: {e}")
 
 
 # ─── Планировщик рассылки ────────────────────────────────────────────────────

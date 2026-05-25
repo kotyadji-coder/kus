@@ -18,6 +18,25 @@
         .status-desc { color: #888; font-size: 14px; line-height: 1.5; }
         .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top: 4px solid #055ba9; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px 0; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Cooking animation */
+        .cooking { display: inline-block; margin: 20px 0; position: relative; width: 80px; height: 80px; }
+        .pot { width: 60px; height: 40px; background: #e8751a; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 10px; }
+        .pot::before { content: ''; position: absolute; top: -6px; left: -6px; right: -6px; height: 6px; background: #c55a0a; border-radius: 3px; }
+        .pot-handle-l, .pot-handle-r { position: absolute; top: -2px; width: 8px; height: 12px; border: 3px solid #c55a0a; border-radius: 3px; background: transparent; }
+        .pot-handle-l { left: -10px; }
+        .pot-handle-r { right: -10px; }
+        .steam { position: absolute; bottom: 42px; width: 6px; border-radius: 3px; background: rgba(5,91,169,0.15); animation: steam 1.5s ease-out infinite; }
+        .steam:nth-child(2) { left: 20px; animation-delay: 0.3s; height: 16px; }
+        .steam:nth-child(3) { left: 35px; animation-delay: 0.6s; height: 20px; }
+        .steam:nth-child(4) { left: 50px; animation-delay: 0.9s; height: 14px; }
+        @keyframes steam { 0% { opacity: 0; transform: translateY(0) scaleX(1); height: 10px; } 50% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-30px) scaleX(1.5); height: 20px; } }
+        .ladle { position: absolute; right: 2px; top: -8px; width: 4px; height: 30px; background: #888; border-radius: 2px; transform-origin: bottom center; animation: stir 2s ease-in-out infinite; }
+        .ladle::after { content: ''; position: absolute; bottom: -2px; left: -4px; width: 12px; height: 8px; border: 3px solid #888; border-top: none; border-radius: 0 0 6px 6px; background: transparent; }
+        @keyframes stir { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+
+        .download-btn { display: inline-flex; align-items: center; gap: 8px; background: #16a34a; color: #fff; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; text-decoration: none; margin-top: 12px; }
+        .download-btn:hover { opacity: 0.9; }
         .contacts { margin-top: 30px; font-size: 13px; color: #aaa; }
         .contacts a { color: #055ba9; }
         .tg-btn { display: inline-flex; align-items: center; gap: 8px; background: #055ba9; color: #fff; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; text-decoration: none; margin-top: 16px; }
@@ -36,7 +55,11 @@
                 <div class="status-text">Ожидаем оплату</div>
                 <div class="status-desc">После оплаты мы сразу начнём готовить рацион</div>
             {% elif order.status == 'paid' or order.status == 'processing' %}
-                <div class="spinner"></div>
+                <div class="cooking">
+                    <div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div>
+                    <div class="ladle"></div>
+                    <div class="pot"><div class="pot-handle-l"></div><div class="pot-handle-r"></div></div>
+                </div>
                 <div class="status-text">Готовим рацион...</div>
                 <div class="status-desc">AI анализирует данные и рассчитывает персональный план.<br>Обычно это занимает 1-2 минуты.</div>
                 {% if not order.telegram_user_id %}
@@ -53,17 +76,21 @@
                 <div class="status-icon">&#10004;</div>
                 <div class="status-text">Готово!</div>
                 <div class="status-desc">
-                    {% if order.telegram_user_id %}PDF отправлен в Telegram.{% endif %}
-                    {% if order.email %}{% if order.telegram_user_id %}<br>Копия отправлена на {{ order.email }}.{% else %}PDF отправлен на {{ order.email }}.{% endif %}{% endif %}
-                    {% if not order.telegram_user_id and not order.email %}
-                    PDF готов. Напишите нам в <a href="https://t.me/doggifood_bot">Telegram</a> для получения.
-                    {% endif %}
+                    Персональный рацион для {{ order.dog_name }} готов!
+                    {% if order.telegram_user_id %}<br>PDF отправлен в Telegram.{% endif %}
+                    {% if order.email %}<br>Копия отправлена на {{ order.email }}.{% endif %}
                     <br><br>У вас 7 дней поддержки — задавайте любые вопросы!
                 </div>
+                {% if order.pdf_path %}
+                <a href="/order/{{ order.id }}/download" class="download-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать PDF
+                </a>
+                {% endif %}
                 {% if not order.telegram_user_id %}
                 <a href="https://t.me/doggifood_bot" target="_blank" class="tg-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
-                    Получить в Telegram
+                    Поддержка в Telegram
                 </a>
                 {% endif %}
             {% elif order.status == 'error' %}
