@@ -206,69 +206,60 @@ def generate_natural_product_notes(dog_profile: dict, warnings: list) -> str:
 
 
 def generate_personal_analysis(dog_profile: dict, diet_summary: dict) -> str:
-    """Генерирует полноценный персональный анализ для отдельной страницы PDF.
-    Возвращает готовый HTML с блоками-карточками."""
+    """Генерирует ровно 6 блоков персонального анализа. Возвращает список HTML-блоков."""
     sex = dog_profile.get("sex", "male")
-    gender_note = f"Пол собаки: {'девочка' if sex == 'female' else 'мальчик'}. Используй правильный род местоимений и глаголов ({'она, её, ей' if sex == 'female' else 'он, его, ему'})."
+    gender_note = f"Пол собаки: {'девочка' if sex == 'female' else 'мальчик'}. Используй правильный род: {'она, её, ей' if sex == 'female' else 'он, его, ему'}."
 
-    result = _ask(f"""Ты — AI-система «Кусь», специализирующаяся на расчёте рационов для собак. Напиши глубокий персональный анализ рациона для владельца собаки.
+    result = _ask(f"""Ты — AI-система «Кусь». Напиши ровно 6 блоков персонального анализа рациона.
 
 ДОСЬЕ СОБАКИ:
 {json.dumps(dog_profile, ensure_ascii=False, indent=2)}
 
-ПОЛНЫЙ РЕЗУЛЬТАТ РАСЧЁТА:
+РЕЗУЛЬТАТ РАСЧЁТА:
 {json.dumps(diet_summary, ensure_ascii=False, indent=2)}
 
-ЗАДАЧА: Объясни владельцу, ПОЧЕМУ рацион составлен именно так. Не общие фразы, а конкретный анализ совокупности факторов этой собаки.
+Напиши РОВНО 6 блоков. Формат каждого блока — строго:
+<div class="insight">
+  <div class="tag ТИП">ЗАГОЛОВОК</div>
+  <p>Текст 3-5 предложений.</p>
+</div>
 
-Формат — строго HTML, блоки <div class="insight">. Теги: breed, health, nutrition, lifestyle.
+Типы тегов: breed, health, nutrition, lifestyle.
 
-ОБЯЗАТЕЛЬНЫЕ БЛОКИ (если применимо к этой собаке):
-
-1. ПОРОДА (tag: breed) — генетические предрасположенности именно этой породы. Склонность к ожирению, аллергиям, проблемам с суставами, сердцем, ЖКТ. Как это повлияло на расчёт.
-
-2. ВЕС И КОНДИЦИЯ (tag: health) — текущий вес vs целевой, почему выбран именно такой целевой вес. Если перевес — почему снижена калорийность, насколько, и когда ожидать результат. Если недовес — почему увеличена.
-
-3. ПОЧЕМУ ИМЕННО ЭТИ ПРОДУКТЫ (tag: nutrition) — объясни логику выбора: почему эти виды мяса, почему именно такое распределение по группам (мясо X%, кости Y%, овощи Z%). Если исключены продукты (стоп-лист/аллергии) — чем заменены и почему.
-
-4. ДОБАВКИ (tag: nutrition) — почему назначены именно эти добавки с именно такими дозировками. Привяжи к конкретным факторам: «глюкозамин потому что крупная порода + перевес = нагрузка на суставы», «цинк потому что крупные породы склонны к дефициту», «витамин C потому что щенок крупной породы — профилактика HOD».
-
-5. ЕСЛИ ЕСТЬ ДИАГНОЗЫ — отдельный блок (tag: health) на каждый значимый диагноз.
-
-6. ЕСЛИ ПРОБЛЕМНЫЙ СТУЛ (tag: health) — возможные причины и что в рационе поможет.
-
-7. ЕСЛИ ЩЕНОК (tag: lifestyle) — что сейчас критично (Ca:P, скорость роста, не перекормить). Когда пересчитать рацион.
-
-8. ЕСЛИ БЕРЕМЕННОСТЬ/ЛАКТАЦИЯ (tag: health) — почему увеличена калорийность, на что обратить внимание.
-
-9. ОБРАЗ ЖИЗНИ (tag: lifestyle) — конкретный совет на основе совокупности факторов.
+Выбери 6 самых важных тем из списка (в порядке приоритета):
+1. Порода — генетические предрасположенности, как повлияли на расчёт
+2. Вес и кондиция — текущий vs целевой, почему именно так
+3. Продукты — логика выбора, распределение по группам
+4. Добавки — почему именно эти, с привязкой к факторам
+5. Диагнозы (если есть) — как учтены в рационе
+6. Стул (если проблемный) — причины и что поможет
+7. Щенок (если да) — Ca:P, рост, когда пересчитать
+8. Беременность/лактация (если да) — калорийность
+9. Образ жизни — советы по активности + кондиции + породе
+10. Контроль веса — как отслеживать прогресс
 
 Требования:
 - {gender_note}
-- Обращайся на «вы», упоминай кличку
-- Каждый блок — 2-4 предложения, но содержательные
-- Анализируй СОВОКУПНОСТЬ факторов, не каждый по отдельности
-- Пиши экспертно, но доступно — без канцелярита и без воды
-- Без emoji. Каждое предложение несёт конкретную информацию.
-- Пиши 4-6 блоков в зависимости от количества значимых факторов
-- НЕ пиши блоки про факторы, которых у этой собаки нет
-- НЕ представляйся диетологом/ветеринаром. Ты — AI-система, и это нормально.
-
-В конце ОБЯЗАТЕЛЬНО добавь:
+- Обращайся на «вы» (с маленькой), упоминай кличку
+- Каждый блок — 3-5 содержательных предложений
+- Анализируй СОВОКУПНОСТЬ факторов
+- Экспертно, но доступно. Без воды, без emoji
+- РОВНО 6 блоков, не больше и не меньше
+- Последний (6-й) блок обязательно:
 <div class="insight" style="background:#fef3c7;border-color:#fbbf24;">
   <div class="tag health">Важно</div>
   <p>Данные рекомендации носят информационный характер и не являются ветеринарной консультацией. При наличии заболеваний или тревожных симптомов обратитесь к ветеринарному врачу.</p>
 </div>""", max_tokens=4000)
-    # Fix truncated HTML — close any unclosed divs
-    if result:
-        open_divs = result.count('<div') - result.count('</div>')
-        if open_divs > 0:
-            result += '</div>' * open_divs
-        # Remove incomplete last block if truncated
-        last_insight = result.rfind('<div class="insight"')
-        if last_insight > 0 and '</div>' not in result[last_insight:].split('</div>')[0:2]:
-            result = result[:last_insight]
-    return result or ""
+
+    if not result:
+        return ""
+
+    # Fix truncated HTML
+    open_divs = result.count('<div') - result.count('</div>')
+    if open_divs > 0:
+        result += '</div>' * open_divs
+
+    return result
 
 
 # =====================================================================
@@ -373,32 +364,21 @@ def generate_cover_image(breed: str, dog_name: str) -> str | None:
     if not client:
         return None
 
-    # Breed-specific appearance hints for better image generation
-    breed_lower = breed.lower()
-    color_hint = ""
-    if "ньюфаундленд" in breed_lower or "newfoundland" in breed_lower:
-        color_hint = "Newfoundland dog, very large massive bear-like dog, solid black fur, thick long double coat, broad head, droopy lips, gentle giant, "
-    elif "лабрадор" in breed_lower or "labrador" in breed_lower:
-        color_hint = "golden/yellow fur, athletic build, "
-    elif "хаски" in breed_lower or "husky" in breed_lower:
-        color_hint = "grey and white fur, blue eyes, wolf-like appearance, "
-    elif "немецкая овчарка" in breed_lower or "german shepherd" in breed_lower:
-        color_hint = "black and tan fur, alert ears, "
-    elif "корги" in breed_lower or "corgi" in breed_lower:
-        color_hint = "red and white fur, short legs, big ears, "
-    elif "шпиц" in breed_lower or "spitz" in breed_lower or "померан" in breed_lower:
-        color_hint = "fluffy orange/cream fur, fox-like face, "
-    elif "такса" in breed_lower or "dachshund" in breed_lower:
-        color_hint = "long body, short legs, brown fur, "
-    elif "бульдог" in breed_lower or "bulldog" in breed_lower:
-        color_hint = "muscular build, flat face, wrinkles, "
+    # Use AI to describe breed appearance for accurate image generation
+    breed_desc = _ask(f"""Describe the dog breed "{breed}" in English for an image generation prompt.
+Include: typical coat color, body size/shape, distinctive features (ear shape, face, tail).
+Write ONE sentence, max 30 words. Example: "golden retriever, large athletic dog with golden wavy fur, floppy ears, friendly face, feathered tail"
+Just the description, nothing else.""", max_tokens=100)
+
+    if not breed_desc or len(breed_desc) < 10:
+        breed_desc = f"{breed} dog"
 
     prompt = (
-        f"A friendly happy {breed} dog, {color_hint}"
-        f"realistic breed-accurate portrait, sitting and looking at camera, "
-        f"soft studio lighting, clean white background, "
-        f"expressive eyes, high quality professional pet photography style, "
-        f"no text, no humans, no props"
+        f"A friendly happy {breed_desc.strip().rstrip('.')}, "
+        f"sitting and looking at camera, "
+        f"3D Pixar-style illustration, warm soft lighting, clean white background, "
+        f"cute expressive eyes, high quality render, "
+        f"no text, no humans, no props, professional pet portrait"
     )
 
     try:

@@ -191,7 +191,25 @@ def generate_html(result: DietResult) -> str:
 
     ai_analysis_html = getattr(result, 'ai_analysis', '') or ''
     has_ai_analysis = bool(ai_analysis_html)
-    total_pages = 11 if has_ai_analysis else 10  # +1 for feeding guide page
+
+    # Split AI analysis into blocks for 2 pages (3 blocks each)
+    ai_blocks_page1 = ""
+    ai_blocks_page2 = ""
+    if has_ai_analysis:
+        import re
+        blocks = re.findall(r'<div class="insight"[^>]*>.*?</div>\s*</div>', ai_analysis_html, re.DOTALL)
+        if len(blocks) >= 6:
+            ai_blocks_page1 = '\n'.join(blocks[:3])
+            ai_blocks_page2 = '\n'.join(blocks[3:6])
+        elif len(blocks) >= 4:
+            mid = len(blocks) // 2
+            ai_blocks_page1 = '\n'.join(blocks[:mid])
+            ai_blocks_page2 = '\n'.join(blocks[mid:])
+        else:
+            ai_blocks_page1 = ai_analysis_html
+            ai_blocks_page2 = ""
+
+    total_pages = (12 if ai_blocks_page2 else 11) if has_ai_analysis else 10
 
     # --- Distribution rows + stacked bar ---
     dist_items = [(g, grams) for g, grams in result.distribution.items() if grams > 0]
@@ -1550,18 +1568,30 @@ p {{ margin: 0; }}
 </section>
 
 {f"""<!-- ============================================================ -->
-<!-- PAGES 10+ — AI PERSONALIZED ANALYSIS (flows across pages)     -->
+<!-- PAGE 10 — AI ANALYSIS (part 1)                                -->
 <!-- ============================================================ -->
-<section class="page ai-analysis" style="overflow:visible;min-height:auto;height:auto;">
-  {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · {doc_id}")}
+<section class="page ai-analysis">
+  {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ")}
 
   <div class="eyebrow">Персональный анализ</div>
   <h2 class="section-title" style="margin-top: 4mm;">Рекомендации для {name_g}</h2>
   <p class="section-sub" style="font-size:10pt;">AI-анализ на основе ветеринарных стандартов NRC, FEDIAF и AAFCO. Система учитывает породные особенности, кондицию, заболевания и баланс нутриентов — и объясняет, почему рацион составлен именно так.</p>
 
-  {ai_analysis_html}
+  {ai_blocks_page1}
 
+  {_page_foot(10, total_pages, doc_id)}
 </section>""" if has_ai_analysis else ''}
+
+{f"""<!-- ============================================================ -->
+<!-- PAGE 11 — AI ANALYSIS (part 2)                                -->
+<!-- ============================================================ -->
+<section class="page ai-analysis">
+  {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · продолжение")}
+
+  {ai_blocks_page2}
+
+  {_page_foot(11, total_pages, doc_id)}
+</section>""" if has_ai_analysis and ai_blocks_page2 else ''}
 
 <!-- ============================================================ -->
 <!-- PAGE {11 if has_ai_analysis else 10} — DISCLAIMER + CONTACTS  -->
@@ -1592,7 +1622,7 @@ p {{ margin: 0; }}
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
-  {_page_foot(11 if has_ai_analysis else 10, total_pages, doc_id)}
+  {_page_foot(total_pages, total_pages, doc_id)}
 </section>
 
 </body>
