@@ -62,8 +62,11 @@ async def process_order(order: dict):
         await update_order(order_id, status="done", pdf_path=pdf_path)
         log.info(f"Order #{order_id}: done! PDF: {pdf_path}")
 
-        # 5. Уведомляем админа
-        await _notify_admin(order)
+        # 5. Уведомляем админа (нефатально)
+        try:
+            await _notify_admin(order)
+        except Exception as e:
+            log.error(f"Order #{order_id}: admin notification failed: {e}")
 
     except Exception as e:
         log.error(f"Order #{order_id}: error — {e}", exc_info=True)

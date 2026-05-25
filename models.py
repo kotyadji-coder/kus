@@ -94,7 +94,7 @@ class OrderForm(BaseModel):
     # Шаг 5: Контакты
     client_name: str = Field(..., min_length=1, max_length=100)
     phone_or_telegram: str = Field(..., min_length=3, max_length=50)
-    email: str = Field("", max_length=100)
+    email: str = Field(..., min_length=5, max_length=100)
 
     # Telegram deep link (если пришёл из бота)
     telegram_user_id: Optional[int] = None

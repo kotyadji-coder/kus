@@ -63,7 +63,6 @@ async def cmd_start(message: Message):
             order_id = int(args[1].replace("order_", ""))
             delivered = await _deliver_order_by_id(user_id, order_id)
             if delivered:
-                await message.answer("Выберите действие:", reply_markup=main_menu_keyboard())
                 return
         except (ValueError, Exception) as e:
             log.error(f"Deep link delivery error: {e}")
@@ -222,7 +221,8 @@ async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
     if not pdf_path or not os.path.exists(pdf_path) or order["status"] != "done":
         await bot.send_message(
             telegram_user_id,
-            f"Заказ #{order_id} привязан! Как только рацион для {order['dog_name']} будет готов, я отправлю PDF сюда."
+            f"Готовим рацион для {order['dog_name']}! Как только будет готов — отправлю PDF сюда.",
+            reply_markup=main_menu_keyboard(),
         )
         return True
 
