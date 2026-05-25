@@ -194,17 +194,6 @@ async def update_order(order_id: int, **kwargs):
         await db.commit()
 
 
-async def get_undelivered_orders(telegram_user_id: int = None) -> list[dict]:
-    """Orders that are done but have no telegram_user_id (not delivered via bot)."""
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(
-            "SELECT * FROM orders WHERE status = 'done' AND (telegram_user_id IS NULL OR telegram_user_id = 0) AND pdf_path IS NOT NULL"
-        ) as cursor:
-            rows = await cursor.fetchall()
-            return [dict(r) for r in rows]
-
-
 async def list_orders(limit: int = 50) -> list[dict]:
     async with aiosqlite.connect(DB_PATH) as db:
         db.row_factory = aiosqlite.Row

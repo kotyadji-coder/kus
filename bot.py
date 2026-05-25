@@ -54,6 +54,20 @@ def main_menu_keyboard():
 @dp.message(CommandStart())
 async def cmd_start(message: Message):
     first_name = message.from_user.first_name or ""
+    user_id = message.from_user.id
+
+    # Проверяем deep link: /start order_123
+    args = message.text.split(maxsplit=1)
+    if len(args) > 1 and args[1].startswith("order_"):
+        try:
+            order_id = int(args[1].replace("order_", ""))
+            delivered = await _deliver_order_by_id(user_id, order_id)
+            if delivered:
+                await message.answer("Выберите действие:", reply_markup=main_menu_keyboard())
+                return
+        except (ValueError, Exception) as e:
+            log.error(f"Deep link delivery error: {e}")
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="🥩 Натуралка", callback_data="track:natural"),
@@ -61,11 +75,7 @@ async def cmd_start(message: Message):
         ]
     ])
     await message.answer(WELCOME.format(first_name=first_name), reply_markup=keyboard)
-    # Показываем persistent-меню
     await message.answer("Выберите действие:", reply_markup=main_menu_keyboard())
-
-    # Проверяем, есть ли недоставленные заказы — отправляем PDF
-    await _deliver_pending_orders(message.from_user.id)
 
 
 # ─── Кнопка «Подобрать рацион» ───────────────────────────────────────────────
@@ -193,37 +203,52 @@ async def user_message(message: Message):
     )
 
 
-# ─── Автодоставка PDF для пользователей, написавших позже ─────────────────────
+# ─── Доставка PDF по deep link ────────────────────────────────────────────────
 
-async def _deliver_pending_orders(telegram_user_id: int):
-    """Если есть готовые заказы без доставки — отправляем PDF."""
-    from models import get_undelivered_orders, update_order
-    try:
-        orders = await get_undelivered_orders()
-        for order in orders:
-            pdf_path = order.get("pdf_path")
-            if not pdf_path or not os.path.exists(pdf_path):
-                continue
-            diet_type = order["diet_type"]
-            diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
-            caption = (
-                f"Вот ваш персональный {diet_label} для {order['dog_name']}!\n\n"
-                f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
-            )
-            import aiohttp
-            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
-            async with aiohttp.ClientSession() as session:
-                with open(pdf_path, "rb") as f:
-                    form = aiohttp.FormData()
-                    form.add_field("chat_id", str(telegram_user_id))
-                    form.add_field("caption", caption)
-                    form.add_field("document", f, filename=os.path.basename(pdf_path))
-                    async with session.post(url, data=form) as resp:
-                        if resp.status == 200:
-                            await update_order(order["id"], telegram_user_id=telegram_user_id)
-                            log.info(f"Delivered pending order #{order['id']} to {telegram_user_id}")
-    except Exception as e:
-        log.error(f"Error delivering pending orders: {e}")
+async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
+    """Привязывает telegram_user_id к заказу и отправляет PDF, если готов."""
+    from models import get_order, update_order
+    import aiohttp
+
+    order = await get_order(order_id)
+    if not order:
+        return False
+
+    # Привязываем Telegram ID к заказу
+    await update_order(order_id, telegram_user_id=telegram_user_id)
+
+    # Если PDF ещё не готов — привязка сохранится, worker доставит позже
+    pdf_path = order.get("pdf_path")
+    if not pdf_path or not os.path.exists(pdf_path) or order["status"] != "done":
+        await bot.send_message(
+            telegram_user_id,
+            f"Заказ #{order_id} привязан! Как только рацион для {order['dog_name']} будет готов, я отправлю PDF сюда."
+        )
+        return True
+
+    # PDF готов — отправляем
+    diet_type = order["diet_type"]
+    diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
+    caption = (
+        f"Вот ваш персональный {diet_label} для {order['dog_name']}!\n\n"
+        f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
+    )
+
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
+    async with aiohttp.ClientSession() as session:
+        with open(pdf_path, "rb") as f:
+            form = aiohttp.FormData()
+            form.add_field("chat_id", str(telegram_user_id))
+            form.add_field("caption", caption)
+            form.add_field("document", f, filename=os.path.basename(pdf_path))
+            async with session.post(url, data=form) as resp:
+                if resp.status == 200:
+                    log.info(f"Delivered order #{order_id} to {telegram_user_id} via deep link")
+                    return True
+                else:
+                    text = await resp.text()
+                    log.error(f"Failed to deliver order #{order_id}: {text}")
+                    return False
 
 
 # ─── Планировщик рассылки ────────────────────────────────────────────────────
