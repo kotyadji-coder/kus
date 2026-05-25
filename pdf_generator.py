@@ -191,7 +191,7 @@ def generate_html(result: DietResult) -> str:
 
     ai_analysis_html = getattr(result, 'ai_analysis', '') or ''
     has_ai_analysis = bool(ai_analysis_html)
-    total_pages = 10 if has_ai_analysis else 9
+    total_pages = 11 if has_ai_analysis else 10  # +1 for feeding guide page
 
     # --- Distribution rows + stacked bar ---
     dist_items = [(g, grams) for g, grams in result.distribution.items() if grams > 0]
@@ -242,10 +242,7 @@ def generate_html(result: DietResult) -> str:
     # --- Warnings ---
     warnings_html = ""
     for w in result.warnings:
-        warnings_html += f'''<div class="warn">
-      <div class="ico">{_SVG_WARN}</div>
-      <div>{w}</div>
-    </div>\n'''
+        warnings_html += f'<div class="warn">⚠ {w}</div>\n'
 
     # --- Menu cards builder ---
     def _menu_card(day_menu) -> str:
@@ -292,7 +289,7 @@ def generate_html(result: DietResult) -> str:
         for d in menu_days
     )
     week_summary = f'''<div class="day" style="background: var(--bg-soft); border-style: dashed;">
-      <div class="day-head"><div class="day-name" style="color:var(--ink);">Итого за неделю</div></div>
+      <div class="day-head"><div class="day-name" style="color:var(--ink);white-space:nowrap;">Итого за неделю</div></div>
       <div style="display:grid; grid-template-columns: 1fr auto; gap: 6px; font-size: 9.5pt;">
         <div style="color:var(--ink-soft);">Общий вес рациона</div><div style="font-weight:700;">≈ {total_week_grams/1000:.2f} кг</div>
         <div style="color:var(--ink-soft);">Кормлений в день</div><div style="font-weight:700;">{result.meals_per_day}</div>
@@ -332,7 +329,6 @@ def generate_html(result: DietResult) -> str:
     for s in result.supplements:
         supp_cards += f'''<div class="supp">
       <div class="head">
-        <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M9 12l2 2 4-4"/></svg></div>
         <div>
           <div class="name">{s['name']}</div>
           <div class="freq">{s.get('frequency', '')}</div>
@@ -367,7 +363,7 @@ def generate_html(result: DietResult) -> str:
     # --- Forbidden foods ---
     danger_rows = ""
     for food, reason in FORBIDDEN_FOODS:
-        danger_rows += f'<div class="danger-row"><div class="x">{_SVG_X}</div><div><div class="nm">{food}</div><div class="why">{reason}</div></div></div>\n'
+        danger_rows += f'<div class="danger-row"><div class="nm">✕ {food}</div><div class="why">{reason}</div></div>\n'
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -776,24 +772,16 @@ p {{ margin: 0; }}
 }}
 .pie .center strong {{ display: block; font-size: 16pt; color: var(--ink); font-weight: 800; }}
 
-.warn-grid {{ display: grid; gap: 3mm; }}
+.warn-grid {{ margin-top: 3mm; }}
 .warn {{
-  display: flex; gap: 10px; align-items: flex-start;
   background: var(--yellow-soft);
   border-left: 3px solid var(--accent);
   border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 9.5pt;
+  padding: 8px 12px;
+  font-size: 9pt;
   color: var(--ink);
-}}
-.warn .ico {{
-  flex: 0 0 auto;
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  background: var(--accent);
-  color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-top: -1px;
+  margin-bottom: 2mm;
+  page-break-inside: avoid;
 }}
 
 /* ===== PAGES 3-4 — Weekly menu ========================================== */
@@ -944,13 +932,6 @@ p {{ margin: 0; }}
   break-inside: avoid;
 }}
 .supp .head {{ display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }}
-.supp .head .ico {{
-  width: 36px; height: 36px; min-width: 36px;
-  border-radius: 10px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  display: inline-flex; align-items: center; justify-content: center;
-}}
 .supp .head .name {{ font-size: 11pt; font-weight: 700; color: var(--ink); }}
 .supp .head .freq {{ font-size: 8pt; color: var(--ink-light); margin-top: 1px; }}
 .supp .dose {{
@@ -1025,18 +1006,10 @@ p {{ margin: 0; }}
   background: #fee2e2;
   border-left: 3px solid var(--red);
   border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 9.5pt;
+  padding: 8px 12px;
+  font-size: 9pt;
   color: var(--ink);
-  display: flex; gap: 10px; align-items: flex-start;
-}}
-.tl-warn .ico {{
-  flex: 0 0 auto;
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  background: var(--red);
-  color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
+  page-break-inside: avoid;
 }}
 
 /* ===== PAGE 8 — Reminders =============================================== */
@@ -1059,75 +1032,39 @@ p {{ margin: 0; }}
 .pill.amber {{ background: var(--accent-soft); color: var(--accent-deep); }}
 
 .danger-grid {{
-  display: flex; flex-wrap: wrap; gap: 2mm;
+  margin: 0;
 }}
 .danger-row {{
-  display: flex; gap: 8px; align-items: flex-start;
-  padding: 6px 10px;
-  background: #fff;
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-soft);
   font-size: 9pt;
   line-height: 1.4;
-  width: 48%;
   page-break-inside: avoid;
-  break-inside: avoid;
 }}
-.danger-row .x {{
-  flex: 0 0 auto;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: var(--red-soft);
-  color: var(--red);
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-top: -1px;
-}}
-.danger-row .nm {{ color: var(--ink); font-weight: 600; }}
-.danger-row .why {{ color: var(--ink-soft); font-weight: 400; }}
+.danger-row:last-child {{ border-bottom: none; }}
+.danger-row .nm {{ color: var(--red); font-weight: 600; }}
+.danger-row .why {{ color: var(--ink-soft); font-weight: 400; margin-left: 16px; }}
 
 .check-grid {{
-  display: flex; flex-wrap: wrap; gap: 2mm;
+  margin: 0;
 }}
-.check-row {{ width: 48%; }}
 .check-row {{
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 8px 12px;
-  background: var(--green-soft);
-  border-radius: 10px;
-  font-size: 9.5pt;
-  line-height: 1.45;
-}}
-.check-row .v {{
-  flex: 0 0 auto;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: var(--green);
-  color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-}}
-.check-row strong {{ color: var(--ink); font-weight: 700; display: block; }}
-.check-row span {{ color: var(--ink-soft); }}
-
-.vet-grid {{
-  display: flex; flex-wrap: wrap; gap: 2mm;
-}}
-.vet-row {{ width: 18%; min-width: 30mm; }}
-.vet-row {{
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: 10px;
-  padding: 10px;
+  padding: 3px 0;
   font-size: 9pt;
   line-height: 1.4;
   color: var(--ink);
-  display: flex; flex-direction: column; gap: 6px;
 }}
-.vet-row .ico {{
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  background: var(--accent);
-  color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
+.check-row strong {{ color: var(--green); font-weight: 700; }}
+.check-row span {{ color: var(--ink-soft); }}
+
+.vet-grid {{
+  margin: 0;
+}}
+.vet-row {{
+  padding: 3px 0;
+  font-size: 9pt;
+  line-height: 1.4;
+  color: var(--ink);
 }}
 
 /* ===== PAGE 9 — AI Personalized Analysis ================================ */
@@ -1188,16 +1125,13 @@ p {{ margin: 0; }}
 
 .support-strip {{
   margin-top: 6mm;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--primary);
   color: #fff;
-  border-radius: 16px;
-  padding: 8mm 10mm;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4mm;
+  border-radius: 12px;
+  padding: 6mm 8mm;
 }}
-.support-strip h3 {{ color: #fff; font-size: 18pt; margin-bottom: 3mm; }}
-.support-strip p {{ font-size: 11pt; line-height: 1.5; color: rgba(255,255,255,0.85); }}
+.support-strip h3 {{ color: #fff; font-size: 16pt; margin-bottom: 3mm; }}
+.support-strip p {{ font-size: 10pt; line-height: 1.5; color: rgba(255,255,255,0.85); }}
 
 .bye {{
   text-align: center;
@@ -1404,7 +1338,7 @@ p {{ margin: 0; }}
 
   <div class="eyebrow">{menu_page1[0].day_name if menu_page1 else ""} — {menu_page1[-1].day_name if menu_page1 else ""}</div>
   <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 2mm;">Меню на неделю</h2>
-  <p class="section-sub" style="margin-bottom: 4mm;">Каждый день — {result.meals_per_day} кормления. Граммовки указаны для миски «как есть».</p>
+  <p class="section-sub" style="margin-bottom: 4mm;">Каждый день — {result.meals_per_day} кормления. Вес продуктов указан до приготовления.</p>
 
   <div class="menu-grid">
     {menu_page1_html}
@@ -1488,17 +1422,51 @@ p {{ margin: 0; }}
   </div>
 
   <div class="tl-warn">
-    <div class="ico">{_SVG_WARN}</div>
-    <div><strong style="display:block; font-weight:700; margin-bottom:2px;">Если диарея — вернитесь на шаг назад</strong>{transition_note if transition_note else "Не паникуйте: ЖКТ настраивается на новый тип пищи 7–14 дней. Уменьшите порцию вдвое на сутки, затем продолжайте схему с предыдущего этапа."}</div>
+    <strong style="display:block; margin-bottom:2px;">⚠ Если диарея — вернитесь на шаг назад</strong>
+    {transition_note if transition_note else "Не паникуйте: ЖКТ настраивается на новый тип пищи 7–14 дней. Уменьшите порцию вдвое на сутки, затем продолжайте схему с предыдущего этапа."}
   </div>
-
-  {cooking_html}
 
   {_page_foot(7, total_pages, doc_id)}
 </section>
 
 <!-- ============================================================ -->
-<!-- PAGE 8 — REMINDERS                                            -->
+<!-- PAGE 8 — FEEDING GUIDE                                        -->
+<!-- ============================================================ -->
+<section class="page">
+  {_page_head(f"<strong>{'Как варить' if dog.diet_type == 'cooked' else 'Как кормить BARF'}</strong>")}
+
+  <div class="eyebrow">Руководство</div>
+  <h2 class="section-title" style="margin-top: 4mm;">{'Правила приготовления' if dog.diet_type == 'cooked' else 'Правила сырого кормления (BARF)'}</h2>
+
+  {'<div style="font-size:9.5pt;line-height:1.6;color:var(--ink);">' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Мясо и субпродукты</strong> — варите 20–30 минут на слабом огне. Не солите, не добавляйте специи. Бульон можно добавить к порции — в нём полезные вещества.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Печень</strong> — варите отдельно, не более 15 минут. Она быстро становится жёсткой и теряет витамины.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Рыба</strong> — варите 10–15 минут. Обязательно проверьте на кости перед подачей. Используйте морскую рыбу (минтай, треска, горбуша).</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Овощи</strong> — добавляйте в последние 5–7 минут варки или давайте сырыми, натёртыми на мелкой тёрке. Тыква, кабачок, морковь, брокколи — лучший выбор.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Яйца</strong> — варите всмятку (3–4 минуты). Белок усваивается лучше после термообработки, желток — наоборот.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Кисломолочка</strong> — не варите! Кефир, творог, ряженка даются сырыми. Добавляйте утром, отдельно от мясного кормления.</p>' + chr(10) +
+  '<p style="margin-bottom:5mm;"><strong>Хранение</strong> — готовую еду храните в холодильнике до 3 дней. Для удобства готовьте партию на 2–3 дня и замораживайте порционно. Размораживайте в холодильнике, не в микроволновке.</p>' + chr(10) +
+  '<div style="background:var(--primary-softer);border-left:3px solid var(--primary);border-radius:8px;padding:8px 12px;font-size:9pt;">' + chr(10) +
+  '<strong>Порядок кормления:</strong> Достаньте порцию → разогрейте до комнатной температуры → добавьте масло/добавки → подайте. Еда не должна быть горячей или холодной из холодильника.' + chr(10) +
+  '</div></div>'
+  if dog.diet_type == 'cooked' else
+  '<div style="font-size:9.5pt;line-height:1.6;color:var(--ink);">' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Мясо</strong> — давайте сырым, порезанным на куски по размеру пасти. Промороженное мясо (3+ дня в морозилке при −18°C) безопасно. Размораживайте в холодильнике 12 часов.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Кости</strong> — только сырые мясные кости (куриные спинки, шеи, крылья). Никогда не давайте варёные кости — они раскалываются на острые осколки! Кости — это источник кальция, не игрушка.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Субпродукты</strong> — печень, сердце, почки, рубец. Давайте сырыми. Печень — не более 5% рациона (богата витамином A). Рубец — зелёный (неочищенный) полезнее белого.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Рыба</strong> — сырая морская рыба 2 раза в неделю. Речную рыбу давать нельзя (паразиты). Мелкую рыбу можно целиком, крупную — без головы и хребта.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Овощи</strong> — сырые, измельчённые в блендере или натёртые на мелкой тёрке. Собаки не умеют переваривать целлюлозу — без измельчения овощи пройдут транзитом.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Кисломолочка</strong> — кефир, творог, ряженка. Давайте утром, отдельно от мясного кормления.</p>' + chr(10) +
+  '<p style="margin-bottom:5mm;"><strong>Хранение</strong> — разделите мясо на порции сразу после покупки и заморозьте. Размораживайте в холодильнике, не на столе и не в микроволновке.</p>' + chr(10) +
+  '<div style="background:var(--primary-softer);border-left:3px solid var(--primary);border-radius:8px;padding:8px 12px;font-size:9pt;">' + chr(10) +
+  '<strong>Порядок кормления:</strong> Достаньте порцию из холодильника за 20 минут до кормления → добавьте овощи, масло и добавки → подайте. Мясо должно быть комнатной температуры, не ледяным.' + chr(10) +
+  '</div></div>'}
+
+  {_page_foot(8, total_pages, doc_id)}
+</section>
+
+<!-- ============================================================ -->
+<!-- PAGE 9 — REMINDERS                                            -->
 <!-- ============================================================ -->
 <section class="page">
   {_page_head("<strong>Памятка владельцу</strong>")}
@@ -1516,33 +1484,33 @@ p {{ margin: 0; }}
   <div class="memo-section">
     <h3>Как понять, что рацион подошёл <span class="pill green">через 2–4 недели</span></h3>
     <div class="check-grid">
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Стул</strong><span>оформленный, 1–2 раза в день</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Шерсть</strong><span>блестящая, меньше выпадает</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Энергия</strong><span>{adj_active} на прогулке, хорошо спит</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Аппетит</strong><span>ест с удовольствием, миску вылизывает</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Вес</strong><span>стабилен или движется к целевому</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Запах</strong><span>уходит из пасти и от кожи</span></div></div>
+      <div class="check-row"><strong>✓ Стул</strong> — <span>оформленный, 1–2 раза в день</span></div>
+      <div class="check-row"><strong>✓ Шерсть</strong> — <span>блестящая, меньше выпадает</span></div>
+      <div class="check-row"><strong>✓ Энергия</strong> — <span>{adj_active} на прогулке, хорошо спит</span></div>
+      <div class="check-row"><strong>✓ Аппетит</strong> — <span>ест с удовольствием, миску вылизывает</span></div>
+      <div class="check-row"><strong>✓ Вес</strong> — <span>стабилен или движется к целевому</span></div>
+      <div class="check-row"><strong>✓ Запах</strong> — <span>уходит из пасти и от кожи</span></div>
     </div>
   </div>
 
   <div class="memo-section" style="margin-bottom: 0;">
     <h3>Когда срочно к ветеринару <span class="pill amber">не откладывайте</span></h3>
     <div class="vet-grid">
-      <div class="vet-row"><div class="ico">{_SVG_WARN}</div>Диарея или рвота более 24 часов</div>
-      <div class="vet-row"><div class="ico">{_SVG_WARN}</div>Отказ от еды более суток</div>
-      <div class="vet-row"><div class="ico">{_SVG_WARN}</div>Кровь в стуле или рвоте</div>
-      <div class="vet-row"><div class="ico">{_SVG_WARN}</div>Сильный зуд или отёк морды</div>
-      <div class="vet-row"><div class="ico">{_SVG_WARN}</div>Внезапная вялость, апатия</div>
+      <div class="vet-row">⚠ Диарея или рвота более 24 часов</div>
+      <div class="vet-row">⚠ Отказ от еды более суток</div>
+      <div class="vet-row">⚠ Кровь в стуле или рвоте</div>
+      <div class="vet-row">⚠ Сильный зуд или отёк морды</div>
+      <div class="vet-row">⚠ Внезапная вялость, апатия</div>
     </div>
   </div>
 
-  {_page_foot(8, total_pages, doc_id)}
+  {_page_foot(9, total_pages, doc_id)}
 </section>
 
-{'<!-- ============================================================ -->' if has_ai_analysis else ''}
-{'<!-- PAGE 9 — AI PERSONALIZED ANALYSIS                            -->' if has_ai_analysis else ''}
-{'<!-- ============================================================ -->' if has_ai_analysis else ''}
-{f"""<section class="page ai-analysis">
+{f"""<!-- ============================================================ -->
+<!-- PAGE 10 — AI PERSONALIZED ANALYSIS                            -->
+<!-- ============================================================ -->
+<section class="page ai-analysis">
   {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · {doc_id}")}
 
   <div class="eyebrow">Персональный анализ</div>
@@ -1551,11 +1519,11 @@ p {{ margin: 0; }}
 
   {ai_analysis_html}
 
-  {_page_foot(9, total_pages, doc_id)}
+  {_page_foot(10, total_pages, doc_id)}
 </section>""" if has_ai_analysis else ''}
 
 <!-- ============================================================ -->
-<!-- PAGE {10 if has_ai_analysis else 9} — DISCLAIMER + CONTACTS                                -->
+<!-- PAGE {11 if has_ai_analysis else 10} — DISCLAIMER + CONTACTS  -->
 <!-- ============================================================ -->
 <section class="page last-page">
   {_page_head("<strong>Дисклеймер и контакты</strong>")}
@@ -1563,39 +1531,19 @@ p {{ margin: 0; }}
   <div class="eyebrow">Важно знать</div>
   <h2 class="section-title" style="margin-top: 4mm;">Несколько слов перед тем,<br/>как закроете PDF</h2>
 
-  <div class="disclaimer-card">
-    <div class="quote">«</div>
-    <p>Данный рацион рассчитан на основе общепринятых ветеринарных норм <strong>NRC&nbsp;2006</strong>, <strong>FEDIAF</strong> и <strong>AAFCO</strong>. Он не заменяет очную консультацию ветеринарного врача. При наличии хронических заболеваний обязательно согласуйте рацион с лечащим ветеринаром.</p>
+  <div style="background:#fff;border:1px solid var(--border-soft);border-radius:12px;padding:6mm;margin-bottom:6mm;">
+    <p style="font-size:10pt;line-height:1.6;color:var(--ink);font-style:italic;">Данный рацион рассчитан на основе общепринятых ветеринарных норм <strong>NRC&nbsp;2006</strong>, <strong>FEDIAF</strong> и <strong>AAFCO</strong>. Он не заменяет очную консультацию ветеринарного врача. При наличии хронических заболеваний обязательно согласуйте рацион с лечащим ветеринаром.</p>
   </div>
 
   <h3 style="font-size: 12pt; margin-bottom: 4mm;">Связь с нами</h3>
-  <div class="contact-grid">
-    <div class="contact-card">
-      <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
-      </div>
-      <div>
-        <div class="label">Telegram-бот</div>
-        <div class="val">@doggifood_bot</div>
-      </div>
-    </div>
-    <div class="contact-card">
-      <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
-      </div>
-      <div>
-        <div class="label">Сайт</div>
-        <div class="val">kus.dogfine.ru</div>
-      </div>
-    </div>
+  <div style="margin-bottom:6mm;">
+    <p style="font-size:11pt;margin-bottom:2mm;"><strong>Telegram:</strong> @doggifood_bot</p>
+    <p style="font-size:11pt;"><strong>Сайт:</strong> kus.dogfine.ru</p>
   </div>
 
-  <div class="support-strip" style="display:flex;align-items:center;gap:6mm;">
-    <div style="flex:1;">
-      <h3>7 дней бесплатной поддержки</h3>
-      <p>Стул не такой? {name} {verb_refused}? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
-    </div>
-    {f'<div style="flex:0 0 auto;text-align:center;"><div style="background:#fff;border-radius:8px;padding:2mm;">{qr_img}</div><div style="font-size:7pt;color:rgba(255,255,255,0.7);margin-top:2px;">Наведите камеру</div></div>' if qr_img else ''}
+  <div class="support-strip">
+    <h3>7 дней бесплатной поддержки</h3>
+    <p>Стул не такой? {name} {verb_refused}? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
   </div>
 
   <div class="bye">
@@ -1603,7 +1551,7 @@ p {{ margin: 0; }}
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
-  {_page_foot(10 if has_ai_analysis else 9, total_pages, doc_id)}
+  {_page_foot(11 if has_ai_analysis else 10, total_pages, doc_id)}
 </section>
 
 </body>

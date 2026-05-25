@@ -110,10 +110,10 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
         f"активность: {dog.activity}, тип: {dog.diet_type}, "
         f"стоп: {stop_products}, диагнозы: {diagnoses}"
     )
-    result.ai_intro = await asyncio.to_thread(generate_natural_intro, dog.name, dog.breed, summary)
+    result.ai_intro = await asyncio.to_thread(generate_natural_intro, dog.name, dog.breed, summary, dog.sex)
     result.ai_notes = await asyncio.to_thread(generate_natural_product_notes,
         {"name": dog.name, "breed": dog.breed, "weight_kg": dog.weight_kg,
-         "condition": dog.condition, "activity": dog.activity,
+         "sex": dog.sex, "condition": dog.condition, "activity": dog.activity,
          "diagnoses": diagnoses, "stop_products": stop_products},
         result.warnings
     )

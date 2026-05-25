@@ -134,15 +134,17 @@ def parse_stop_products(raw_text: str) -> list[str]:
 # НАТУРАЛКА — AI-генерация
 # =====================================================================
 
-def generate_natural_intro(dog_name: str, breed: str, summary: str) -> str:
+def generate_natural_intro(dog_name: str, breed: str, summary: str, sex: str = "male") -> str:
     """Персональное вступление для PDF с натуральным рационом."""
+    gender_note = f"Пол собаки: {'девочка' if sex == 'female' else 'мальчик'}. Используй правильный род: {'она, её, ей' if sex == 'female' else 'он, его, ему'}."
     result = _ask(f"""Напиши короткое (3-4 предложения) вступление для PDF-документа с натуральным рационом собаки.
-Обращайся к владельцу на «вы». Упомяни кличку и породу. Объясни, почему рацион подобран именно так.
-Тон: дружелюбный, профессиональный. Без emoji.
+Обращайся к владельцу на «вы» (с маленькой буквы). Упомяни кличку и породу. Объясни, почему рацион подобран именно так.
+{gender_note}
+Тон: дружелюбный, профессиональный. Без emoji. Не представляйся диетологом/ветеринаром.
 
 Кличка: {dog_name}
 Порода: {breed}
-Данные: {summary}""", max_tokens=2000)
+Данные: {summary}""", max_tokens=500)
     return result or ""
 
 
@@ -183,20 +185,23 @@ def generate_natural_weekly_menu(dog_profile: dict, products: dict, daily_grams:
 
 def generate_natural_product_notes(dog_profile: dict, warnings: list) -> str:
     """AI пишет персональные заметки: почему выбраны эти продукты, на что обращать внимание."""
+    sex = dog_profile.get("sex", "male")
+    gender_note = f"Пол собаки: {'девочка' if sex == 'female' else 'мальчик'}. Используй правильный род."
     result = _ask(f"""Напиши краткие персональные рекомендации (5-7 пунктов) для владельца собаки по натуральному питанию.
 
+{gender_note}
 Профиль:
 {json.dumps(dog_profile, ensure_ascii=False)}
 
 Предупреждения системы: {warnings}
 
-Формат: маркированный список. Каждый пункт — 1-2 предложения.
-Тон: дружелюбный, конкретный. Без воды. Без emoji.
-Примеры пунктов:
+Формат: маркированный список (простой текст, без markdown). Каждый пункт — 1-2 предложения.
+Тон: дружелюбный, конкретный. Обращение на «вы» (с маленькой буквы). Без воды. Без emoji.
+Темы:
 - Почему выбраны именно эти продукты
 - На что обращать внимание при кормлении
-- Когда пересчитать рацион (вес изменился, возраст)
-- Лайфхаки по хранению и закупке""", max_tokens=500)
+- Когда пересчитать рацион
+- Лайфхаки по хранению и закупке""", max_tokens=600)
     return result or ""
 
 
@@ -253,7 +258,16 @@ def generate_personal_analysis(dog_profile: dict, diet_summary: dict) -> str:
 <div class="insight" style="background:#fef3c7;border-color:#fbbf24;">
   <div class="tag health">Важно</div>
   <p>Данные рекомендации носят информационный характер и не являются ветеринарной консультацией. При наличии заболеваний или тревожных симптомов обратитесь к ветеринарному врачу.</p>
-</div>""", max_tokens=2500)
+</div>""", max_tokens=4000)
+    # Fix truncated HTML — close any unclosed divs
+    if result:
+        open_divs = result.count('<div') - result.count('</div>')
+        if open_divs > 0:
+            result += '</div>' * open_divs
+        # Remove incomplete last block if truncated
+        last_insight = result.rfind('<div class="insight"')
+        if last_insight > 0 and '</div>' not in result[last_insight:].split('</div>')[0:2]:
+            result = result[:last_insight]
     return result or ""
 
 
@@ -359,11 +373,32 @@ def generate_cover_image(breed: str, dog_name: str) -> str | None:
     if not client:
         return None
 
+    # Breed-specific appearance hints for better image generation
+    breed_lower = breed.lower()
+    color_hint = ""
+    if "ньюфаундленд" in breed_lower or "newfoundland" in breed_lower:
+        color_hint = "black fur, massive build, thick double coat, "
+    elif "лабрадор" in breed_lower or "labrador" in breed_lower:
+        color_hint = "golden/yellow fur, athletic build, "
+    elif "хаски" in breed_lower or "husky" in breed_lower:
+        color_hint = "grey and white fur, blue eyes, wolf-like appearance, "
+    elif "немецкая овчарка" in breed_lower or "german shepherd" in breed_lower:
+        color_hint = "black and tan fur, alert ears, "
+    elif "корги" in breed_lower or "corgi" in breed_lower:
+        color_hint = "red and white fur, short legs, big ears, "
+    elif "шпиц" in breed_lower or "spitz" in breed_lower or "померан" in breed_lower:
+        color_hint = "fluffy orange/cream fur, fox-like face, "
+    elif "такса" in breed_lower or "dachshund" in breed_lower:
+        color_hint = "long body, short legs, brown fur, "
+    elif "бульдог" in breed_lower or "bulldog" in breed_lower:
+        color_hint = "muscular build, flat face, wrinkles, "
+
     prompt = (
-        f"A friendly happy {breed} dog sitting and looking at camera, "
-        f"3D Pixar-style illustration, warm soft lighting, white clean background, "
-        f"cute expressive eyes, high quality render, no text, no humans, "
-        f"professional pet portrait style"
+        f"A friendly happy {breed} dog, {color_hint}"
+        f"realistic breed-accurate portrait, sitting and looking at camera, "
+        f"soft studio lighting, clean white background, "
+        f"expressive eyes, high quality professional pet photography style, "
+        f"no text, no humans, no props"
     )
 
     try:
