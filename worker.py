@@ -252,7 +252,7 @@ async def _deliver(order: dict, pdf_path: str):
 
 
 async def _send_telegram_pdf(user_id: int, pdf_path: str, order: dict):
-    """Отправляет PDF файл в Telegram."""
+    """Отправляет PDF файл в Telegram через внутренний API бота."""
     import aiohttp
 
     diet_label = "натуральный рацион" if order["diet_type"] in ("barf", "cooked") else "подбор сухого корма"
@@ -261,17 +261,17 @@ async def _send_telegram_pdf(user_id: int, pdf_path: str, order: dict):
         f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
     )
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
+    # Отправляем через внутренний API бота (localhost:8907)
+    # Бот держит соединение с Telegram через long polling
     async with aiohttp.ClientSession() as session:
-        with open(pdf_path, "rb") as f:
-            form = aiohttp.FormData()
-            form.add_field("chat_id", str(user_id))
-            form.add_field("caption", caption)
-            form.add_field("document", f, filename=os.path.basename(pdf_path))
-            async with session.post(url, data=form) as resp:
-                if resp.status != 200:
-                    text = await resp.text()
-                    raise Exception(f"Telegram API error {resp.status}: {text}")
+        async with session.post("http://127.0.0.1:8907/send_document", json={
+            "chat_id": user_id,
+            "file_path": pdf_path,
+            "caption": caption,
+        }, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+            data = await resp.json()
+            if not data.get("ok"):
+                raise Exception(f"Bot API error: {data.get('error', 'unknown')}")
 
 
 def _send_email_pdf(email: str, pdf_path: str, order: dict):
@@ -307,8 +307,8 @@ def _send_email_pdf(email: str, pdf_path: str, order: dict):
 # =====================================================================
 
 async def _notify_admin(order: dict):
-    """Уведомляет Анастасию о новом выполненном заказе."""
-    if not ADMIN_TELEGRAM_ID or not BOT_TOKEN:
+    """Уведомляет Анастасию о новом выполненном заказе через внутренний API бота."""
+    if not ADMIN_TELEGRAM_ID:
         return
 
     import aiohttp
@@ -320,10 +320,15 @@ async def _notify_admin(order: dict):
         f"Собака: {order['dog_name']} ({order['breed']})\n"
         f"Клиент: {order['client_name']}\n"
         f"Телефон: {order['phone_or_telegram']}\n"
-        f"Email: {order['email']}\n"
+        f"Email: {order.get('email', '')}\n"
         f"Сумма: {order.get('amount', '?')} руб."
     )
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     async with aiohttp.ClientSession() as session:
-        await session.post(url, json={"chat_id": ADMIN_TELEGRAM_ID, "text": text})
+        async with session.post("http://127.0.0.1:8907/send_message", json={
+            "chat_id": int(ADMIN_TELEGRAM_ID),
+            "text": text,
+        }, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+            data = await resp.json()
+            if not data.get("ok"):
+                raise Exception(f"Bot API error: {data.get('error', 'unknown')}")

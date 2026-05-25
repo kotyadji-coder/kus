@@ -286,6 +286,52 @@ async def send_scheduled_messages():
                 log.error(f"Failed to send to {user['user_id']}: {e}")
 
 
+# ─── Внутренний HTTP API (для worker → бот) ──────────────────────────────────
+
+from aiohttp import web
+
+async def _handle_send_document(request: web.Request):
+    """Worker вызывает POST /send_document с chat_id, file_path, caption."""
+    try:
+        data = await request.json()
+        chat_id = int(data["chat_id"])
+        file_path = data["file_path"]
+        caption = data.get("caption", "")
+
+        from aiogram.types import FSInputFile
+        doc = FSInputFile(file_path)
+        await bot.send_document(chat_id, doc, caption=caption)
+        log.info(f"Internal API: sent {file_path} to {chat_id}")
+        return web.json_response({"ok": True})
+    except Exception as e:
+        log.error(f"Internal API error: {e}")
+        return web.json_response({"ok": False, "error": str(e)}, status=500)
+
+
+async def _handle_send_message(request: web.Request):
+    """Worker вызывает POST /send_message с chat_id, text."""
+    try:
+        data = await request.json()
+        chat_id = int(data["chat_id"])
+        text = data["text"]
+        await bot.send_message(chat_id, text)
+        return web.json_response({"ok": True})
+    except Exception as e:
+        log.error(f"Internal API error: {e}")
+        return web.json_response({"ok": False, "error": str(e)}, status=500)
+
+
+async def _start_internal_api():
+    app = web.Application()
+    app.router.add_post("/send_document", _handle_send_document)
+    app.router.add_post("/send_message", _handle_send_message)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "127.0.0.1", 8907)
+    await site.start()
+    log.info("Internal API started on 127.0.0.1:8907")
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 async def main():
@@ -304,6 +350,9 @@ async def main():
     await bot.set_my_commands([
         BotCommand(command="start", description="Начать / Главное меню"),
     ])
+
+    # Запускаем внутренний API для отправки PDF из worker
+    await _start_internal_api()
 
     await dp.start_polling(bot)
 
