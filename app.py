@@ -219,6 +219,7 @@ async def _create_yookassa_payment(order_id: int, amount: float, form: OrderForm
 
 
 @app.post("/webhook/yookassa")
+@app.post("/payment/webhook")
 async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
     """Webhook от ЮKassa — подтверждение оплаты."""
     body = await request.body()
