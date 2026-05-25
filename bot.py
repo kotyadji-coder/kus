@@ -290,6 +290,27 @@ async def send_scheduled_messages():
 
 from aiohttp import web
 
+async def _tg_request(method: str, data: dict = None, files: dict = None):
+    """Send request to Telegram API reusing bot's aiohttp connector."""
+    import aiohttp
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
+    # Reuse bot's connector to keep TCP connection alive
+    connector = bot.session._session.connector if hasattr(bot.session, '_session') else None
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession(connector=connector, connector_owner=False, timeout=timeout) as session:
+        if files:
+            form_data = aiohttp.FormData()
+            for k, v in (data or {}).items():
+                form_data.add_field(k, str(v))
+            for k, v in files.items():
+                form_data.add_field(k, open(v, 'rb'), filename=os.path.basename(v))
+            async with session.post(url, data=form_data) as resp:
+                return await resp.json()
+        else:
+            async with session.post(url, json=data) as resp:
+                return await resp.json()
+
+
 async def _handle_send_document(request: web.Request):
     """Worker вызывает POST /send_document с chat_id, file_path, caption."""
     try:
@@ -298,11 +319,14 @@ async def _handle_send_document(request: web.Request):
         file_path = data["file_path"]
         caption = data.get("caption", "")
 
-        from aiogram.types import FSInputFile
-        doc = FSInputFile(file_path)
-        await bot.send_document(chat_id, doc, caption=caption)
-        log.info(f"Internal API: sent {file_path} to {chat_id}")
-        return web.json_response({"ok": True})
+        result = await _tg_request("sendDocument",
+            data={"chat_id": chat_id, "caption": caption},
+            files={"document": file_path})
+        if result.get("ok"):
+            log.info(f"Internal API: sent {file_path} to {chat_id}")
+            return web.json_response({"ok": True})
+        else:
+            raise Exception(str(result))
     except Exception as e:
         log.error(f"Internal API error: {e}")
         return web.json_response({"ok": False, "error": str(e)}, status=500)
@@ -314,10 +338,15 @@ async def _handle_send_message(request: web.Request):
         data = await request.json()
         chat_id = int(data["chat_id"])
         text = data["text"]
-        await bot.send_message(chat_id, text)
-        return web.json_response({"ok": True})
+
+        result = await _tg_request("sendMessage", data={"chat_id": chat_id, "text": text})
+        if result.get("ok"):
+            log.info(f"Internal API: sent message to {chat_id}")
+            return web.json_response({"ok": True})
+        else:
+            raise Exception(str(result))
     except Exception as e:
-        log.error(f"Internal API error: {e}")
+        log.error(f"Internal API send_message error: {e}")
         return web.json_response({"ok": False, "error": str(e)}, status=500)
 
 

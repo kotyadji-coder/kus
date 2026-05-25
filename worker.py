@@ -262,13 +262,12 @@ async def _send_telegram_pdf(user_id: int, pdf_path: str, order: dict):
     )
 
     # Отправляем через внутренний API бота (localhost:8907)
-    # Бот держит соединение с Telegram через long polling
     async with aiohttp.ClientSession() as session:
         async with session.post("http://127.0.0.1:8907/send_document", json={
             "chat_id": user_id,
             "file_path": pdf_path,
             "caption": caption,
-        }, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+        }, timeout=aiohttp.ClientTimeout(total=60)) as resp:
             data = await resp.json()
             if not data.get("ok"):
                 raise Exception(f"Bot API error: {data.get('error', 'unknown')}")
