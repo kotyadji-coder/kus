@@ -43,8 +43,13 @@
         h2 { font-size: 22px; color: #055ba9; margin-bottom: 6px; }
         .step-desc { font-size: 14px; color: #777; line-height: 1.5; margin-bottom: 20px; }
 
+        /* Question groups */
+        .question-group { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e8ecf0; }
+        .question-group:first-of-type, .step-desc + .question-group { margin-top: 0; padding-top: 0; border-top: none; }
+
         /* Form elements */
         label { display: block; font-size: 17px; font-weight: 700; margin: 22px 0 8px; color: #222; }
+        .question-group > label:first-child { margin-top: 0; }
         input[type="text"], input[type="number"], input[type="email"], input[type="tel"],
         select, textarea {
             width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 10px;
@@ -242,21 +247,24 @@
             <h2>Активность и кондиция</h2>
             <p class="step-desc">Порция для дивана и для охотника — разные вещи. Это влияет на калорийность.</p>
 
-            <label>Что ест сейчас?</label>
-            <div class="cards single-col">
-                <label class="card-option"><input type="radio" name="current_food" value="dry" required>
-                    <div class="card"><div class="card-icon">🥣</div><div class="card-title">Сухой корм</div></div></label>
-                <label class="card-option"><input type="radio" name="current_food" value="porridge">
-                    <div class="card"><div class="card-icon">🍲</div><div class="card-title">Каши с мясом</div></div></label>
-                <label class="card-option"><input type="radio" name="current_food" value="natural">
-                    <div class="card"><div class="card-icon">🥩</div><div class="card-title">Натуралка</div></div></label>
-                <label class="card-option"><input type="radio" name="current_food" value="table">
-                    <div class="card"><div class="card-icon">🍽</div><div class="card-title">Еда со стола</div></div></label>
-                <label class="card-option"><input type="radio" name="current_food" value="mixed">
-                    <div class="card"><div class="card-icon">🔀</div><div class="card-title">Смешанное (корм + обычная еда)</div></div></label>
+            <div class="question-group">
+                <label>Что ест сейчас?</label>
+                <div class="cards single-col">
+                    <label class="card-option"><input type="radio" name="current_food" value="dry" required>
+                        <div class="card"><div class="card-icon">🥣</div><div class="card-title">Сухой корм</div></div></label>
+                    <label class="card-option"><input type="radio" name="current_food" value="porridge">
+                        <div class="card"><div class="card-icon">🍲</div><div class="card-title">Каши с мясом</div></div></label>
+                    <label class="card-option"><input type="radio" name="current_food" value="natural">
+                        <div class="card"><div class="card-icon">🥩</div><div class="card-title">Натуралка</div></div></label>
+                    <label class="card-option"><input type="radio" name="current_food" value="table">
+                        <div class="card"><div class="card-icon">🍽</div><div class="card-title">Еда со стола</div></div></label>
+                    <label class="card-option"><input type="radio" name="current_food" value="mixed">
+                        <div class="card"><div class="card-icon">🔀</div><div class="card-title">Смешанное (корм + обычная еда)</div></div></label>
+                </div>
             </div>
 
-            <label>Кондиция (упитанность)</label>
+            <div class="question-group">
+                <label>Кондиция (упитанность)</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="condition" value="thin" required>
                     <div class="card"><div class="card-icon">🦴</div><div class="card-title">Худышка</div><div class="card-desc">Рёбра и позвоночник сильно торчат</div></div></label>
@@ -267,8 +275,10 @@
                 <label class="card-option"><input type="radio" name="condition" value="obese">
                     <div class="card"><div class="card-icon">🏋️</div><div class="card-title">Колобок</div><div class="card-desc">Ожирение, тяжело двигаться</div></div></label>
             </div>
+            </div>
 
-            <label>Активность</label>
+            <div class="question-group">
+                <label>Активность</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="activity" value="lazy" required>
                     <div class="card"><div class="card-icon">😴</div><div class="card-title">Ленивая</div><div class="card-desc">Гуляем мало, в основном спит</div></div></label>
@@ -278,6 +288,7 @@
                     <div class="card"><div class="card-icon">🏃</div><div class="card-title">Высокая</div><div class="card-desc">Спорт, охота, рабочая собака</div></div></label>
                 <label class="card-option"><input type="radio" name="activity" value="puppy">
                     <div class="card"><div class="card-icon">🐶</div><div class="card-title">Растущий организм</div><div class="card-desc">Активный щенок</div></div></label>
+            </div>
             </div>
 
             <div class="buttons">
@@ -291,22 +302,25 @@
             <h2>Здоровье</h2>
             <p class="step-desc">Некоторые продукты и корма противопоказаны при определённых заболеваниях. Учтём это при подборе.</p>
 
-            <label>Есть ли проблемы со здоровьем?</label>
-            <div class="hint" style="margin-bottom:8px;">Отметьте всё, что есть. Это влияет на подбор продуктов и добавок.</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-                <label class="checkbox-label"><input type="checkbox" name="diag_allergy" value="аллергия"> Аллергия</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_gastritis" value="гастрит"> Гастрит</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_pancreatitis" value="панкреатит"> Панкреатит</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_joints" value="суставы"> Суставы / дисплазия</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_kidney" value="мкб"> Почки / МКБ</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_liver" value="печень"> Печень</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_skin" value="дерматит"> Кожа / шерсть</label>
-                <label class="checkbox-label"><input type="checkbox" name="diag_lactose" value="лактоза"> Непереносимость лактозы</label>
+            <div class="question-group">
+                <label>Есть ли проблемы со здоровьем?</label>
+                <div class="hint" style="margin-bottom:10px;">Отметьте всё, что есть. Это влияет на подбор продуктов и добавок.</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <label class="checkbox-label"><input type="checkbox" name="diag_allergy" value="аллергия"> Аллергия</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_gastritis" value="гастрит"> Гастрит</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_pancreatitis" value="панкреатит"> Панкреатит</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_joints" value="суставы"> Суставы / дисплазия</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_kidney" value="мкб"> Почки / МКБ</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_liver" value="печень"> Печень</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_skin" value="дерматит"> Кожа / шерсть</label>
+                    <label class="checkbox-label"><input type="checkbox" name="diag_lactose" value="лактоза"> Непереносимость лактозы</label>
+                </div>
+                <label for="diagnoses" style="margin-top:12px;">Другие диагнозы</label>
+                <textarea id="diagnoses" name="diagnoses" placeholder="Если есть что-то ещё — напишите. Если нет — оставьте пустым" rows="2"></textarea>
             </div>
-            <label for="diagnoses" style="margin-top:10px;">Другие диагнозы</label>
-            <textarea id="diagnoses" name="diagnoses" placeholder="Если есть что-то ещё — напишите. Если нет — оставьте пустым" rows="2"></textarea>
 
-            <label>Как дела со стулом?</label>
+            <div class="question-group">
+                <label>Как дела со стулом?</label>
             <div class="cards single-col">
                 <label class="card-option"><input type="radio" name="stool" value="good" required>
                     <div class="card"><div class="card-icon">✅</div><div class="card-title">Отличный</div><div class="card-desc">Оформленный, 1-2 раза в день</div></div></label>
@@ -316,6 +330,7 @@
                     <div class="card"><div class="card-icon">⏸</div><div class="card-title">Бывают запоры</div></div></label>
                 <label class="card-option"><input type="radio" name="stool" value="high_volume">
                     <div class="card"><div class="card-icon">📦</div><div class="card-title">Много и часто</div><div class="card-desc">Может говорить о плохом усвоении корма</div></div></label>
+            </div>
             </div>
 
             <div class="buttons">
@@ -329,6 +344,7 @@
             <h2>Что подбираем</h2>
             <p class="step-desc">Вы получите персональный PDF с полным расчётом и рекомендациями.</p>
 
+            <div class="question-group">
             <label>Тип рациона</label>
             <div class="hint" style="margin-top:0;margin-bottom:10px;">Натуралка — видотипичное питание с полным контролем состава. Сухой корм — удобнее в быту. Оба варианта работают, если подобраны правильно.</div>
             <div class="cards single-col">
@@ -363,10 +379,13 @@
                         <div class="card"><div class="card-icon">✨</div><div class="card-title">Не ограничено</div><div class="card-desc">Кролик, утка, лосось и т.д.</div></div></label>
                 </div>
             </div>
+            </div>
 
+            <div class="question-group">
             <label for="stop_products">Стоп-продукты</label>
             <textarea id="stop_products" name="stop_products" placeholder="Курица, говядина... Если нет — оставьте пустым"></textarea>
             <div class="hint">Аллергия, непереносимость — эти продукты будут полностью исключены</div>
+            </div>
 
             <div class="buttons">
                 <button type="button" class="btn btn-back" onclick="prevStep()">Назад</button>

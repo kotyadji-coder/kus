@@ -186,7 +186,7 @@ async def _create_yookassa_payment(order_id: int, amount: float, form: OrderForm
         "description": f"{diet_label} для {form.dog_name}",
         "metadata": {"order_id": str(order_id)},
         "receipt": {
-            "customer": {"email": form.email},
+            "customer": {"email": form.email} if form.email else {"phone": form.phone_or_telegram},
             "items": [{
                 "description": diet_label,
                 "quantity": "1",
