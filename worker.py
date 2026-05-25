@@ -252,25 +252,9 @@ async def _deliver(order: dict, pdf_path: str):
 
 
 async def _send_telegram_pdf(user_id: int, pdf_path: str, order: dict):
-    """Отправляет PDF файл в Telegram через внутренний API бота."""
-    import aiohttp
-
-    diet_label = "натуральный рацион" if order["diet_type"] in ("barf", "cooked") else "подбор сухого корма"
-    caption = (
-        f"Готово! Вот ваш персональный {diet_label} для {order['dog_name']}.\n\n"
-        f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
-    )
-
-    # Отправляем через внутренний API бота (localhost:8907)
-    async with aiohttp.ClientSession() as session:
-        async with session.post("http://127.0.0.1:8907/send_document", json={
-            "chat_id": user_id,
-            "file_path": pdf_path,
-            "caption": caption,
-        }, timeout=aiohttp.ClientTimeout(total=60)) as resp:
-            data = await resp.json()
-            if not data.get("ok"):
-                raise Exception(f"Bot API error: {data.get('error', 'unknown')}")
+    """Telegram delivery is handled by bot's delivery loop (bot.py).
+    Worker just marks the order as done — bot picks it up within 10 seconds."""
+    log.info(f"Order #{order['id']}: PDF ready, bot will deliver to {user_id}")
 
 
 def _send_email_pdf(email: str, pdf_path: str, order: dict):
@@ -306,28 +290,5 @@ def _send_email_pdf(email: str, pdf_path: str, order: dict):
 # =====================================================================
 
 async def _notify_admin(order: dict):
-    """Уведомляет Анастасию о новом выполненном заказе через внутренний API бота."""
-    if not ADMIN_TELEGRAM_ID:
-        return
-
-    import aiohttp
-
-    diet_label = "Натуралка" if order["diet_type"] in ("barf", "cooked") else "Сухой корм"
-    text = (
-        f"Новый заказ выполнен!\n\n"
-        f"#{order['id']} | {diet_label}\n"
-        f"Собака: {order['dog_name']} ({order['breed']})\n"
-        f"Клиент: {order['client_name']}\n"
-        f"Телефон: {order['phone_or_telegram']}\n"
-        f"Email: {order.get('email', '')}\n"
-        f"Сумма: {order.get('amount', '?')} руб."
-    )
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post("http://127.0.0.1:8907/send_message", json={
-            "chat_id": int(ADMIN_TELEGRAM_ID),
-            "text": text,
-        }, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-            data = await resp.json()
-            if not data.get("ok"):
-                raise Exception(f"Bot API error: {data.get('error', 'unknown')}")
+    """Admin notification is handled by bot's delivery loop (bot.py)."""
+    log.info(f"Order #{order['id']}: done, bot will notify admin")

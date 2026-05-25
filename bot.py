@@ -288,77 +288,79 @@ async def send_scheduled_messages():
 
 # ─── Внутренний HTTP API (для worker → бот) ──────────────────────────────────
 
-from aiohttp import web
 
-async def _tg_request(method: str, data: dict = None, files: dict = None):
-    """Send request to Telegram API reusing bot's aiohttp connector."""
-    import aiohttp
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
-    # Reuse bot's connector to keep TCP connection alive
-    connector = bot.session._session.connector if hasattr(bot.session, '_session') else None
-    timeout = aiohttp.ClientTimeout(total=30)
-    async with aiohttp.ClientSession(connector=connector, connector_owner=False, timeout=timeout) as session:
-        if files:
-            form_data = aiohttp.FormData()
-            for k, v in (data or {}).items():
-                form_data.add_field(k, str(v))
-            for k, v in files.items():
-                form_data.add_field(k, open(v, 'rb'), filename=os.path.basename(v))
-            async with session.post(url, data=form_data) as resp:
-                return await resp.json()
-        else:
-            async with session.post(url, json=data) as resp:
-                return await resp.json()
+# ─── Очередь доставки: бот проверяет готовые заказы и отправляет PDF ──────────
 
+async def _delivery_loop():
+    """Периодически проверяет заказы со статусом done + telegram_user_id, отправляет PDF."""
+    from models import get_order, update_order
+    import aiosqlite
+    DB_PATH = os.path.join(os.path.dirname(__file__), "kus.db")
 
-async def _handle_send_document(request: web.Request):
-    """Worker вызывает POST /send_document с chat_id, file_path, caption."""
-    try:
-        data = await request.json()
-        chat_id = int(data["chat_id"])
-        file_path = data["file_path"]
-        caption = data.get("caption", "")
+    while True:
+        try:
+            async with aiosqlite.connect(DB_PATH) as db:
+                db.row_factory = aiosqlite.Row
+                # Заказы: done, есть telegram_user_id, ещё не доставлены (delivered=0)
+                async with db.execute(
+                    "SELECT * FROM orders WHERE status='done' AND telegram_user_id IS NOT NULL AND telegram_user_id > 0 AND COALESCE(delivered, 0) = 0 AND pdf_path IS NOT NULL"
+                ) as cursor:
+                    rows = await cursor.fetchall()
 
-        result = await _tg_request("sendDocument",
-            data={"chat_id": chat_id, "caption": caption},
-            files={"document": file_path})
-        if result.get("ok"):
-            log.info(f"Internal API: sent {file_path} to {chat_id}")
-            return web.json_response({"ok": True})
-        else:
-            raise Exception(str(result))
-    except Exception as e:
-        log.error(f"Internal API error: {e}")
-        return web.json_response({"ok": False, "error": str(e)}, status=500)
+            for row in rows:
+                order = dict(row)
+                tg_id = order["telegram_user_id"]
+                pdf_path = order["pdf_path"]
+                if not os.path.exists(pdf_path):
+                    continue
 
+                diet_type = order["diet_type"]
+                diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
+                caption = (
+                    f"Готово! Вот ваш персональный {diet_label} для {order['dog_name']}.\n\n"
+                    f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
+                )
 
-async def _handle_send_message(request: web.Request):
-    """Worker вызывает POST /send_message с chat_id, text."""
-    try:
-        data = await request.json()
-        chat_id = int(data["chat_id"])
-        text = data["text"]
+                try:
+                    from aiogram.types import FSInputFile
+                    doc = FSInputFile(pdf_path)
+                    await bot.send_document(tg_id, doc, caption=caption)
+                    await update_order(order["id"], delivered=1)
+                    log.info(f"Delivery loop: sent order #{order['id']} to {tg_id}")
+                except Exception as e:
+                    log.error(f"Delivery loop: failed order #{order['id']}: {e}")
 
-        result = await _tg_request("sendMessage", data={"chat_id": chat_id, "text": text})
-        if result.get("ok"):
-            log.info(f"Internal API: sent message to {chat_id}")
-            return web.json_response({"ok": True})
-        else:
-            raise Exception(str(result))
-    except Exception as e:
-        log.error(f"Internal API send_message error: {e}")
-        return web.json_response({"ok": False, "error": str(e)}, status=500)
+            # Уведомления админу о новых заказах
+            async with aiosqlite.connect(DB_PATH) as db:
+                db.row_factory = aiosqlite.Row
+                async with db.execute(
+                    "SELECT * FROM orders WHERE status='done' AND COALESCE(admin_notified, 0) = 0"
+                ) as cursor:
+                    rows = await cursor.fetchall()
 
+            for row in rows:
+                order = dict(row)
+                diet_label = "Натуралка" if order["diet_type"] in ("barf", "cooked") else "Сухой корм"
+                text = (
+                    f"Новый заказ выполнен!\n\n"
+                    f"#{order['id']} | {diet_label}\n"
+                    f"Собака: {order['dog_name']} ({order['breed']})\n"
+                    f"Клиент: {order['client_name']}\n"
+                    f"Телефон: {order['phone_or_telegram']}\n"
+                    f"Email: {order.get('email', '')}\n"
+                    f"Сумма: {order.get('amount', '?')} руб."
+                )
+                try:
+                    await bot.send_message(ADMIN_ID, text)
+                    await update_order(order["id"], admin_notified=1)
+                    log.info(f"Delivery loop: admin notified about order #{order['id']}")
+                except Exception as e:
+                    log.error(f"Delivery loop: admin notify failed: {e}")
 
-async def _start_internal_api():
-    app = web.Application()
-    app.router.add_post("/send_document", _handle_send_document)
-    app.router.add_post("/send_message", _handle_send_message)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "127.0.0.1", 8907)
-    await site.start()
-    log.info("Internal API started on 127.0.0.1:8907")
+        except Exception as e:
+            log.error(f"Delivery loop error: {e}")
+
+        await asyncio.sleep(10)  # Проверяем каждые 10 секунд
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -380,8 +382,23 @@ async def main():
         BotCommand(command="start", description="Начать / Главное меню"),
     ])
 
-    # Запускаем внутренний API для отправки PDF из worker
-    await _start_internal_api()
+    # Добавляем колонки delivered/admin_notified если их нет
+    import aiosqlite
+    DB_PATH = os.path.join(os.path.dirname(__file__), "kus.db")
+    async with aiosqlite.connect(DB_PATH) as db:
+        try:
+            await db.execute("ALTER TABLE orders ADD COLUMN delivered INTEGER DEFAULT 0")
+            await db.commit()
+        except Exception:
+            pass
+        try:
+            await db.execute("ALTER TABLE orders ADD COLUMN admin_notified INTEGER DEFAULT 0")
+            await db.commit()
+        except Exception:
+            pass
+
+    # Запускаем цикл доставки PDF через Telegram
+    asyncio.create_task(_delivery_loop())
 
     await dp.start_polling(bot)
 
