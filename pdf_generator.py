@@ -152,6 +152,11 @@ def generate_html(result: DietResult) -> str:
     sex_text = "мальчик" if dog.sex == "male" else "девочка"
     doc_id = f"Рацион {dog.name}"
     weight_diff = round(dog.weight_kg - result.ideal_weight_kg, 1)
+    is_female = dog.sex == "female"
+    pronoun_he = "она" if is_female else "он"
+    pronoun_him = "её" if is_female else "его"
+    verb_refused = "отказалась" if is_female else "отказался"
+    adj_active = "активна" if is_female else "активен"
 
     # QR-код на бота
     qr_b64 = _generate_qr_b64("https://t.me/doggifood_bot")
@@ -324,26 +329,10 @@ def generate_html(result: DietResult) -> str:
 
     # --- Supplements ---
     supp_cards = ""
-    for i, s in enumerate(result.supplements):
-        full_cls = " full" if i == len(result.supplements) - 1 and len(result.supplements) % 2 == 1 else ""
-        if full_cls:
-            supp_cards += f'''<div class="supp{full_cls}">
-      <div class="left">
-        <div class="head" style="margin-bottom: 3mm;">
-          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <div>
-            <div class="name">{s['name']}</div>
-            <div class="freq">{s.get('frequency', '')}</div>
-          </div>
-        </div>
-        <div class="note" style="font-size: 10pt;">{s.get('notes', '')}</div>
-      </div>
-      <div class="dose" style="text-align:right; white-space: nowrap;">{s['dosage']}</div>
-    </div>\n'''
-        else:
-            supp_cards += f'''<div class="supp">
+    for s in result.supplements:
+        supp_cards += f'''<div class="supp">
       <div class="head">
-        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M9 12l2 2 4-4"/></svg></div>
         <div>
           <div class="name">{s['name']}</div>
           <div class="freq">{s.get('frequency', '')}</div>
@@ -495,19 +484,25 @@ html, body {{
   padding-bottom: 5mm;
   border-bottom: 1px solid var(--border-soft);
 }}
-.page-head .logo {{ display: inline-flex; align-items: center; gap: 8px; }}
+.page-head .logo {{ display: inline-block; }}
 .page-head .logo .mark {{
-  width: 26px; height: 26px;
-  border-radius: 8px;
+  width: 22px; height: 22px;
+  border-radius: 6px;
   background: var(--primary);
   color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-block;
+  text-align: center;
+  line-height: 22px;
+  vertical-align: middle;
+  margin-right: 6px;
 }}
+.page-head .logo .mark svg {{ vertical-align: middle; }}
 .page-head .logo .name {{
   font-weight: 800;
   font-size: 16px;
   color: var(--primary);
   letter-spacing: -0.02em;
+  vertical-align: middle;
 }}
 .page-head .meta {{
   font-size: 9pt;
@@ -680,11 +675,12 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 2 — Summary ================================================= */
 .metric-grid {{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 4mm;
   margin-bottom: 8mm;
 }}
+.metric {{ width: 22%; }}
 .metric {{
   background: var(--bg-soft);
   border: 1px solid var(--border-soft);
@@ -710,11 +706,12 @@ p {{ margin: 0; }}
 .metric .sub {{ font-size: 8.5pt; color: var(--ink-light); margin-top: 2mm; }}
 
 .summary-grid {{
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  display: flex;
   gap: 6mm;
   margin-bottom: 6mm;
 }}
+.summary-grid > .group-table {{ flex: 1.4; min-width: 0; }}
+.summary-grid > div:last-child {{ flex: 1; min-width: 0; }}
 
 .group-table {{
   background: #fff;
@@ -801,10 +798,11 @@ p {{ margin: 0; }}
 
 /* ===== PAGES 3-4 — Weekly menu ========================================== */
 .menu-grid {{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 3mm;
 }}
+.menu-grid > .day {{ width: 48%; }}
 .day {{
   background: #fff;
   border: 1px solid var(--border-soft);
@@ -864,10 +862,11 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 5 — Shopping list =========================================== */
 .shop-grid {{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 3mm;
 }}
+.shop-group {{ width: 48%; }}
 .shop-group {{
   border-radius: 10px;
   padding: 4mm;
@@ -929,38 +928,43 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 6 — Supplements ============================================= */
 .supp-grid {{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4mm;
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
 }}
 .supp {{
   background: #fff;
   border: 1px solid var(--border-soft);
   border-radius: 14px;
-  padding: 6mm;
-  display: flex; flex-direction: column;
-  gap: 3mm;
+  padding: 4mm 5mm;
+  display: flex; flex-direction: row;
+  align-items: center;
+  gap: 4mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }}
-.supp .head {{ display: flex; align-items: center; gap: 10px; }}
+.supp .head {{ display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }}
 .supp .head .ico {{
-  width: 44px; height: 44px;
-  border-radius: 12px;
+  width: 36px; height: 36px; min-width: 36px;
+  border-radius: 10px;
   background: var(--primary-soft);
   color: var(--primary);
   display: inline-flex; align-items: center; justify-content: center;
 }}
-.supp .head .name {{ font-size: 13pt; font-weight: 700; color: var(--ink); }}
-.supp .head .freq {{ font-size: 8.5pt; color: var(--ink-light); margin-top: 2px; }}
+.supp .head .name {{ font-size: 11pt; font-weight: 700; color: var(--ink); }}
+.supp .head .freq {{ font-size: 8pt; color: var(--ink-light); margin-top: 1px; }}
 .supp .dose {{
-  font-size: 20pt;
+  font-size: 16pt;
   font-weight: 800;
   color: var(--primary);
   letter-spacing: -0.03em;
   line-height: 1;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }}
-.supp .note {{ font-size: 9.5pt; color: var(--ink-soft); line-height: 1.5; }}
+.supp .note {{ font-size: 9pt; color: var(--ink-soft); line-height: 1.4; flex: 1; min-width: 0; }}
 
-.supp.full {{ grid-column: span 2; flex-direction: row; align-items: center; gap: 6mm; }}
+.supp.full {{ flex-direction: row; align-items: center; gap: 4mm; }}
 .supp.full .left {{ flex: 1; }}
 
 /* ===== PAGE 7 — Transition timeline ===================================== */
@@ -1008,10 +1012,11 @@ p {{ margin: 0; }}
 }}
 .tl-step.final .days-badge {{ background: var(--accent); }}
 .tl-step .step-name {{
-  font-size: 13pt;
+  font-size: 12pt;
   font-weight: 700;
   color: var(--ink);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }}
 .tl-step .step-text {{ font-size: 10pt; color: var(--ink-soft); line-height: 1.55; }}
 
@@ -1054,16 +1059,19 @@ p {{ margin: 0; }}
 .pill.amber {{ background: var(--accent-soft); color: var(--accent-deep); }}
 
 .danger-grid {{
-  display: grid; grid-template-columns: 1fr 1fr; gap: 3mm;
+  display: flex; flex-wrap: wrap; gap: 2mm;
 }}
 .danger-row {{
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 8px 12px;
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 6px 10px;
   background: #fff;
   border: 1px solid var(--border-soft);
-  border-radius: 10px;
-  font-size: 9.5pt;
-  line-height: 1.45;
+  border-radius: 8px;
+  font-size: 9pt;
+  line-height: 1.4;
+  width: 48%;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }}
 .danger-row .x {{
   flex: 0 0 auto;
@@ -1078,8 +1086,9 @@ p {{ margin: 0; }}
 .danger-row .why {{ color: var(--ink-soft); font-weight: 400; }}
 
 .check-grid {{
-  display: grid; grid-template-columns: 1fr 1fr; gap: 3mm;
+  display: flex; flex-wrap: wrap; gap: 2mm;
 }}
+.check-row {{ width: 48%; }}
 .check-row {{
   display: flex; gap: 10px; align-items: flex-start;
   padding: 8px 12px;
@@ -1100,8 +1109,9 @@ p {{ margin: 0; }}
 .check-row span {{ color: var(--ink-soft); }}
 
 .vet-grid {{
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm;
+  display: flex; flex-wrap: wrap; gap: 2mm;
 }}
+.vet-row {{ width: 18%; min-width: 30mm; }}
 .vet-row {{
   background: #fff7ed;
   border: 1px solid #fed7aa;
@@ -1121,14 +1131,13 @@ p {{ margin: 0; }}
 }}
 
 /* ===== PAGE 9 — AI Personalized Analysis ================================ */
-.ai-analysis {{}}
-.ai-analysis .insight {{ background: #fff; border: 1px solid var(--border-soft); border-radius: 14px; padding: 5mm 6mm; margin-bottom: 3mm; }}
-.ai-analysis .insight .tag {{ display: inline-block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 6px; margin-bottom: 2mm; }}
+.ai-analysis .insight {{ background: #fff; border: 1px solid var(--border-soft); border-radius: 10px; padding: 3mm 5mm; margin-bottom: 2mm; page-break-inside: avoid; break-inside: avoid; }}
+.ai-analysis .insight .tag {{ display: inline-block; font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 5px; margin-bottom: 1mm; }}
 .ai-analysis .insight .tag.breed {{ background: var(--primary-softer); color: var(--primary); }}
 .ai-analysis .insight .tag.health {{ background: #fef3c7; color: #92400e; }}
 .ai-analysis .insight .tag.nutrition {{ background: #dcfce7; color: #166534; }}
 .ai-analysis .insight .tag.lifestyle {{ background: #ede9fe; color: #5b21b6; }}
-.ai-analysis .insight p {{ font-size: 9.5pt; line-height: 1.55; color: var(--ink); margin: 0; }}
+.ai-analysis .insight p {{ font-size: 9pt; line-height: 1.45; color: var(--ink); margin: 0; }}
 
 /* ===== PAGE 10 — Disclaimer / contacts ================================== */
 .last-page {{ background: var(--bg-soft); }}
@@ -1156,8 +1165,9 @@ p {{ margin: 0; }}
   padding-left: 14mm;
 }}
 .contact-grid {{
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm;
+  display: flex; gap: 4mm;
 }}
+.contact-card {{ flex: 1; }}
 .contact-card {{
   background: #fff;
   border: 1px solid var(--border-soft);
@@ -1458,7 +1468,7 @@ p {{ margin: 0; }}
     {supp_cards}
   </div>
 
-  {'<div style="margin-top: 6mm; background: var(--primary-softer); border-left: 3px solid var(--primary); border-radius: 8px; padding: 5mm 6mm; font-size: 9.5pt; line-height: 1.6; color: var(--ink);"><div style="font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 3mm;">Персональные рекомендации</div>' + getattr(result, 'ai_notes', '').replace(chr(10), '<br/>') + '</div>' if getattr(result, 'ai_notes', '') else ''}
+  {'<div style="margin-top: 5mm; background: var(--primary-softer); border-left: 3px solid var(--primary); border-radius: 8px; padding: 4mm 5mm; font-size: 9pt; line-height: 1.5; color: var(--ink);"><div style="font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 2mm;">Персональные рекомендации</div>' + getattr(result, 'ai_notes', '').replace(chr(10), '<br/>') + '</div>' if getattr(result, 'ai_notes', '') else ''}
 
   {_page_foot(6, total_pages, doc_id)}
 </section>
@@ -1508,7 +1518,7 @@ p {{ margin: 0; }}
     <div class="check-grid">
       <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Стул</strong><span>оформленный, 1–2 раза в день</span></div></div>
       <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Шерсть</strong><span>блестящая, меньше выпадает</span></div></div>
-      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Энергия</strong><span>активна на прогулке, хорошо спит</span></div></div>
+      <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Энергия</strong><span>{adj_active} на прогулке, хорошо спит</span></div></div>
       <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Аппетит</strong><span>ест с удовольствием, миску вылизывает</span></div></div>
       <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Вес</strong><span>стабилен или движется к целевому</span></div></div>
       <div class="check-row"><div class="v">{_SVG_CHECK}</div><div><strong>Запах</strong><span>уходит из пасти и от кожи</span></div></div>
@@ -1537,7 +1547,7 @@ p {{ margin: 0; }}
 
   <div class="eyebrow">Персональный анализ</div>
   <h2 class="section-title" style="margin-top: 4mm;">Рекомендации для {name_g}</h2>
-  <p class="section-sub">На основе породы, возраста, веса, активности и особенностей здоровья.</p>
+  <p class="section-sub">AI-анализ на основе ветеринарных стандартов NRC, FEDIAF и AAFCO. Система учитывает породные особенности, кондицию, заболевания и баланс нутриентов — и объясняет, почему рацион составлен именно так.</p>
 
   {ai_analysis_html}
 
@@ -1583,7 +1593,7 @@ p {{ margin: 0; }}
   <div class="support-strip" style="display:flex;align-items:center;gap:6mm;">
     <div style="flex:1;">
       <h3>7 дней бесплатной поддержки</h3>
-      <p>Стул не такой? {name} отказался? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
+      <p>Стул не такой? {name} {verb_refused}? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
     </div>
     {f'<div style="flex:0 0 auto;text-align:center;"><div style="background:#fff;border-radius:8px;padding:2mm;">{qr_img}</div><div style="font-size:7pt;color:rgba(255,255,255,0.7);margin-top:2px;">Наведите камеру</div></div>' if qr_img else ''}
   </div>
