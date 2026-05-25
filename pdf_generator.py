@@ -362,8 +362,16 @@ def generate_html(result: DietResult) -> str:
 
     # --- Forbidden foods ---
     danger_rows = ""
-    for food, reason in FORBIDDEN_FOODS:
-        danger_rows += f'<div class="danger-row"><div class="nm">✕ {food}</div><div class="why">{reason}</div></div>\n'
+    for i in range(0, len(FORBIDDEN_FOODS), 2):
+        left = FORBIDDEN_FOODS[i]
+        right = FORBIDDEN_FOODS[i+1] if i+1 < len(FORBIDDEN_FOODS) else None
+        danger_rows += '<tr>'
+        danger_rows += f'<td><span class="nm">✕ {left[0]}</span><br/><span class="why">{left[1]}</span></td>'
+        if right:
+            danger_rows += f'<td><span class="nm">✕ {right[0]}</span><br/><span class="why">{right[1]}</span></td>'
+        else:
+            danger_rows += '<td></td>'
+        danger_rows += '</tr>\n'
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -1031,50 +1039,82 @@ p {{ margin: 0; }}
 .pill.green {{ background: var(--green-soft); color: var(--green); }}
 .pill.amber {{ background: var(--accent-soft); color: var(--accent-deep); }}
 
-.danger-grid {{
-  margin: 0;
+.danger-table {{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2mm;
 }}
-.danger-row {{
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border-soft);
+.danger-table td {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 6px 10px;
   font-size: 9pt;
   line-height: 1.4;
+  vertical-align: top;
+  width: 50%;
+}}
+.danger-table .nm {{ color: var(--red); font-weight: 600; }}
+.danger-table .why {{ color: var(--ink-soft); }}
+
+.check-table {{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2mm;
+}}
+.check-table td {{
+  background: var(--green-soft);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 9pt;
+  line-height: 1.4;
+  width: 50%;
+  vertical-align: top;
+}}
+.check-table td strong {{ color: var(--green); font-weight: 700; }}
+.check-table td span {{ color: var(--ink-soft); }}
+
+.vet-table {{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2mm;
+}}
+.vet-table td {{
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 9pt;
+  line-height: 1.4;
+  color: var(--ink);
+  vertical-align: top;
+}}
+
+/* ===== AI Personalized Analysis (multi-page) ============================ */
+.ai-analysis .insight {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 5mm 6mm;
+  margin-bottom: 4mm;
   page-break-inside: avoid;
+  break-inside: avoid;
 }}
-.danger-row:last-child {{ border-bottom: none; }}
-.danger-row .nm {{ color: var(--red); font-weight: 600; }}
-.danger-row .why {{ color: var(--ink-soft); font-weight: 400; margin-left: 16px; }}
-
-.check-grid {{
-  margin: 0;
+.ai-analysis .insight .tag {{
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 3mm;
 }}
-.check-row {{
-  padding: 3px 0;
-  font-size: 9pt;
-  line-height: 1.4;
-  color: var(--ink);
-}}
-.check-row strong {{ color: var(--green); font-weight: 700; }}
-.check-row span {{ color: var(--ink-soft); }}
-
-.vet-grid {{
-  margin: 0;
-}}
-.vet-row {{
-  padding: 3px 0;
-  font-size: 9pt;
-  line-height: 1.4;
-  color: var(--ink);
-}}
-
-/* ===== PAGE 9 — AI Personalized Analysis ================================ */
-.ai-analysis .insight {{ background: #fff; border: 1px solid var(--border-soft); border-radius: 10px; padding: 3mm 5mm; margin-bottom: 2mm; page-break-inside: avoid; break-inside: avoid; }}
-.ai-analysis .insight .tag {{ display: inline-block; font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 5px; margin-bottom: 1mm; }}
 .ai-analysis .insight .tag.breed {{ background: var(--primary-softer); color: var(--primary); }}
 .ai-analysis .insight .tag.health {{ background: #fef3c7; color: #92400e; }}
 .ai-analysis .insight .tag.nutrition {{ background: #dcfce7; color: #166534; }}
 .ai-analysis .insight .tag.lifestyle {{ background: #ede9fe; color: #5b21b6; }}
-.ai-analysis .insight p {{ font-size: 9pt; line-height: 1.45; color: var(--ink); margin: 0; }}
+.ai-analysis .insight p {{ font-size: 10pt; line-height: 1.6; color: var(--ink); margin: 0; }}
 
 /* ===== PAGE 10 — Disclaimer / contacts ================================== */
 .last-page {{ background: var(--bg-soft); }}
@@ -1402,8 +1442,6 @@ p {{ margin: 0; }}
     {supp_cards}
   </div>
 
-  {'<div style="margin-top: 5mm; background: var(--primary-softer); border-left: 3px solid var(--primary); border-radius: 8px; padding: 4mm 5mm; font-size: 9pt; line-height: 1.5; color: var(--ink);"><div style="font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 2mm;">Персональные рекомендации</div>' + getattr(result, 'ai_notes', '').replace(chr(10), '<br/>') + '</div>' if getattr(result, 'ai_notes', '') else ''}
-
   {_page_foot(6, total_pages, doc_id)}
 </section>
 
@@ -1462,6 +1500,8 @@ p {{ margin: 0; }}
   '<strong>Порядок кормления:</strong> Достаньте порцию из холодильника за 20 минут до кормления → добавьте овощи, масло и добавки → подайте. Мясо должно быть комнатной температуры, не ледяным.' + chr(10) +
   '</div></div>'}
 
+  {'<div style="margin-top: 5mm; background: var(--primary-softer); border-left: 3px solid var(--primary); border-radius: 8px; padding: 4mm 5mm; font-size: 9pt; line-height: 1.5; color: var(--ink);"><div style="font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 2mm;">Персональные рекомендации</div>' + getattr(result, 'ai_notes', '').replace(chr(10), '<br/>') + '</div>' if getattr(result, 'ai_notes', '') else ''}
+
   {_page_foot(8, total_pages, doc_id)}
 </section>
 
@@ -1476,50 +1516,51 @@ p {{ margin: 0; }}
 
   <div class="memo-section">
     <h3>Что НЕЛЬЗЯ давать собакам <span class="pill red">опасно</span></h3>
-    <div class="danger-grid">
+    <table class="danger-table">
       {danger_rows}
-    </div>
+    </table>
   </div>
 
   <div class="memo-section">
     <h3>Как понять, что рацион подошёл <span class="pill green">через 2–4 недели</span></h3>
-    <div class="check-grid">
-      <div class="check-row"><strong>✓ Стул</strong> — <span>оформленный, 1–2 раза в день</span></div>
-      <div class="check-row"><strong>✓ Шерсть</strong> — <span>блестящая, меньше выпадает</span></div>
-      <div class="check-row"><strong>✓ Энергия</strong> — <span>{adj_active} на прогулке, хорошо спит</span></div>
-      <div class="check-row"><strong>✓ Аппетит</strong> — <span>ест с удовольствием, миску вылизывает</span></div>
-      <div class="check-row"><strong>✓ Вес</strong> — <span>стабилен или движется к целевому</span></div>
-      <div class="check-row"><strong>✓ Запах</strong> — <span>уходит из пасти и от кожи</span></div>
-    </div>
+    <table class="check-table">
+      <tr><td><strong>✓ Стул</strong> — <span>оформленный, 1–2 раза в день</span></td><td><strong>✓ Шерсть</strong> — <span>блестящая, меньше выпадает</span></td></tr>
+      <tr><td><strong>✓ Энергия</strong> — <span>{adj_active} на прогулке, хорошо спит</span></td><td><strong>✓ Аппетит</strong> — <span>ест с удовольствием, миску вылизывает</span></td></tr>
+      <tr><td><strong>✓ Вес</strong> — <span>стабилен или движется к целевому</span></td><td><strong>✓ Запах</strong> — <span>уходит из пасти и от кожи</span></td></tr>
+    </table>
   </div>
 
   <div class="memo-section" style="margin-bottom: 0;">
     <h3>Когда срочно к ветеринару <span class="pill amber">не откладывайте</span></h3>
-    <div class="vet-grid">
-      <div class="vet-row">⚠ Диарея или рвота более 24 часов</div>
-      <div class="vet-row">⚠ Отказ от еды более суток</div>
-      <div class="vet-row">⚠ Кровь в стуле или рвоте</div>
-      <div class="vet-row">⚠ Сильный зуд или отёк морды</div>
-      <div class="vet-row">⚠ Внезапная вялость, апатия</div>
-    </div>
+    <table class="vet-table">
+      <tr>
+        <td>⚠ Диарея или рвота более 24 часов</td>
+        <td>⚠ Отказ от еды более суток</td>
+        <td>⚠ Кровь в стуле или рвоте</td>
+      </tr>
+      <tr>
+        <td>⚠ Сильный зуд или отёк морды</td>
+        <td>⚠ Внезапная вялость, апатия</td>
+        <td></td>
+      </tr>
+    </table>
   </div>
 
   {_page_foot(9, total_pages, doc_id)}
 </section>
 
 {f"""<!-- ============================================================ -->
-<!-- PAGE 10 — AI PERSONALIZED ANALYSIS                            -->
+<!-- PAGES 10+ — AI PERSONALIZED ANALYSIS (flows across pages)     -->
 <!-- ============================================================ -->
-<section class="page ai-analysis">
+<section class="page ai-analysis" style="overflow:visible;min-height:auto;height:auto;">
   {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · {doc_id}")}
 
   <div class="eyebrow">Персональный анализ</div>
   <h2 class="section-title" style="margin-top: 4mm;">Рекомендации для {name_g}</h2>
-  <p class="section-sub">AI-анализ на основе ветеринарных стандартов NRC, FEDIAF и AAFCO. Система учитывает породные особенности, кондицию, заболевания и баланс нутриентов — и объясняет, почему рацион составлен именно так.</p>
+  <p class="section-sub" style="font-size:10pt;">AI-анализ на основе ветеринарных стандартов NRC, FEDIAF и AAFCO. Система учитывает породные особенности, кондицию, заболевания и баланс нутриентов — и объясняет, почему рацион составлен именно так.</p>
 
   {ai_analysis_html}
 
-  {_page_foot(10, total_pages, doc_id)}
 </section>""" if has_ai_analysis else ''}
 
 <!-- ============================================================ -->

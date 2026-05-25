@@ -377,7 +377,7 @@ def generate_cover_image(breed: str, dog_name: str) -> str | None:
     breed_lower = breed.lower()
     color_hint = ""
     if "ньюфаундленд" in breed_lower or "newfoundland" in breed_lower:
-        color_hint = "black fur, massive build, thick double coat, "
+        color_hint = "Newfoundland dog, very large massive bear-like dog, solid black fur, thick long double coat, broad head, droopy lips, gentle giant, "
     elif "лабрадор" in breed_lower or "labrador" in breed_lower:
         color_hint = "golden/yellow fur, athletic build, "
     elif "хаски" in breed_lower or "husky" in breed_lower:
