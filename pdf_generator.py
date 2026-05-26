@@ -310,7 +310,7 @@ def generate_html(result: DietResult) -> str:
 
         tag = f'<div class="day-tag">{day_total} г</div>'
         if is_fish:
-            tag = f'<div class="day-tag fish">{_SVG_FISH} Рыбный день</div>'
+            tag = f'<div class="day-tag fish">Рыбный&nbsp;день</div>'
 
         morning_items = ""
         for p in day_menu.morning:
@@ -891,7 +891,8 @@ p {{ margin: 0; }}
   border-radius: 100px;
   background: var(--bg-soft);
   color: var(--ink-soft);
-  display: inline-flex; align-items: center; gap: 4px;
+  display: inline-block;
+  white-space: nowrap;
 }}
 .day-tag.fish {{ background: #dbeafe; color: #1e3a8a; }}
 

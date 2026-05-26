@@ -296,26 +296,26 @@ class DietCalculator:
     def _calc_distribution(self, dog: DogProfile, daily_grams: float) -> dict:
         if dog.diet_type == "barf":
             dist = {
-                "muscle_meat": 0.40,
-                "raw_meaty_bones": 0.12,
-                "organs": 0.12,
-                "vegetables": 0.15,
-                "dairy": 0.08,
-                "eggs": 0.03,
-                "fish": 0.0,  # рыба 1-2 раза в неделю заменяет мясо
-                "oils_supplements": 0.01,
-            }
+                "muscle_meat": 0.45,       # основа рациона
+                "raw_meaty_bones": 0.12,   # источник кальция
+                "organs": 0.12,            # витамины A, B12, железо
+                "vegetables": 0.15,        # клетчатка
+                "dairy": 0.10,             # кисломолочка
+                "eggs": 0.04,              # полноценный белок
+                "fish": 0.0,               # рыба 2 раза/нед заменяет мясо
+                "oils_supplements": 0.02,  # масла
+            }  # = 1.00
         else:  # cooked
             dist = {
-                "muscle_meat": 0.50,
-                "raw_meaty_bones": 0.0,  # Нет костей при варке!
-                "organs": 0.12,
-                "vegetables": 0.15,
-                "dairy": 0.10,
-                "eggs": 0.03,
-                "fish": 0.0,
-                "oils_supplements": 0.01,
-            }
+                "muscle_meat": 0.55,       # больше мяса (нет костей)
+                "raw_meaty_bones": 0.0,    # нет костей при варке!
+                "organs": 0.12,            # субпродукты
+                "vegetables": 0.15,        # овощи
+                "dairy": 0.10,             # кисломолочка
+                "eggs": 0.04,              # яйца
+                "fish": 0.0,               # рыбные дни
+                "oils_supplements": 0.04,  # масла + костная мука
+            }  # = 1.00
 
         # Корректировка при диагнозах
         if "pancreatitis" in dog.diagnoses:
