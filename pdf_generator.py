@@ -197,12 +197,13 @@ def generate_html(result: DietResult) -> str:
     ai_blocks_page2 = ""
     if has_ai_analysis:
         import re
-        blocks = re.findall(r'<div class="insight"[^>]*>.*?</div>\s*</div>', ai_analysis_html, re.DOTALL)
-        if len(blocks) >= 6:
-            ai_blocks_page1 = '\n'.join(blocks[:3])
-            ai_blocks_page2 = '\n'.join(blocks[3:6])
-        elif len(blocks) >= 4:
-            mid = len(blocks) // 2
+        # Split by finding each <div class="insight" ...> ... </div> block
+        # Use a simple approach: split on the opening tag
+        parts = re.split(r'(?=<div class="insight")', ai_analysis_html)
+        blocks = [p.strip() for p in parts if p.strip().startswith('<div class="insight"')]
+
+        if len(blocks) >= 4:
+            mid = (len(blocks) + 1) // 2  # ceil division
             ai_blocks_page1 = '\n'.join(blocks[:mid])
             ai_blocks_page2 = '\n'.join(blocks[mid:])
         else:
@@ -635,9 +636,7 @@ p {{ margin: 0; }}
 .cover-stats .divider {{ width: 1px; height: 24px; background: var(--border); }}
 
 .cover-badge {{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-block;
   margin-top: 8mm;
   padding: 8px 16px;
   background: var(--accent);
@@ -645,7 +644,7 @@ p {{ margin: 0; }}
   font-weight: 700;
   font-size: 10pt;
   border-radius: 100px;
-  letter-spacing: -0.005em;
+  white-space: nowrap;
 }}
 .cover-badge .dot {{ width: 8px; height: 8px; border-radius: 50%; background: #fff; }}
 
@@ -1039,11 +1038,11 @@ p {{ margin: 0; }}
 }}
 
 /* ===== PAGE 8 — Reminders =============================================== */
-.memo-section {{ margin-bottom: 6mm; }}
+.memo-section {{ margin-bottom: 3mm; }}
 .memo-section h3 {{
-  font-size: 12pt;
-  margin-bottom: 4mm;
-  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10pt;
+  margin-bottom: 2mm;
+  display: inline-block;
 }}
 .memo-section h3 .pill {{
   font-size: 8pt;
@@ -1060,15 +1059,15 @@ p {{ margin: 0; }}
 .danger-table {{
   width: 100%;
   border-collapse: separate;
-  border-spacing: 2mm;
+  border-spacing: 1.5mm;
 }}
 .danger-table td {{
   background: #fff;
   border: 1px solid var(--border-soft);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 8pt;
+  line-height: 1.35;
   vertical-align: top;
   width: 50%;
 }}
@@ -1078,14 +1077,14 @@ p {{ margin: 0; }}
 .check-table {{
   width: 100%;
   border-collapse: separate;
-  border-spacing: 2mm;
+  border-spacing: 1.5mm;
 }}
 .check-table td {{
   background: var(--green-soft);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 8pt;
+  line-height: 1.35;
   width: 50%;
   vertical-align: top;
 }}
@@ -1095,15 +1094,15 @@ p {{ margin: 0; }}
 .vet-table {{
   width: 100%;
   border-collapse: separate;
-  border-spacing: 2mm;
+  border-spacing: 1.5mm;
 }}
 .vet-table td {{
   background: #fff7ed;
   border: 1px solid #fed7aa;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 8pt;
+  line-height: 1.35;
   color: var(--ink);
   vertical-align: top;
 }}
@@ -1529,8 +1528,8 @@ p {{ margin: 0; }}
 <section class="page">
   {_page_head("<strong>Памятка владельцу</strong>")}
 
-  <div class="eyebrow">Запомнить и распечатать на холодильник</div>
-  <h2 class="section-title" style="margin-top: 4mm;">Памятка</h2>
+  <div class="eyebrow">Памятка владельцу</div>
+  <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 2mm;">Запомнить и повесить на холодильник</h2>
 
   <div class="memo-section">
     <h3>Что НЕЛЬЗЯ давать собакам <span class="pill red">опасно</span></h3>
