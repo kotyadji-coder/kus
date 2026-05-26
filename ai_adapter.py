@@ -18,7 +18,7 @@ GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "project-5c6fc698-9b69-
 GOOGLE_CREDS_PATH = os.getenv("GOOGLE_APPLICATION_CREDENTIALS",
     os.path.join(os.path.dirname(__file__), "google-credentials.json"))
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
-VERTEX_MODELS = ["gemini-3.5-flash", "gemini-3.1-pro", "gemini-2.5-flash"]
+FALLBACK_MODELS = ["gemini-3.5-flash", "gemini-2.5-flash"]
 
 _client = None
 
@@ -37,7 +37,7 @@ def _get_client():
             _client = genai.Client(
                 vertexai=True,
                 project=GOOGLE_CLOUD_PROJECT,
-                location="us-central1",
+                location="global",
             )
             return _client
 
@@ -54,21 +54,33 @@ def _get_client():
 def _ask(prompt: str, max_tokens: int = 1000) -> str | None:
     """Отправляет запрос в Gemini, возвращает текст ответа."""
     import time
+    from google.genai import types
     client = _get_client()
     if not client:
         return None
-    # Gemini 2.5 flash uses thinking tokens that count against max_output_tokens
-    # Multiply by 8x to ensure enough room for actual text
-    effective_max = max_tokens * 8
-    # Пробуем модели по порядку (на Vertex AI не все могут быть включены)
-    models_to_try = [GEMINI_MODEL] + [m for m in VERTEX_MODELS if m != GEMINI_MODEL]
+    # Пробуем модели по порядку
+    models_to_try = [GEMINI_MODEL] + [m for m in FALLBACK_MODELS if m != GEMINI_MODEL]
     for model in models_to_try:
+        # Gemini 3.5+ — thinking model, нужен thinking_config
+        is_thinking = "3.5" in model or "3.1" in model or "3-" in model
+        if is_thinking:
+            config = types.GenerateContentConfig(
+                max_output_tokens=max_tokens,
+                temperature=0.3,
+                thinking_config=types.ThinkingConfig(thinking_level="MINIMAL"),
+            )
+        else:
+            # Gemini 2.5 flash — thinking tokens count against max_output_tokens
+            config = types.GenerateContentConfig(
+                max_output_tokens=max_tokens * 8,
+                temperature=0.3,
+            )
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
                     model=model,
                     contents=prompt,
-                    config={"max_output_tokens": effective_max, "temperature": 0.3},
+                    config=config,
                 )
                 text = response.text
                 if text:
