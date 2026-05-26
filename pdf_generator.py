@@ -665,17 +665,14 @@ p {{ margin: 0; }}
   margin-top: 10mm;
   border-radius: 14px;
   overflow: hidden;
-  height: 60mm;
+  max-height: 65mm;
   background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm));
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--ink-light);
   font-size: 10pt;
 }}
 .cover-photo img {{
-  width: 100%; height: 100%; object-fit: contain; display: block;
+  width: 100%; height: auto; display: block;
 }}
 .cover-photo .float-card {{
   position: absolute;
