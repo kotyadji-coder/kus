@@ -53,25 +53,36 @@ def _get_client():
 
 def _ask(prompt: str, max_tokens: int = 1000) -> str | None:
     """Отправляет запрос в Gemini, возвращает текст ответа."""
+    import time
     client = _get_client()
     if not client:
         return None
     # Пробуем модели по порядку (на Vertex AI не все могут быть включены)
     models_to_try = [GEMINI_MODEL] + [m for m in VERTEX_MODELS if m != GEMINI_MODEL]
     for model in models_to_try:
-        try:
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-                config={"max_output_tokens": max_tokens, "temperature": 0.3},
-            )
-            return response.text.strip()
-        except Exception as e:
-            if "NOT_FOUND" in str(e) or "not found" in str(e).lower():
-                continue  # Модель не доступна, пробуем следующую
-            print(f"Gemini error ({model}): {e}")
-            return None
-    print("Gemini: ни одна модель не доступна")
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config={"max_output_tokens": max_tokens, "temperature": 0.3},
+                )
+                text = response.text
+                if text:
+                    return text.strip()
+                # Пустой ответ — retry
+                print(f"Gemini ({model}): empty response, attempt {attempt + 1}/3")
+                time.sleep(1)
+                continue
+            except Exception as e:
+                if "NOT_FOUND" in str(e) or "not found" in str(e).lower():
+                    break  # Модель не доступна, пробуем следующую
+                print(f"Gemini error ({model}), attempt {attempt + 1}/3: {e}")
+                time.sleep(2)
+        else:
+            continue
+        continue
+    print("Gemini: все попытки исчерпаны")
     return None
 
 
