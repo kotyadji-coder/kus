@@ -516,20 +516,26 @@ class DietCalculator:
             ca_mg_day = round(ideal_weight * 50 / 50) * 50
             if ca_mg_day < 200:
                 ca_mg_day = 200
-            # 1 ч.л. молотой скорлупы ≈ 2 г ≈ 800 мг кальция
-            eggshell_tsp = max(0.5, round(ca_mg_day / 800 * 2) / 2)
-            if eggshell_tsp == int(eggshell_tsp):
-                tsp_text = f"{int(eggshell_tsp)} ч.л."
+            # Кальция цитрат: таблетки обычно 500 мг
+            tablets_500 = ca_mg_day / 500
+            if tablets_500 <= 0.5:
+                citrate_dose = "1/2 таблетки (500 мг)"
+            elif tablets_500 <= 1:
+                citrate_dose = "1 таблетка (500 мг)"
+            elif tablets_500 <= 1.5:
+                citrate_dose = "1.5 таблетки (500 мг)"
             else:
-                tsp_text = f"{eggshell_tsp} ч.л."
+                citrate_dose = f"{round(tablets_500)} таблетки (500 мг)"
             supps.append({
-                "name": "Кальций (яичная скорлупа или цитрат)",
-                "dosage": f"{tsp_text} в день",
+                "name": "Кальция цитрат",
+                "dosage": f"{ca_mg_day} мг в день",
                 "frequency": "Ежедневно, разделить на кормления",
                 "notes": (
-                    f"Обязательно при варёном рационе (нет костей). "
-                    f"Лучший вариант: молотая яичная скорлупа ({tsp_text} = ~{ca_mg_day} мг Ca). "
-                    f"Альтернатива: кальция цитрат {ca_mg_day} мг (аптека) — лучшая усвояемость."
+                    f"Обязателен при варёном рационе — без костей кальция критически мало. "
+                    f"Аптека: кальция цитрат {citrate_dose} в день (усваивается на 40-50%, "
+                    f"можно с едой и без). Замена: кальция глюконат или карбонат (давать с едой). "
+                    f"Ветеринарные добавки: Canina Calcium Citrate, 8in1 Excel Calcium, "
+                    f"Wolmar Pro Bio Calcium — содержат кальций + витамин D3 для лучшего усвоения."
                 ),
             })
 
