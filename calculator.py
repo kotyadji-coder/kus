@@ -510,16 +510,27 @@ class DietCalculator:
             "notes": f"С едой. Лососёвое масло или капсулы ({measure_hint}).",
         })
 
-        # Костная мука / скорлупа — при варке или плохом Ca:P
+        # Кальций — при варке или плохом Ca:P
         if dog.diet_type == "cooked" or ca_p_ratio < 1.1:
-            # 1 ч.л. костной муки ≈ 5 г
-            bone_meal_g = self._round_practical(ideal_weight * 0.5, 5)
-            bone_tsp = max(1, round(bone_meal_g / 5))
+            # ~50 мг кальция на 1 кг массы тела в день (NRC)
+            ca_mg_day = round(ideal_weight * 50 / 50) * 50
+            if ca_mg_day < 200:
+                ca_mg_day = 200
+            # 1 ч.л. молотой скорлупы ≈ 2 г ≈ 800 мг кальция
+            eggshell_tsp = max(0.5, round(ca_mg_day / 800 * 2) / 2)
+            if eggshell_tsp == int(eggshell_tsp):
+                tsp_text = f"{int(eggshell_tsp)} ч.л."
+            else:
+                tsp_text = f"{eggshell_tsp} ч.л."
             supps.append({
-                "name": "Костная мука",
-                "dosage": f"{bone_tsp} ч.л. в день",
-                "frequency": "Ежедневно, разделить на все кормления",
-                "notes": f"Обязательно при варёном рационе (без костей). ≈ {int(bone_meal_g)} г, разделить на все кормления.",
+                "name": "Кальций (яичная скорлупа или цитрат)",
+                "dosage": f"{tsp_text} в день",
+                "frequency": "Ежедневно, разделить на кормления",
+                "notes": (
+                    f"Обязательно при варёном рационе (нет костей). "
+                    f"Лучший вариант: молотая яичная скорлупа ({tsp_text} = ~{ca_mg_day} мг Ca). "
+                    f"Альтернатива: кальция цитрат {ca_mg_day} мг (аптека) — лучшая усвояемость."
+                ),
             })
 
         # Ламинария
