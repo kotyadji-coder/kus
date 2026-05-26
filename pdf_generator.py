@@ -28,7 +28,7 @@ def _generate_qr_b64(url: str) -> str:
     except Exception:
         return ""
 
-DIET_TYPE_LABELS = {"barf": "BARF (сырое)", "cooked": "Термообработка (варка)"}
+DIET_TYPE_LABELS = {"barf": "BARF (сырое)", "cooked": "Термообработка\u00a0(варка)"}
 CONDITION_LABELS = {"thin": "Недовес", "athletic": "Норма", "chubby": "Лёгкий перевес", "obese": "Ожирение"}
 ACTIVITY_LABELS = {"lazy": "Низкая", "moderate": "Средняя", "high": "Высокая", "puppy": "Щенок"}
 GROUP_LABELS = {
@@ -230,7 +230,7 @@ def generate_html(result: DietResult) -> str:
             g_display = f"{egg_count} шт./нед."
         else:
             g_display = f"{int(grams)} г"
-        distribution_rows += f'<div class="group-row"><span class="sw" style="background:{color}"></span><span class="nm">{label}</span><span class="g">{g_display}</span></div>\n'
+        distribution_rows += f'<div class="group-row"><span class="sw" style="background:{color};display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:6px;"></span><span class="nm">{label}</span> <span class="g" style="float:right;">{g_display}</span></div>\n'
         stack_spans += f'<span style="background:{color}; width:{pct:.1f}%"></span>'
 
     # Pie chart conic gradient
@@ -299,8 +299,16 @@ def generate_html(result: DietResult) -> str:
       </div>
     </div>'''
 
-    menu_page1_html = "\n".join(_menu_card(d) for d in menu_page1)
-    menu_page2_html = "\n".join(_menu_card(d) for d in menu_page2)
+    def _menu_table(days_list):
+        rows = []
+        for i in range(0, len(days_list), 2):
+            left = _menu_card(days_list[i])
+            right = _menu_card(days_list[i+1]) if i+1 < len(days_list) else ''
+            rows.append(f'<tr><td>{left}</td><td>{right}</td></tr>')
+        return '\n'.join(rows)
+
+    menu_page1_html = _menu_table(menu_page1)
+    menu_page2_html = _menu_table(menu_page2)
 
     # Week summary card
     total_week_grams = sum(
@@ -308,11 +316,11 @@ def generate_html(result: DietResult) -> str:
         for d in menu_days
     )
     week_summary = f'''<div class="day" style="background: var(--bg-soft); border-style: dashed;">
-      <div class="day-head"><div class="day-name" style="color:var(--ink);white-space:nowrap;">Итого за неделю</div></div>
-      <div style="display:grid; grid-template-columns: 1fr auto; gap: 6px; font-size: 9.5pt;">
-        <div style="color:var(--ink-soft);">Общий вес рациона</div><div style="font-weight:700;">≈ {total_week_grams/1000:.2f} кг</div>
-        <div style="color:var(--ink-soft);">Кормлений в день</div><div style="font-weight:700;">{result.meals_per_day}</div>
-      </div>
+      <div class="day-head"><div class="day-name" style="color:var(--ink);">Итого&nbsp;за&nbsp;неделю</div></div>
+      <table style="width:100%;font-size:9.5pt;border-collapse:collapse;">
+        <tr><td style="color:var(--ink-soft);padding:2px 0;">Общий вес рациона</td><td style="font-weight:700;text-align:right;padding:2px 0;">≈&nbsp;{total_week_grams/1000:.2f}&nbsp;кг</td></tr>
+        <tr><td style="color:var(--ink-soft);padding:2px 0;">Кормлений в день</td><td style="font-weight:700;text-align:right;padding:2px 0;">{result.meals_per_day}</td></tr>
+      </table>
     </div>'''
 
     # --- Shopping list ---
@@ -330,7 +338,7 @@ def generate_html(result: DietResult) -> str:
             shopping_by_group[g] = []
         shopping_by_group[g].append((pname, int(info["grams"]), info["product_id"]))
 
-    shopping_html = ""
+    shop_groups_list = []
     for group_key, items in shopping_by_group.items():
         css_cls = SHOP_GROUP_CSS.get(group_key, "eggs")
         group_label = GROUP_LABELS.get(group_key, group_key)
@@ -338,20 +346,26 @@ def generate_html(result: DietResult) -> str:
         for pname, grams, pid in sorted(items, key=lambda x: -x[1]):
             g_str = _fmt_egg_or_grams(grams, pid, pname)
             items_html += f'<div class="shop-item"><div class="check"></div><div class="nm">{pname}</div><div class="g">{g_str}</div></div>\n'
-        shopping_html += f'''<div class="shop-group {css_cls}">
+        shop_groups_list.append(f'''<div class="shop-group {css_cls}">
       <h4><span>{group_label}</span></h4>
       {items_html}
-    </div>\n'''
+    </div>''')
+
+    # Build 2-column table from shop groups
+    shopping_rows = ""
+    for i in range(0, len(shop_groups_list), 2):
+        left = shop_groups_list[i]
+        right = shop_groups_list[i+1] if i+1 < len(shop_groups_list) else ''
+        shopping_rows += f'<tr><td>{left}</td><td>{right}</td></tr>\n'
+    shopping_html = shopping_rows
 
     # --- Supplements ---
     supp_cards = ""
     for s in result.supplements:
         supp_cards += f'''<div class="supp">
       <div class="head">
-        <div>
-          <div class="name">{s['name']}</div>
-          <div class="freq">{s.get('frequency', '')}</div>
-        </div>
+        <span class="name">{s['name']}</span>
+        <span class="freq">{s.get('frequency', '')}</span>
       </div>
       <div class="dose">{s['dosage']}</div>
       <div class="note">{s.get('notes', '')}</div>
@@ -482,7 +496,6 @@ html, body {{
   padding: 18mm 16mm 14mm;
   box-sizing: border-box;
   box-shadow: 0 12px 32px -16px rgba(11,23,38,0.25);
-  overflow: hidden;
   page-break-after: always;
   break-after: page;
   zoom: var(--page-zoom, 1);
@@ -642,7 +655,7 @@ p {{ margin: 0; }}
   background: var(--accent);
   color: #fff;
   font-weight: 700;
-  font-size: 10pt;
+  font-size: 9.5pt;
   border-radius: 100px;
   white-space: nowrap;
 }}
@@ -696,17 +709,18 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 2 — Summary ================================================= */
 .metric-grid {{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4mm;
-  margin-bottom: 8mm;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3mm;
+  margin-bottom: 6mm;
 }}
-.metric {{ width: 22%; }}
 .metric {{
   background: var(--bg-soft);
   border: 1px solid var(--border-soft);
   border-radius: 12px;
-  padding: 5mm;
+  padding: 4mm;
+  width: 25%;
+  vertical-align: top;
 }}
 .metric .lbl {{
   font-size: 8pt;
@@ -727,12 +741,13 @@ p {{ margin: 0; }}
 .metric .sub {{ font-size: 8.5pt; color: var(--ink-light); margin-top: 2mm; }}
 
 .summary-grid {{
-  display: flex;
-  gap: 6mm;
-  margin-bottom: 6mm;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4mm 0;
+  margin-bottom: 5mm;
 }}
-.summary-grid > .group-table {{ flex: 1.4; min-width: 0; }}
-.summary-grid > div:last-child {{ flex: 1; min-width: 0; }}
+.summary-grid > tbody > tr > td:first-child {{ width: 58%; }}
+.summary-grid > tbody > tr > td:last-child {{ width: 42%; vertical-align: top; }}
 
 .group-table {{
   background: #fff;
@@ -743,16 +758,12 @@ p {{ margin: 0; }}
 .group-table h4 {{ margin-bottom: 4mm; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); }}
 
 .group-row {{
-  display: grid;
-  grid-template-columns: 16px 1fr auto;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0;
+  padding: 4px 0;
   border-bottom: 1px dashed var(--border-soft);
-  font-size: 10pt;
+  font-size: 9.5pt;
+  line-height: 1.4;
 }}
 .group-row:last-child {{ border-bottom: none; }}
-.group-row .sw {{ width: 10px; height: 10px; border-radius: 3px; }}
 .group-row .nm {{ color: var(--ink); }}
 .group-row .g {{ font-weight: 700; font-feature-settings: "tnum"; }}
 
@@ -802,20 +813,21 @@ p {{ margin: 0; }}
   background: var(--yellow-soft);
   border-left: 3px solid var(--accent);
   border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 9pt;
+  padding: 6px 10px;
+  font-size: 8.5pt;
   color: var(--ink);
   margin-bottom: 2mm;
+  line-height: 1.4;
   page-break-inside: avoid;
 }}
 
 /* ===== PAGES 3-4 — Weekly menu ========================================== */
 .menu-grid {{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3mm;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2mm;
 }}
-.menu-grid > .day {{ width: 48%; }}
+.menu-grid td {{ width: 50%; vertical-align: top; }}
 .day {{
   background: #fff;
   border: 1px solid var(--border-soft);
@@ -875,11 +887,11 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 5 — Shopping list =========================================== */
 .shop-grid {{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3mm;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2mm;
 }}
-.shop-group {{ width: 48%; }}
+.shop-grid td {{ width: 50%; vertical-align: top; }}
 .shop-group {{
   border-radius: 10px;
   padding: 4mm;
@@ -906,24 +918,23 @@ p {{ margin: 0; }}
 }}
 
 .shop-item {{
-  display: grid;
-  grid-template-columns: 12px 1fr auto;
-  align-items: center;
-  gap: 8px;
   padding: 3px 0;
   font-size: 9.5pt;
-  font-size: 10pt;
   border-bottom: 1px dashed rgba(11,23,38,0.08);
+  line-height: 1.4;
 }}
 .shop-item:last-child {{ border-bottom: none; }}
 .shop-item .check {{
-  width: 12px; height: 12px;
+  width: 11px; height: 11px;
   border: 1.5px solid var(--ink-soft);
   border-radius: 3px;
   background: rgba(255,255,255,0.6);
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
 }}
 .shop-item .nm {{ color: var(--ink); }}
-.shop-item .g {{ font-weight: 700; font-feature-settings: "tnum"; }}
+.shop-item .g {{ font-weight: 700; font-feature-settings: "tnum"; float: right; }}
 
 .shop-tip {{
   margin-top: 3mm;
@@ -941,40 +952,31 @@ p {{ margin: 0; }}
 
 /* ===== PAGE 6 — Supplements ============================================= */
 .supp-grid {{
-  display: flex;
-  flex-direction: column;
-  gap: 3mm;
+  margin: 0;
 }}
 .supp {{
   background: #fff;
   border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  padding: 4mm 5mm;
-  display: flex; flex-direction: row;
-  align-items: center;
-  gap: 4mm;
+  border-radius: 10px;
+  padding: 3.5mm 5mm;
+  margin-bottom: 2.5mm;
   page-break-inside: avoid;
   break-inside: avoid;
 }}
-.supp .head {{ display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }}
-.supp .head .name {{ font-size: 11pt; font-weight: 700; color: var(--ink); }}
-.supp .head .freq {{ font-size: 8pt; color: var(--ink-light); margin-top: 1px; }}
+.supp .head .name {{ font-size: 10.5pt; font-weight: 700; color: var(--ink); display: inline; }}
+.supp .head .freq {{ font-size: 8pt; color: var(--ink-light); display: inline; margin-left: 6px; }}
 .supp .dose {{
-  font-size: 16pt;
+  font-size: 13pt;
   font-weight: 800;
   color: var(--primary);
   letter-spacing: -0.03em;
   line-height: 1;
-  white-space: nowrap;
-  flex: 0 0 auto;
+  margin: 2mm 0 1mm;
 }}
-.supp .note {{ font-size: 9pt; color: var(--ink-soft); line-height: 1.4; flex: 1; min-width: 0; }}
-
-.supp.full {{ flex-direction: row; align-items: center; gap: 4mm; }}
-.supp.full .left {{ flex: 1; }}
+.supp .note {{ font-size: 8.5pt; color: var(--ink-soft); line-height: 1.4; }}
 
 /* ===== PAGE 7 — Transition timeline ===================================== */
-.timeline {{ position: relative; padding-left: 18mm; margin-top: 4mm; }}
+.timeline {{ position: relative; padding-left: 18mm; margin-top: 3mm; }}
 .timeline::before {{
   content: ""; position: absolute;
   left: 8mm; top: 4mm; bottom: 4mm;
@@ -982,11 +984,11 @@ p {{ margin: 0; }}
 }}
 .tl-step {{
   position: relative;
-  margin-bottom: 5mm;
+  margin-bottom: 3mm;
   background: #fff;
   border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  padding: 5mm 6mm;
+  border-radius: 10px;
+  padding: 3.5mm 5mm;
   page-break-inside: avoid;
   break-inside: avoid;
 }}
@@ -1018,22 +1020,22 @@ p {{ margin: 0; }}
 }}
 .tl-step.final .days-badge {{ background: var(--accent); }}
 .tl-step .step-name {{
-  font-size: 12pt;
+  font-size: 11pt;
   font-weight: 700;
   color: var(--ink);
   letter-spacing: -0.01em;
-  white-space: nowrap;
 }}
-.tl-step .step-text {{ font-size: 10pt; color: var(--ink-soft); line-height: 1.55; }}
+.tl-step .step-text {{ font-size: 9pt; color: var(--ink-soft); line-height: 1.45; }}
 
 .tl-warn {{
-  margin-top: 4mm;
+  margin-top: 3mm;
   background: #fee2e2;
   border-left: 3px solid var(--red);
   border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 9pt;
+  padding: 6px 10px;
+  font-size: 8.5pt;
   color: var(--ink);
+  line-height: 1.4;
   page-break-inside: avoid;
 }}
 
@@ -1105,6 +1107,7 @@ p {{ margin: 0; }}
   line-height: 1.35;
   color: var(--ink);
   vertical-align: top;
+  width: 50%;
 }}
 
 /* ===== AI Personalized Analysis (multi-page) ============================ */
@@ -1159,23 +1162,20 @@ p {{ margin: 0; }}
   padding-left: 14mm;
 }}
 .contact-grid {{
-  display: flex; gap: 4mm;
+  margin-bottom: 4mm;
 }}
-.contact-card {{ flex: 1; }}
-.contact-card {{
+.contact-grid table {{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3mm 0;
+}}
+.contact-grid td {{
   background: #fff;
   border: 1px solid var(--border-soft);
   border-radius: 12px;
-  padding: 6mm;
-  display: flex; flex-direction: column; gap: 4mm;
-  align-items: flex-start;
-}}
-.contact-card .ico {{
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5mm;
+  vertical-align: top;
+  width: 50%;
 }}
 .contact-card .label {{ font-size: 8.5pt; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }}
 .contact-card .val {{ font-size: 13pt; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }}
@@ -1226,7 +1226,6 @@ p {{ margin: 0; }}
     width: 210mm;
     height: 297mm;
     max-height: 297mm;
-    overflow: hidden;
     zoom: 1 !important;
     padding: 18mm 16mm 14mm;
     box-sizing: border-box;
@@ -1336,39 +1335,43 @@ p {{ margin: 0; }}
   <h2 class="section-title" style="margin-top: 4mm;">Что и сколько съедает {name} за день</h2>
   <p class="section-sub">{getattr(result, 'ai_intro', '') or f'Рассчитано на основе целевого веса {result.ideal_weight_kg} кг и {ACTIVITY_LABELS.get(dog.activity, "средней").lower()} активности. Поделено на {result.meals_per_day} кормления.{season_note}{pregnancy_note}'}</p>
 
-  <div class="metric-grid">
-    <div class="metric">
+  <table class="metric-grid">
+    <tr>
+    <td class="metric">
       <div class="lbl">Суточная норма</div>
       <div class="val">{int(result.daily_grams)}<span class="unit">г</span></div>
       <div class="sub">в {result.meals_per_day} порции</div>
-    </div>
-    <div class="metric">
+    </td>
+    <td class="metric">
       <div class="lbl">Калорийность</div>
       <div class="val">{int(result.mer_kcal)}<span class="unit">ккал</span></div>
-      <div class="sub">≈ {int(result.mer_kcal / result.ideal_weight_kg) if result.ideal_weight_kg > 0 else 0} ккал/кг</div>
-    </div>
-    <div class="metric">
+      <div class="sub">≈&nbsp;{int(result.mer_kcal / result.ideal_weight_kg) if result.ideal_weight_kg > 0 else 0} ккал/кг</div>
+    </td>
+    <td class="metric">
       <div class="lbl">Кормлений</div>
       <div class="val">{result.meals_per_day}<span class="unit">раза</span></div>
       <div class="sub">утро · вечер</div>
-    </div>
-    <div class="metric">
+    </td>
+    <td class="metric">
       <div class="lbl">Целевой вес</div>
       <div class="val">{result.ideal_weight_kg}<span class="unit">кг</span></div>
       <div class="sub">{f"−{weight_diff} кг" if weight_diff > 0 else f"+{abs(weight_diff)} кг" if weight_diff < 0 else "в норме"}</div>
-    </div>
-  </div>
+    </td>
+    </tr>
+  </table>
 
-  <div class="summary-grid">
-    <div class="group-table">
-      <h4>Распределение по группам · {int(total_grams)} г</h4>
-      <div class="stack">
-        {stack_spans}
+  <table class="summary-grid">
+    <tr>
+    <td>
+      <div class="group-table">
+        <h4>Распределение по группам · {int(total_grams)} г</h4>
+        <div class="stack">
+          {stack_spans}
+        </div>
+        {distribution_rows}
       </div>
-      {distribution_rows}
-    </div>
-
-    <div style="display:flex; flex-direction:column; gap:4mm;">
+    </td>
+    <td>
       <div class="pie-card">
         <div class="pie">
           <div class="center"><strong>{int(dominant_pct)}%</strong>{dominant_group}</div>
@@ -1377,8 +1380,9 @@ p {{ margin: 0; }}
           {DIET_TYPE_LABELS.get(dog.diet_type, dog.diet_type)}
         </div>
       </div>
-    </div>
-  </div>
+    </td>
+    </tr>
+  </table>
 
   <div class="warn-grid">
     {warnings_html}
@@ -1397,9 +1401,9 @@ p {{ margin: 0; }}
   <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 2mm;">Меню на неделю</h2>
   <p class="section-sub" style="margin-bottom: 4mm;">Каждый день — {result.meals_per_day} кормления. Вес продуктов указан до приготовления.</p>
 
-  <div class="menu-grid">
+  <table class="menu-grid">
     {menu_page1_html}
-  </div>
+  </table>
 
   {_page_foot(3, total_pages, doc_id)}
 </section>
@@ -1413,10 +1417,10 @@ p {{ margin: 0; }}
   <div class="eyebrow">{menu_page2[0].day_name if menu_page2 else ""} — {menu_page2[-1].day_name if menu_page2 else ""}</div>
   <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 2mm;">Меню на неделю</h2>
 
-  <div class="menu-grid">
+  <table class="menu-grid">
     {menu_page2_html}
-    {week_summary}
-  </div>
+    <tr><td colspan="2">{week_summary}</td></tr>
+  </table>
 
   {_page_foot(4, total_pages, doc_id)}
 </section>
@@ -1431,9 +1435,9 @@ p {{ margin: 0; }}
   <h2 class="section-title" style="margin-top: 4mm;">Список покупок на неделю</h2>
   <p class="section-sub">Распечатайте — и отмечайте по мере покупки. Все веса — на 7 дней для {name_g}.</p>
 
-  <div class="shop-grid">
+  <table class="shop-grid">
     {shopping_html}
-  </div>
+  </table>
 
   <div class="shop-tip">
     <div>
@@ -1553,12 +1557,13 @@ p {{ margin: 0; }}
       <tr>
         <td>⚠ Диарея или рвота более 24 часов</td>
         <td>⚠ Отказ от еды более суток</td>
-        <td>⚠ Кровь в стуле или рвоте</td>
       </tr>
       <tr>
+        <td>⚠ Кровь в стуле или рвоте</td>
         <td>⚠ Сильный зуд или отёк морды</td>
-        <td>⚠ Внезапная вялость, апатия</td>
-        <td></td>
+      </tr>
+      <tr>
+        <td colspan="2">⚠ Внезапная вялость, апатия</td>
       </tr>
     </table>
   </div>
@@ -1601,19 +1606,27 @@ p {{ margin: 0; }}
   <div class="eyebrow">Важно знать</div>
   <h2 class="section-title" style="margin-top: 4mm;">Несколько слов перед тем,<br/>как закроете PDF</h2>
 
-  <div style="background:#fff;border:1px solid var(--border-soft);border-radius:12px;padding:6mm;margin-bottom:6mm;">
-    <p style="font-size:10pt;line-height:1.6;color:var(--ink);font-style:italic;">Данный рацион рассчитан на основе общепринятых ветеринарных норм <strong>NRC&nbsp;2006</strong>, <strong>FEDIAF</strong> и <strong>AAFCO</strong>. Он не заменяет очную консультацию ветеринарного врача. При наличии хронических заболеваний обязательно согласуйте рацион с лечащим ветеринаром.</p>
+  <div style="background:#fff;border:1px solid var(--border-soft);border-radius:12px;padding:5mm;margin-bottom:5mm;">
+    <p style="font-size:9.5pt;line-height:1.55;color:var(--ink);font-style:italic;">Данный рацион рассчитан на основе общепринятых ветеринарных норм <strong>NRC&nbsp;2006</strong>, <strong>FEDIAF</strong> и <strong>AAFCO</strong>. Он не заменяет очную консультацию ветеринарного врача. При наличии хронических заболеваний обязательно согласуйте рацион с лечащим ветеринаром.</p>
   </div>
 
-  <h3 style="font-size: 12pt; margin-bottom: 4mm;">Связь с нами</h3>
-  <div style="margin-bottom:6mm;">
-    <p style="font-size:11pt;margin-bottom:2mm;"><strong>Telegram:</strong> @doggifood_bot</p>
-    <p style="font-size:11pt;"><strong>Сайт:</strong> kus.dogfine.ru</p>
-  </div>
+  <h3 style="font-size: 11pt; margin-bottom: 3mm;">Связь с нами</h3>
+  <table style="width:100%;border-collapse:separate;border-spacing:3mm 0;margin-bottom:5mm;">
+    <tr>
+      <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:4mm 5mm;width:50%;vertical-align:top;">
+        <div style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Telegram</div>
+        <div style="font-size:12pt;font-weight:700;color:var(--ink);">@doggifood_bot</div>
+      </td>
+      <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:4mm 5mm;width:50%;vertical-align:top;">
+        <div style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Сайт</div>
+        <div style="font-size:12pt;font-weight:700;color:var(--ink);">kus.dogfine.ru</div>
+      </td>
+    </tr>
+  </table>
 
   <div class="support-strip">
-    <h3>7 дней бесплатной поддержки</h3>
-    <p>Стул не такой? {name} {verb_refused}? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
+    <h3 style="font-size:14pt;">7 дней бесплатной поддержки</h3>
+    <p style="font-size:9.5pt;">Стул не такой? {name} {verb_refused}? Не уверены, нормальна ли реакция? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
   </div>
 
   <div class="bye">
