@@ -29,8 +29,8 @@ def _generate_qr_b64(url: str) -> str:
         return ""
 
 DIET_TYPE_LABELS = {"barf": "BARF (сырое)", "cooked": "Термообработка\u00a0(варка)"}
-CONDITION_LABELS = {"thin": "Недовес", "athletic": "Норма", "chubby": "Лёгкий перевес", "obese": "Ожирение"}
-ACTIVITY_LABELS = {"lazy": "Низкая", "moderate": "Средняя", "high": "Высокая", "puppy": "Щенок"}
+CONDITION_LABELS = {"thin": "недовес", "athletic": "норма", "chubby": "лёгкий перевес", "obese": "ожирение"}
+ACTIVITY_LABELS = {"lazy": "низкая", "moderate": "средняя", "high": "высокая", "puppy": "щенок"}
 GROUP_LABELS = {
     "muscle_meat": "Мясо мускульное",
     "raw_meaty_bones": "Сырые мясные кости",
