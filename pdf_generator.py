@@ -674,25 +674,28 @@ p {{ margin: 0; }}
 .cover-photo img {{
   width: 100%; height: auto; display: block;
 }}
-.cover-photo .float-card {{
+.float-card {{
   position: absolute;
   left: 8mm; bottom: 8mm;
   background: rgba(255,255,255,0.96);
   backdrop-filter: blur(8px);
   border-radius: 12px;
   padding: 10px 14px;
-  display: flex; align-items: center; gap: 10px;
   box-shadow: 0 12px 30px -12px rgba(11,23,38,0.25);
 }}
-.cover-photo .float-card .ico {{
+.float-card .ico {{
   width: 32px; height: 32px;
   border-radius: 8px;
   background: var(--primary-soft);
   color: var(--primary);
-  display: flex; align-items: center; justify-content: center;
+  display: inline-block;
+  text-align: center;
+  line-height: 32px;
+  vertical-align: middle;
+  margin-right: 10px;
 }}
-.cover-photo .float-card .label {{ font-size: 8pt; color: var(--ink-soft); }}
-.cover-photo .float-card .val {{ font-size: 11pt; font-weight: 700; color: var(--ink); }}
+.float-card .label {{ font-size: 8pt; color: var(--ink-soft); display: inline-block; vertical-align: middle; }}
+.float-card .val {{ font-size: 11pt; font-weight: 700; color: var(--ink); display: inline-block; vertical-align: middle; margin-left: 4px; }}
 
 .cover-footer {{
   position: absolute;
@@ -1304,8 +1307,10 @@ p {{ margin: 0; }}
       </div>
     </div>
 
-    <div class="cover-photo">
-      {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
+    <div style="position:relative;">
+      <div class="cover-photo">
+        {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
+      </div>
       <div class="float-card">
         <div class="ico">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
