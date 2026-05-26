@@ -675,7 +675,7 @@ p {{ margin: 0; }}
   font-size: 10pt;
 }}
 .cover-photo img {{
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width: 100%; height: 100%; object-fit: contain; display: block;
 }}
 .cover-photo .float-card {{
   position: absolute;
