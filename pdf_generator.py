@@ -58,10 +58,27 @@ FORBIDDEN_FOODS = [
 
 def _fmt_age(age_months: int) -> str:
     if age_months < 12:
-        return f"{age_months} мес."
+        m = age_months
+        if m == 1:
+            return "1 месяц"
+        elif m in (2, 3, 4):
+            return f"{m} месяца"
+        return f"{m} месяцев"
     years = age_months // 12
     months = age_months % 12
-    return f"{years} г." + (f" {months} мес." if months else "")
+    if years == 1:
+        y_str = "1 год"
+    elif years in (2, 3, 4):
+        y_str = f"{years} года"
+    else:
+        y_str = f"{years} лет"
+    if not months:
+        return y_str
+    if months == 1:
+        return f"{y_str} 1 месяц"
+    elif months in (2, 3, 4):
+        return f"{y_str} {months} месяца"
+    return f"{y_str} {months} месяцев"
 
 
 def _fmt_grams(grams: float) -> str:
@@ -210,7 +227,27 @@ def generate_html(result: DietResult) -> str:
             ai_blocks_page1 = ai_analysis_html
             ai_blocks_page2 = ""
 
-    total_pages = (12 if ai_blocks_page2 else 11) if has_ai_analysis else 10
+    has_ai_notes = bool(getattr(result, 'ai_notes', ''))
+    # Pages: cover(1) + summary(2) + menu1(3) + menu2(4) + shop(5) + supps(6) + transition(7) + feeding(8)
+    # + [personal_recs(9)] + memo + [ai_analysis*1-2] + disclaimer
+    pn = 8  # feeding guide is page 8
+    pn_notes = 0
+    if has_ai_notes:
+        pn += 1
+        pn_notes = pn
+    pn_memo = pn + 1
+    pn_ai1 = 0
+    pn_ai2 = 0
+    if has_ai_analysis:
+        pn_ai1 = pn_memo + 1
+        if ai_blocks_page2:
+            pn_ai2 = pn_ai1 + 1
+            pn_last = pn_ai2 + 1
+        else:
+            pn_last = pn_ai1 + 1
+    else:
+        pn_last = pn_memo + 1
+    total_pages = pn_last
 
     # --- Distribution rows + stacked bar ---
     dist_items = [(g, grams) for g, grams in result.distribution.items() if grams > 0]
@@ -379,10 +416,7 @@ def generate_html(result: DietResult) -> str:
         is_final = (i == len(result.transition_plan) - 1) or (i == len([s for s in result.transition_plan if "note" not in s]) - 1)
         final_cls = " final" if is_final else ""
         transition_steps += f'''<div class="tl-step{final_cls}">
-      <div class="row1">
-        <span class="days-badge">Дни {step['days']}</span>
-        <span class="step-name">{step['title']}</span>
-      </div>
+      <div class="row1"><span class="days-badge">Дни&nbsp;{step['days']}</span> <span class="step-name">{step['title']}</span></div>
       <div class="step-text">{step['desc']}</div>
     </div>\n'''
 
@@ -1005,6 +1039,7 @@ p {{ margin: 0; }}
 .tl-step.final::before {{ background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }}
 .tl-step .row1 {{
   margin-bottom: 1.5mm;
+  white-space: nowrap;
 }}
 .tl-step .days-badge {{
   font-size: 8.5pt;
@@ -1525,13 +1560,28 @@ p {{ margin: 0; }}
   '<strong>Порядок кормления:</strong> Достаньте порцию из холодильника за 20 минут до кормления → добавьте овощи, масло и добавки → подайте. Мясо должно быть комнатной температуры, не ледяным.' + chr(10) +
   '</div></div>'}
 
-  {'<div style="margin-top: 5mm; background: var(--primary-softer); border-left: 3px solid var(--primary); border-radius: 8px; padding: 4mm 5mm; font-size: 9pt; line-height: 1.5; color: var(--ink);"><div style="font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 2mm;">Персональные рекомендации</div>' + getattr(result, 'ai_notes', '').replace(chr(10), '<br/>') + '</div>' if getattr(result, 'ai_notes', '') else ''}
-
   {_page_foot(8, total_pages, doc_id)}
 </section>
 
+{f"""<!-- ============================================================ -->
+<!-- PAGE 9 — PERSONAL RECOMMENDATIONS                             -->
 <!-- ============================================================ -->
-<!-- PAGE 9 — REMINDERS                                            -->
+<section class="page">
+  {_page_head(f"<strong>{dog.name}</strong> · Персональные рекомендации")}
+
+  <div class="eyebrow">Специально для {name_g}</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Персональные рекомендации</h2>
+  <p class="section-sub">На основе породы, веса, кондиции и типа кормления {name_g}.</p>
+
+  <div style="font-size: 11pt; line-height: 1.7; color: var(--ink);">
+    {getattr(result, 'ai_notes', '').replace(chr(10), '<br/>')}
+  </div>
+
+  {_page_foot(pn_notes, total_pages, doc_id)}
+</section>""" if getattr(result, 'ai_notes', '') else ''}
+
+<!-- ============================================================ -->
+<!-- REMINDERS                                                      -->
 <!-- ============================================================ -->
 <section class="page">
   {_page_head("<strong>Памятка владельцу</strong>")}
@@ -1573,11 +1623,11 @@ p {{ margin: 0; }}
     </table>
   </div>
 
-  {_page_foot(9, total_pages, doc_id)}
+  {_page_foot(pn_memo, total_pages, doc_id)}
 </section>
 
 {f"""<!-- ============================================================ -->
-<!-- PAGE 10 — AI ANALYSIS (part 1)                                -->
+<!-- AI ANALYSIS (part 1)                                          -->
 <!-- ============================================================ -->
 <section class="page ai-analysis">
   {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ")}
@@ -1588,22 +1638,22 @@ p {{ margin: 0; }}
 
   {ai_blocks_page1}
 
-  {_page_foot(10, total_pages, doc_id)}
+  {_page_foot(pn_ai1, total_pages, doc_id)}
 </section>""" if has_ai_analysis else ''}
 
 {f"""<!-- ============================================================ -->
-<!-- PAGE 11 — AI ANALYSIS (part 2)                                -->
+<!-- AI ANALYSIS (part 2)                                          -->
 <!-- ============================================================ -->
 <section class="page ai-analysis">
   {_page_head(f"<strong>{dog.name}</strong> · Персональный анализ · продолжение")}
 
   {ai_blocks_page2}
 
-  {_page_foot(11, total_pages, doc_id)}
+  {_page_foot(pn_ai2, total_pages, doc_id)}
 </section>""" if has_ai_analysis and ai_blocks_page2 else ''}
 
 <!-- ============================================================ -->
-<!-- PAGE {11 if has_ai_analysis else 10} — DISCLAIMER + CONTACTS  -->
+<!-- DISCLAIMER + CONTACTS                                          -->
 <!-- ============================================================ -->
 <section class="page last-page">
   {_page_head("<strong>Дисклеймер и контакты</strong>")}
@@ -1639,7 +1689,7 @@ p {{ margin: 0; }}
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
-  {_page_foot(total_pages, total_pages, doc_id)}
+  {_page_foot(pn_last, total_pages, doc_id)}
 </section>
 
 </body>
