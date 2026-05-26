@@ -165,14 +165,15 @@ def _gender_note(sex: str) -> str:
 def generate_natural_intro(dog_name: str, breed: str, summary: str, sex: str = "male") -> str:
     """Персональное вступление для PDF с натуральным рационом."""
     gender_note = _gender_note(sex)
-    result = _ask(f"""Напиши короткое (3-4 предложения) вступление для PDF-документа с натуральным рационом собаки.
+    result = _ask(f"""Напиши вступление (4-5 полных предложений, минимум 200 символов) для PDF-документа с натуральным рационом собаки.
 Обращайся к владельцу на «вы» (с маленькой буквы, НЕ «Вы»). Упомяни кличку и породу. Объясни, почему рацион подобран именно так.
 {gender_note}
 Тон: дружелюбный, профессиональный. Без emoji. Не представляйся диетологом/ветеринаром.
+Напиши ПОЛНЫЙ текст, не обрезай, не сокращай.
 
 Кличка: {dog_name}
 Порода: {breed}
-Данные: {summary}""", max_tokens=500)
+Данные: {summary}""", max_tokens=800)
     return result or ""
 
 
@@ -392,21 +393,27 @@ def generate_cover_image(breed: str, dog_name: str) -> str | None:
     if not client:
         return None
 
-    # Use AI to describe breed appearance for accurate image generation
-    breed_desc = _ask(f"""Describe the dog breed "{breed}" in English for an image generation prompt.
-Include: typical coat color, body size/shape, distinctive features (ear shape, face, tail).
-Write ONE sentence, max 30 words. Example: "golden retriever, large athletic dog with golden wavy fur, floppy ears, friendly face, feathered tail"
-Just the description, nothing else.""", max_tokens=100)
+    # Use AI to get English breed name and detailed visual description
+    breed_desc = _ask(f"""I need to generate an image of a "{breed}" dog breed.
+
+Step 1: Write the EXACT English breed name (e.g. "Бигль" = "Beagle", "Лабрадор-ретривер" = "Labrador Retriever").
+Step 2: Describe this breed's TYPICAL appearance in detail.
+
+Format your answer as ONE paragraph, like this example:
+"Beagle, a small to medium-sized hound dog with a short tricolor coat (black, brown, and white), long droopy ears, large brown or hazel eyes, square muzzle, medium-length tail carried high, muscular compact body"
+
+Include: exact English breed name, size, coat type/color/length, ear shape, eye color, muzzle shape, tail, body type.
+Write ONLY the description, nothing else. Max 50 words.""", max_tokens=200)
 
     if not breed_desc or len(breed_desc) < 10:
         breed_desc = f"{breed} dog"
 
     prompt = (
-        f"A friendly happy {breed_desc.strip().rstrip('.')}, "
-        f"sitting and looking at camera, "
-        f"3D Pixar-style illustration, warm soft lighting, clean white background, "
-        f"cute expressive eyes, high quality render, "
-        f"no text, no humans, no props, professional pet portrait"
+        f"A single friendly happy {breed_desc.strip().rstrip('.')}, "
+        f"sitting and looking at camera with a gentle smile, "
+        f"3D Pixar-style illustration, warm soft studio lighting, clean solid white background, "
+        f"cute big expressive eyes, detailed fur texture, high quality 3D render, "
+        f"no text, no watermark, no humans, no other animals, no props, centered composition"
     )
 
     try:

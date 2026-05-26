@@ -345,7 +345,7 @@ def generate_html(result: DietResult) -> str:
         items_html = ""
         for pname, grams, pid in sorted(items, key=lambda x: -x[1]):
             g_str = _fmt_egg_or_grams(grams, pid, pname)
-            items_html += f'<div class="shop-item"><div class="check"></div><div class="nm">{pname}</div><div class="g">{g_str}</div></div>\n'
+            items_html += f'<table class="shop-item"><tr><td style="width:14px;"><div class="check"></div></td><td class="nm">{pname}</td><td class="g">{g_str}</td></tr></table>\n'
         shop_groups_list.append(f'''<div class="shop-group {css_cls}">
       <h4><span>{group_label}</span></h4>
       {items_html}
@@ -918,23 +918,21 @@ p {{ margin: 0; }}
 }}
 
 .shop-item {{
-  padding: 3px 0;
+  width: 100%;
+  border-collapse: collapse;
   font-size: 9.5pt;
   border-bottom: 1px dashed rgba(11,23,38,0.08);
-  line-height: 1.4;
 }}
-.shop-item:last-child {{ border-bottom: none; }}
+.shop-item:last-of-type {{ border-bottom: none; }}
+.shop-item td {{ padding: 2px 0; vertical-align: middle; }}
 .shop-item .check {{
   width: 11px; height: 11px;
   border: 1.5px solid var(--ink-soft);
   border-radius: 3px;
   background: rgba(255,255,255,0.6);
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 6px;
 }}
 .shop-item .nm {{ color: var(--ink); }}
-.shop-item .g {{ font-weight: 700; font-feature-settings: "tnum"; float: right; }}
+.shop-item .g {{ font-weight: 700; font-feature-settings: "tnum"; text-align: right; white-space: nowrap; }}
 
 .shop-tip {{
   margin-top: 3mm;
@@ -1006,24 +1004,28 @@ p {{ margin: 0; }}
 }}
 .tl-step.final::before {{ background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }}
 .tl-step .row1 {{
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 2mm;
+  margin-bottom: 1.5mm;
 }}
 .tl-step .days-badge {{
-  font-size: 9pt;
+  font-size: 8.5pt;
   font-weight: 700;
   color: #fff;
   background: var(--primary);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
   letter-spacing: -0.01em;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
 }}
 .tl-step.final .days-badge {{ background: var(--accent); }}
 .tl-step .step-name {{
-  font-size: 11pt;
+  font-size: 10.5pt;
   font-weight: 700;
   color: var(--ink);
   letter-spacing: -0.01em;
+  display: inline;
+  vertical-align: middle;
 }}
 .tl-step .step-text {{ font-size: 9pt; color: var(--ink-soft); line-height: 1.45; }}
 
@@ -1040,10 +1042,10 @@ p {{ margin: 0; }}
 }}
 
 /* ===== PAGE 8 — Reminders =============================================== */
-.memo-section {{ margin-bottom: 3mm; }}
+.memo-section {{ margin-bottom: 5mm; }}
 .memo-section h3 {{
-  font-size: 10pt;
-  margin-bottom: 2mm;
+  font-size: 12pt;
+  margin-bottom: 3mm;
   display: inline-block;
 }}
 .memo-section h3 .pill {{
@@ -1067,9 +1069,9 @@ p {{ margin: 0; }}
   background: #fff;
   border: 1px solid var(--border-soft);
   border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 8pt;
-  line-height: 1.35;
+  padding: 5px 10px;
+  font-size: 9pt;
+  line-height: 1.4;
   vertical-align: top;
   width: 50%;
 }}
@@ -1084,9 +1086,9 @@ p {{ margin: 0; }}
 .check-table td {{
   background: var(--green-soft);
   border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 8pt;
-  line-height: 1.35;
+  padding: 5px 10px;
+  font-size: 9pt;
+  line-height: 1.4;
   width: 50%;
   vertical-align: top;
 }}
@@ -1102,9 +1104,9 @@ p {{ margin: 0; }}
   background: #fff7ed;
   border: 1px solid #fed7aa;
   border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 8pt;
-  line-height: 1.35;
+  padding: 5px 10px;
+  font-size: 9pt;
+  line-height: 1.4;
   color: var(--ink);
   vertical-align: top;
   width: 50%;
@@ -1294,7 +1296,7 @@ p {{ margin: 0; }}
       <div class="cover-stats">
         <div class="stat"><strong>{age_text}</strong><div style="font-size:9pt;color:var(--ink-light);">возраст</div></div>
         <div class="divider"></div>
-        <div class="stat"><strong>{dog.weight_kg} кг</strong><div style="font-size:9pt;color:var(--ink-light);">текущий вес</div></div>
+        <div class="stat"><strong>{dog.weight_kg}&nbsp;кг</strong><div style="font-size:9pt;color:var(--ink-light);">текущий&nbsp;вес</div></div>
         <div class="divider"></div>
         <div class="stat"><strong>{sex_text}</strong><div style="font-size:9pt;color:var(--ink-light);">пол</div></div>
         <div class="divider"></div>
@@ -1533,7 +1535,7 @@ p {{ margin: 0; }}
   {_page_head("<strong>Памятка владельцу</strong>")}
 
   <div class="eyebrow">Памятка владельцу</div>
-  <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 2mm;">Запомнить и повесить на холодильник</h2>
+  <h2 class="section-title" style="margin-top: 3mm; margin-bottom: 5mm;">Запомнить и повесить на холодильник</h2>
 
   <div class="memo-section">
     <h3>Что НЕЛЬЗЯ давать собакам <span class="pill red">опасно</span></h3>
@@ -1563,7 +1565,8 @@ p {{ margin: 0; }}
         <td>⚠ Сильный зуд или отёк морды</td>
       </tr>
       <tr>
-        <td colspan="2">⚠ Внезапная вялость, апатия</td>
+        <td>⚠ Внезапная вялость, апатия</td>
+        <td>⚠ Затруднённое дыхание или судороги</td>
       </tr>
     </table>
   </div>
