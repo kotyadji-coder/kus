@@ -57,6 +57,9 @@ def _ask(prompt: str, max_tokens: int = 1000) -> str | None:
     client = _get_client()
     if not client:
         return None
+    # Gemini 2.5 flash uses thinking tokens that count against max_output_tokens
+    # Multiply by 8x to ensure enough room for actual text
+    effective_max = max_tokens * 8
     # Пробуем модели по порядку (на Vertex AI не все могут быть включены)
     models_to_try = [GEMINI_MODEL] + [m for m in VERTEX_MODELS if m != GEMINI_MODEL]
     for model in models_to_try:
@@ -65,7 +68,7 @@ def _ask(prompt: str, max_tokens: int = 1000) -> str | None:
                 response = client.models.generate_content(
                     model=model,
                     contents=prompt,
-                    config={"max_output_tokens": max_tokens, "temperature": 0.3},
+                    config={"max_output_tokens": effective_max, "temperature": 0.3},
                 )
                 text = response.text
                 if text:
