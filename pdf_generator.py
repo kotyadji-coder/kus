@@ -345,7 +345,7 @@ def generate_html(result: DietResult) -> str:
         items_html = ""
         for pname, grams, pid in sorted(items, key=lambda x: -x[1]):
             g_str = _fmt_egg_or_grams(grams, pid, pname)
-            items_html += f'<table class="shop-item"><tr><td style="width:14px;"><div class="check"></div></td><td class="nm">{pname}</td><td class="g">{g_str}</td></tr></table>\n'
+            items_html += f'<table class="shop-item"><tr><td style="width:14px;padding-right:8px;"><div class="check"></div></td><td class="nm">{pname}</td><td class="g" style="padding-left:8px;">{g_str}</td></tr></table>\n'
         shop_groups_list.append(f'''<div class="shop-group {css_cls}">
       <h4><span>{group_label}</span></h4>
       {items_html}
@@ -1042,10 +1042,10 @@ p {{ margin: 0; }}
 }}
 
 /* ===== PAGE 8 — Reminders =============================================== */
-.memo-section {{ margin-bottom: 5mm; }}
+.memo-section {{ margin-bottom: 6mm; }}
 .memo-section h3 {{
-  font-size: 12pt;
-  margin-bottom: 3mm;
+  font-size: 13pt;
+  margin-bottom: 4mm;
   display: inline-block;
 }}
 .memo-section h3 .pill {{
@@ -1069,9 +1069,9 @@ p {{ margin: 0; }}
   background: #fff;
   border: 1px solid var(--border-soft);
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  padding: 6px 10px;
+  font-size: 9.5pt;
+  line-height: 1.45;
   vertical-align: top;
   width: 50%;
 }}
@@ -1086,9 +1086,9 @@ p {{ margin: 0; }}
 .check-table td {{
   background: var(--green-soft);
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  padding: 6px 10px;
+  font-size: 9.5pt;
+  line-height: 1.45;
   width: 50%;
   vertical-align: top;
 }}
@@ -1104,9 +1104,9 @@ p {{ margin: 0; }}
   background: #fff7ed;
   border: 1px solid #fed7aa;
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 9pt;
-  line-height: 1.4;
+  padding: 6px 10px;
+  font-size: 9.5pt;
+  line-height: 1.45;
   color: var(--ink);
   vertical-align: top;
   width: 50%;
