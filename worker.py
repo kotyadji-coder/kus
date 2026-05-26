@@ -114,7 +114,10 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
     result.ai_notes = await asyncio.to_thread(generate_natural_product_notes,
         {"name": dog.name, "breed": dog.breed, "weight_kg": dog.weight_kg,
          "sex": dog.sex, "condition": dog.condition, "activity": dog.activity,
-         "diagnoses": diagnoses, "stop_products": stop_products},
+         "diagnoses": diagnoses, "stop_products": stop_products,
+         "daily_grams": result.daily_grams, "ideal_weight_kg": result.ideal_weight_kg,
+         "meals_per_day": result.meals_per_day, "diet_type": dog.diet_type,
+         "ca_p_ratio": result.ca_p_ratio},
         result.warnings
     )
 

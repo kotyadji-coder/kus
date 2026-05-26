@@ -331,12 +331,12 @@ class DietCalculator:
             dist["vegetables"] = 0.18
 
         result = {k: self._round_g(v * daily_grams) for k, v in dist.items()}
-        # Компенсируем потери от округления — добавляем разницу к мясу
+        # Компенсируем потери от округления — корректируем мясо
         rounded_total = sum(result.values())
         target = self._round_g(daily_grams)
         diff = target - rounded_total
         if diff != 0 and result.get("muscle_meat", 0) > 0:
-            result["muscle_meat"] = self._round_g(result["muscle_meat"] + diff)
+            result["muscle_meat"] += diff
         return result
 
     # --- Подбор конкретных продуктов ---
