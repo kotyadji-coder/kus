@@ -391,6 +391,47 @@ def generate_dry_food_conclusion(budget_foods: list, mid_foods: list, premium_fo
 
 COVER_CACHE_DIR = os.path.join(os.path.dirname(__file__), "data", "cover_cache")
 
+# Топ-50 пород: русское название → английское (для Imagen)
+_BREED_EN = {
+    "лабрадор-ретривер": "Labrador Retriever", "немецкая овчарка": "German Shepherd",
+    "золотистый ретривер": "Golden Retriever", "бигль": "Beagle",
+    "французский бульдог": "French Bulldog", "бульдог": "English Bulldog",
+    "пудель": "Poodle", "ротвейлер": "Rottweiler",
+    "немецкий курцхаар": "German Shorthaired Pointer", "такса": "Dachshund",
+    "вельш-корги пемброк": "Pembroke Welsh Corgi", "корги": "Pembroke Welsh Corgi",
+    "австралийская овчарка": "Australian Shepherd", "йоркширский терьер": "Yorkshire Terrier",
+    "йорк": "Yorkshire Terrier", "кавалер-кинг-чарльз-спаниель": "Cavalier King Charles Spaniel",
+    "доберман": "Doberman Pinscher", "боксёр": "Boxer", "боксер": "Boxer",
+    "цвергшнауцер": "Miniature Schnauzer", "кане-корсо": "Cane Corso",
+    "сибирский хаски": "Siberian Husky", "хаски": "Siberian Husky",
+    "бернский зенненхунд": "Bernese Mountain Dog", "померанский шпиц": "Pomeranian",
+    "шпиц": "Pomeranian", "ши-тцу": "Shih Tzu",
+    "бостон-терьер": "Boston Terrier", "мопс": "Pug",
+    "английский спрингер-спаниель": "English Springer Spaniel",
+    "бриттани": "Brittany", "кокер-спаниель": "Cocker Spaniel",
+    "шетландская овчарка": "Shetland Sheepdog", "шелти": "Shetland Sheepdog",
+    "мальтезе": "Maltese", "мальтийская болонка": "Maltese",
+    "веймаранер": "Weimaraner", "бельгийская овчарка малинуа": "Belgian Malinois",
+    "малинуа": "Belgian Malinois", "колли": "Collie",
+    "бордер-колли": "Border Collie", "бассет-хаунд": "Basset Hound",
+    "родезийский риджбек": "Rhodesian Ridgeback", "далматин": "Dalmatian",
+    "акита-ину": "Akita", "акита": "Akita",
+    "сиба-ину": "Shiba Inu", "шиба-ину": "Shiba Inu",
+    "вест-хайленд-уайт-терьер": "West Highland White Terrier",
+    "чихуахуа": "Chihuahua", "джек-рассел-терьер": "Jack Russell Terrier",
+    "стаффордширский бультерьер": "Staffordshire Bull Terrier",
+    "американский стаффордширский терьер": "American Staffordshire Terrier",
+    "стафф": "American Staffordshire Terrier",
+    "самоед": "Samoyed", "самоедская собака": "Samoyed",
+    "аляскинский маламут": "Alaskan Malamute", "маламут": "Alaskan Malamute",
+    "ирландский сеттер": "Irish Setter", "английский сеттер": "English Setter",
+    "русский той": "Russian Toy Terrier", "той-терьер": "Russian Toy Terrier",
+    "среднеазиатская овчарка": "Central Asian Shepherd", "алабай": "Central Asian Shepherd",
+    "кавказская овчарка": "Caucasian Shepherd",
+    "метис": "Mixed breed dog", "дворняга": "Mixed breed dog",
+    "дворняжка": "Mixed breed dog",
+}
+
 
 def _breed_cache_key(breed: str) -> str:
     """Превращает название породы в имя файла: 'Лабрадор-ретривер' -> 'лабрадор-ретривер.png'."""
@@ -421,23 +462,11 @@ def generate_cover_image(breed: str, dog_name: str) -> str | None:
     if not client:
         return None
 
-    # Use AI to get English breed name and detailed visual description
-    breed_desc = _ask(f"""I need to generate an image of a "{breed}" dog breed.
-
-Step 1: Write the EXACT English breed name (e.g. "Бигль" = "Beagle", "Лабрадор-ретривер" = "Labrador Retriever").
-Step 2: Describe this breed's TYPICAL appearance in detail.
-
-Format your answer as ONE paragraph, like this example:
-"Beagle, a small to medium-sized hound dog with a short tricolor coat (black, brown, and white), long droopy ears, large brown or hazel eyes, square muzzle, medium-length tail carried high, muscular compact body"
-
-Include: exact English breed name, size, coat type/color/length, ear shape, eye color, muzzle shape, tail, body type.
-Write ONLY the description, nothing else. Max 50 words.""", max_tokens=200)
-
-    if not breed_desc or len(breed_desc) < 10:
-        breed_desc = f"{breed} dog"
+    # Английское название породы — Imagen понимает породы напрямую
+    breed_en = _BREED_EN.get(breed.lower().strip(), breed)
 
     prompt = (
-        f"A single friendly happy {breed_desc.strip().rstrip('.')}, "
+        f"A single friendly happy {breed_en} dog, "
         f"sitting and looking at camera with a gentle smile, "
         f"3D Pixar-style illustration, warm soft studio lighting, clean solid white background, "
         f"cute big expressive eyes, detailed fur texture, high quality 3D render, "
