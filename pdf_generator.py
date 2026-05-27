@@ -388,13 +388,23 @@ def generate_html(result: DietResult) -> str:
       {items_html}
     </div>''')
 
-    # Build 2-column table from shop groups
-    shopping_rows = ""
-    for i in range(0, len(shop_groups_list), 2):
-        left = shop_groups_list[i]
-        right = shop_groups_list[i+1] if i+1 < len(shop_groups_list) else ''
-        shopping_rows += f'<tr><td>{left}</td><td>{right}</td></tr>\n'
-    shopping_html = shopping_rows
+    # Build 2-column table: balance columns by distributing groups alternately
+    # Count items per group for balancing
+    col_left = []
+    col_right = []
+    count_left = 0
+    count_right = 0
+    for g in shop_groups_list:
+        item_count = g.count('class="shop-item"')
+        if count_left <= count_right:
+            col_left.append(g)
+            count_left += item_count
+        else:
+            col_right.append(g)
+            count_right += item_count
+    left_html = '\n'.join(col_left)
+    right_html = '\n'.join(col_right)
+    shopping_html = f'<tr><td>{left_html}</td><td>{right_html}</td></tr>\n'
 
     # --- Supplements ---
     supp_cards = ""
@@ -1481,8 +1491,8 @@ p {{ margin: 0; }}
 
   <div class="shop-tip">
     <div>
-      <strong>{'Стоимость рациона: ≈' + str(int(round(result.cost_per_day / 50) * 50)) + ' руб/день · ≈' + str(int(round(result.cost_per_month / 500) * 500)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет от Кусь'}</strong>
-      {(result.meal_prep.get('tip', '') + ' Цены ориентировочные — зависят от региона и магазина.') if result.cost_per_day > 0 else 'Разделите мясо на порции сразу после покупки и заморозьте. Размораживайте в холодильнике 12 часов — не на столе.'}
+      <strong>{'≈' + str(int(round(result.cost_per_day / 50) * 50)) + ' руб/день · ≈' + str(int(round(result.cost_per_month / 500) * 500)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет'}</strong>
+      {'Цены ориентировочные — зависят от региона.' if result.cost_per_day > 0 else 'Разделите мясо на порции и заморозьте.'}
     </div>
   </div>
 
