@@ -396,8 +396,8 @@ PRICE_LABELS = {
     "premium": ("Лучшее из лучшего", "от 800 руб/кг"),
 }
 
-CONDITION_LABELS_DRY = {"thin": "Недовес", "athletic": "Норма", "chubby": "Лёгкий перевес", "obese": "Ожирение"}
-ACTIVITY_LABELS_DRY = {"lazy": "Низкая", "moderate": "Средняя", "high": "Высокая", "puppy": "Щенок"}
+CONDITION_LABELS_DRY = {"thin": "недовес", "athletic": "норма", "chubby": "лёгкий перевес", "obese": "ожирение"}
+ACTIVITY_LABELS_DRY = {"lazy": "низкая", "moderate": "средняя", "high": "высокая", "puppy": "щенок"}
 
 _SVG_PAW_DRY = '<svg width="{w}" height="{w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg>'
 _SVG_CHECK_DRY = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
@@ -423,7 +423,8 @@ def _dry_page_foot(num: int, total: int, doc_id: str) -> str:
 def generate_dry_food_html(result: DryFoodResult) -> str:
     dog = result.dog
     today = date.today().strftime("%d.%m.%Y")
-    age_text = f"{dog.age_months // 12} г." if dog.age_months >= 12 else f"{dog.age_months} мес."
+    from pdf_generator import _fmt_age
+    age_text = _fmt_age(dog.age_months)
     sex_text = "мальчик" if dog.sex == "male" else "девочка"
     doc_id = f"Подбор {dog.name}"
 
@@ -495,15 +496,17 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         border_style = ' style="border: 1.5px solid var(--primary);"' if is_best_overall else ''
 
         return f'''<div class="food"{border_style}>
-      <div>
+      <table class="food-layout"><tr>
+      <td>
         <div class="rank"><span class="hash">#</span>{rank}</div>
         <div class="rank-meta">{rank_meta}</div>
-      </div>
-      <div class="bag-photo">
-        <svg width="44" height="52"><use href="#bag-icon"/></svg>
-        <div class="ph-label">фото пачки</div>
-      </div>
-      <div class="body">
+      </td>
+      <td>
+        <div class="bag-photo">
+          <svg width="44" height="52"><use href="#bag-icon"/></svg>
+        </div>
+      </td>
+      <td><div class="body">
         <div class="top">
           <div>
             <div class="brand">{brand}</div>
@@ -516,11 +519,13 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         </div>
 
         <div class="meat-scale">
-          <div class="meat-bar">
-            <div class="meat-fill" style="--pct: {min(meat_pct, 100)}%;"></div>
+          <table class="meat-scale-inner"><tr>
+          <td><div class="meat-bar">
+            <div class="meat-fill" style="width: {min(meat_pct, 100)}%;"></div>
             <div class="meat-label">% мяса</div>
-          </div>
-          <div class="meat-pct">{meat_pct}<span class="small">%</span></div>
+          </div></td>
+          <td><div class="meat-pct">{meat_pct}<span class="small">%</span></div></td>
+          </tr></table>
         </div>
 
         {nutri_html}
@@ -528,7 +533,8 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         <div class="proscons">{proscons}</div>
         {ai_html}
         {buy_html}
-      </div>
+      </div></td>
+      </tr></table>
     </div>'''
 
     # --- Category page builder ---
@@ -641,7 +647,7 @@ html, body {{ margin:0; padding:0; background:#e6e9ef; font-family:"Golos Text",
 .toolbar button {{ font-family:inherit; font-size:13px; font-weight:600; padding:10px 16px; border:none; border-radius:8px; background:var(--primary); color:#fff; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }}
 .toolbar .hint {{ font-size:11px; color:var(--ink-light); align-self:center; padding:0 6px; }}
 
-.page {{ width:210mm; min-height:297mm; margin:16px auto; background:#fff; position:relative; padding:12mm 14mm 10mm; box-shadow:0 12px 32px -16px rgba(11,23,38,0.25); overflow:hidden; page-break-after:always; break-after:page; zoom:var(--page-zoom,1); }}
+.page {{ width:210mm; min-height:297mm; margin:16px auto; background:#fff; position:relative; padding:12mm 14mm 10mm; box-shadow:0 12px 32px -16px rgba(11,23,38,0.25); page-break-after:always; break-after:page; zoom:var(--page-zoom,1); }}
 .page:last-of-type {{ page-break-after:auto; }}
 .page-foot {{ position:absolute; left:0; right:0; bottom:8mm; text-align:center; font-size:8pt; color:var(--ink-light); letter-spacing:0.05em; }}
 .page-foot strong {{ color:var(--ink-soft); font-weight:600; }}
@@ -681,22 +687,23 @@ p {{ margin:0; }}
 .cover-stats .divider {{ width:1px; height:24px; background:var(--border); }}
 .cover-badge {{ display:inline-flex; align-items:center; gap:8px; margin-top:8mm; padding:8px 16px; background:var(--accent); color:#fff; font-weight:700; font-size:10pt; border-radius:100px; }}
 .cover-badge .dot {{ width:8px; height:8px; border-radius:50%; background:#fff; }}
-.cover-photo {{ margin-top:10mm; border-radius:14px; overflow:hidden; height:50mm; background:linear-gradient(135deg,var(--primary-soft),var(--bg-warm)); position:relative; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:10pt; }}
-.cover-photo img {{ width:100%; height:100%; object-fit:cover; display:block; }}
-.cover-photo .float-card {{ position:absolute; left:8mm; bottom:8mm; background:rgba(255,255,255,0.96); backdrop-filter:blur(8px); border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:10px; box-shadow:0 12px 30px -12px rgba(11,23,38,0.25); }}
-.cover-photo .float-card .ico {{ width:32px; height:32px; border-radius:8px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; }}
-.cover-photo .float-card .label {{ font-size:8pt; color:var(--ink-soft); }}
-.cover-photo .float-card .val {{ font-size:11pt; font-weight:700; color:var(--ink); }}
+.cover-photo {{ margin-top:10mm; border-radius:14px; overflow:hidden; max-height:50mm; background:linear-gradient(135deg,var(--primary-soft),var(--bg-warm)); position:relative; color:var(--ink-light); font-size:10pt; }}
+.cover-photo img {{ width:100%; height:auto; display:block; }}
+.float-card {{ position:absolute; left:8mm; bottom:8mm; background:rgba(255,255,255,0.96); border-radius:12px; padding:10px 14px; box-shadow:0 12px 30px -12px rgba(11,23,38,0.25); }}
+.float-card .ico {{ width:32px; height:32px; border-radius:8px; background:var(--primary-soft); color:var(--primary); display:inline-block; text-align:center; line-height:32px; vertical-align:middle; margin-right:10px; }}
+.float-card .label {{ font-size:8pt; color:var(--ink-soft); display:inline-block; vertical-align:middle; }}
+.float-card .val {{ font-size:11pt; font-weight:700; color:var(--ink); display:inline-block; vertical-align:middle; margin-left:4px; }}
 .cover-footer {{ position:absolute; left:16mm; right:16mm; bottom:12mm; display:flex; justify-content:space-between; align-items:center; font-size:8.5pt; color:var(--ink-light); border-top:1px solid var(--border-soft); padding-top:5mm; }}
 
 /* Profile */
-.profile-grid {{ display:grid; grid-template-columns:1.05fr 1fr; gap:5mm; margin-bottom:7mm; }}
+.profile-grid {{ width:100%; border-collapse:separate; border-spacing:4mm 0; margin-bottom:7mm; }}
+.profile-grid td {{ width:50%; vertical-align:top; }}
 .profile-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:5mm 6mm; }}
 .profile-card .hd {{ display:flex; align-items:center; gap:10px; margin-bottom:4mm; padding-bottom:4mm; border-bottom:1px solid var(--border-soft); }}
 .profile-card .hd .av {{ width:44px; height:44px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
 .profile-card .hd .nm {{ font-size:14pt; font-weight:800; letter-spacing:-0.02em; color:var(--ink); }}
 .profile-card .hd .sub {{ font-size:9pt; color:var(--ink-light); margin-top:2px; }}
-.profile-row {{ display:grid; grid-template-columns:1fr auto; align-items:center; padding:6px 0; border-bottom:1px dashed var(--border-soft); font-size:10pt; }}
+.profile-row {{ padding:6px 0; border-bottom:1px dashed var(--border-soft); font-size:10pt; }}
 .profile-row:last-child {{ border-bottom:none; }}
 .profile-row .k {{ color:var(--ink-soft); }}
 .profile-row .v {{ font-weight:700; color:var(--ink); }}
@@ -711,7 +718,8 @@ p {{ margin:0; }}
 .ai-quote .signoff {{ font-size:9pt; color:rgba(255,255,255,0.7); display:flex; align-items:center; gap:8px; }}
 .ai-quote .signoff .dot {{ width:6px; height:6px; border-radius:50%; background:var(--accent); }}
 
-.steps-grid {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; }}
+.steps-grid {{ width:100%; border-collapse:separate; border-spacing:3mm 0; }}
+.steps-grid td {{ width:33%; vertical-align:top; }}
 .step {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:5mm; position:relative; }}
 .step .num {{ position:absolute; top:4mm; right:5mm; font-size:22pt; font-weight:800; color:var(--primary-soft); letter-spacing:-0.03em; line-height:1; }}
 .step .ico {{ width:36px; height:36px; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:4mm; }}
@@ -719,7 +727,7 @@ p {{ margin:0; }}
 .step .txt {{ font-size:9.5pt; color:var(--ink-soft); line-height:1.5; }}
 .step .txt strong {{ color:var(--ink); font-weight:700; }}
 
-.cat-strip {{ margin-top:6mm; display:grid; grid-template-columns:repeat(3,1fr); gap:3mm; }}
+.cat-strip {{ margin-top:6mm; width:100%; border-collapse:separate; border-spacing:2mm 0; }}
 .cat-pill {{ display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; font-size:9.5pt; font-weight:600; color:var(--ink); }}
 .cat-pill.budget {{ background:#eef2f7; }}
 .cat-pill.middle {{ background:var(--primary-soft); color:var(--primary-dark); }}
@@ -744,7 +752,11 @@ p {{ margin:0; }}
 
 /* Food card */
 .foods {{ display:flex; flex-direction:column; gap:2mm; }}
-.food {{ background:#fff; border:1px solid var(--border); border-radius:10px; padding:2.5mm 4mm 3mm; display:grid; grid-template-columns:9mm 16mm 1fr; gap:3mm; page-break-inside:avoid; break-inside:avoid; position:relative; overflow:hidden; }}
+.food {{ background:#fff; border:1px solid var(--border); border-radius:10px; padding:2.5mm 4mm 3mm; page-break-inside:avoid; break-inside:avoid; position:relative; }}
+.food-layout {{ width:100%; border-collapse:collapse; }}
+.food-layout td {{ vertical-align:top; padding:0 1.5mm; }}
+.food-layout td:first-child {{ width:9mm; }}
+.food-layout td:nth-child(2) {{ width:16mm; }}
 .food .rank {{ font-size:22pt; font-weight:800; color:var(--primary); letter-spacing:-0.05em; line-height:0.9; font-feature-settings:"tnum"; }}
 .food .rank .hash {{ font-size:11pt; font-weight:700; color:var(--primary-soft); vertical-align:super; margin-right:-2px; }}
 .food .rank-meta {{ font-size:6.5pt; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-light); margin-top:2mm; line-height:1.2; }}
@@ -764,9 +776,11 @@ p {{ margin:0; }}
 .badge.blue {{ background:var(--primary-soft); color:var(--primary); }}
 .badge.amber {{ background:var(--accent-soft); color:var(--accent-deep); }}
 
-.meat-scale {{ margin:1.5mm 0; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }}
+.meat-scale {{ margin:1.5mm 0; }}
+.meat-scale-inner {{ width:100%; border-collapse:collapse; }}
+.meat-scale-inner td:last-child {{ width:30px; text-align:right; padding-left:8px; }}
 .meat-scale .meat-bar {{ position:relative; height:6mm; background:var(--bg-soft); border:1px solid var(--border-soft); border-radius:6px; overflow:hidden; }}
-.meat-scale .meat-fill {{ position:absolute; inset:0; width:var(--pct,50%); background:linear-gradient(90deg,var(--meat-from) 0%,var(--meat-to) 100%); border-radius:6px 0 0 6px; }}
+.meat-scale .meat-fill {{ position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,var(--meat-from) 0%,var(--meat-to) 100%); border-radius:6px 0 0 6px; }}
 .meat-scale .meat-fill::after {{ content:""; position:absolute; right:0; top:0; bottom:0; width:3px; background:#fff; box-shadow:1px 0 0 rgba(11,23,38,0.06); }}
 .meat-scale .meat-label {{ position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:7pt; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#fff; text-shadow:0 1px 0 rgba(11,23,38,0.2); z-index:1; }}
 .meat-scale .meat-pct {{ font-size:14pt; font-weight:800; letter-spacing:-0.03em; color:var(--primary); font-feature-settings:"tnum"; line-height:1; }}
@@ -780,7 +794,7 @@ p {{ margin:0; }}
 .ingredients {{ font-size:7.5pt; color:var(--ink-soft); line-height:1.4; font-style:italic; margin-bottom:1.5mm; padding-left:7px; border-left:2px solid var(--border); }}
 .ingredients strong {{ font-style:normal; font-weight:700; color:var(--ink); }}
 
-.proscons {{ display:grid; grid-template-columns:1fr 1fr; gap:0.5mm 4mm; margin-bottom:1.5mm; }}
+.proscons {{ margin-bottom:1.5mm; }}
 .pc {{ display:flex; align-items:flex-start; gap:5px; font-size:7.5pt; line-height:1.3; color:var(--ink); }}
 .pc .ic {{ flex:0 0 auto; width:11px; height:11px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-top:1px; }}
 .pc.pro .ic {{ background:var(--green-soft); color:var(--green); }}
@@ -820,7 +834,8 @@ p {{ margin:0; }}
 
 /* Transition */
 .transition-strip {{ margin-bottom:6mm; background:#fff; border:1px solid var(--border-soft); border-radius:16px; padding:6mm 7mm; }}
-.transition-track {{ display:grid; grid-template-columns:repeat(4,1fr); gap:2mm; margin-bottom:5mm; }}
+.transition-track {{ width:100%; border-collapse:separate; border-spacing:2mm 0; margin-bottom:5mm; }}
+.transition-track td {{ width:25%; vertical-align:top; }}
 .tr-step-bar {{ display:flex; flex-direction:column; align-items:stretch; gap:2mm; }}
 .tr-step-bar .days {{ font-size:9pt; font-weight:700; color:var(--ink); display:flex; align-items:baseline; gap:6px; }}
 .tr-step-bar .days .num {{ font-size:20pt; font-weight:800; color:var(--primary); letter-spacing:-0.04em; line-height:1; font-feature-settings:"tnum"; }}
@@ -833,7 +848,7 @@ p {{ margin:0; }}
 .tr-legend .sw.old {{ background:repeating-linear-gradient(135deg,#cbd5e1 0 4px,#b8c4d4 4px 8px); }}
 .tr-legend .sw.new {{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); }}
 
-.tips-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:4mm; }}
+.tips-grid {{ width:100%; border-collapse:separate; border-spacing:3mm; }}
 .tip {{ background:#fff; border:1px solid var(--border-soft); border-radius:12px; padding:5mm 6mm; display:flex; gap:12px; align-items:flex-start; }}
 .tip .ic {{ flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
 .tip.warn .ic {{ background:var(--accent-soft); color:var(--accent-deep); }}
@@ -846,7 +861,7 @@ p {{ margin:0; }}
 .disclaimer-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:8mm; margin-bottom:6mm; position:relative; }}
 .disclaimer-card .quote {{ position:absolute; top:-8px; left:6mm; font-size:36pt; font-weight:800; color:var(--primary); line-height:1; }}
 .disclaimer-card p {{ font-size:10.5pt; line-height:1.6; color:var(--ink); font-style:italic; padding-left:14mm; }}
-.contact-grid {{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:4mm; }}
+.contact-grid {{ width:100%; border-collapse:separate; border-spacing:3mm 0; }}
 .contact-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:12px; padding:6mm; display:flex; flex-direction:column; gap:4mm; align-items:flex-start; }}
 .contact-card .ico {{ width:44px; height:44px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
 .contact-card .label {{ font-size:8.5pt; color:var(--ink-light); text-transform:uppercase; letter-spacing:0.1em; font-weight:600; }}
@@ -861,7 +876,7 @@ p {{ margin:0; }}
 @media print {{
   html,body {{ background:#fff; }}
   .toolbar {{ display:none !important; }}
-  .page {{ margin:0; box-shadow:none; width:210mm; min-height:297mm; zoom:1 !important; padding:12mm 14mm 10mm; }}
+  .page {{ margin:0; box-shadow:none; width:210mm; min-height:297mm; max-height:297mm; zoom:1 !important; padding:12mm 14mm 10mm; }}
   .page:last-of-type {{ page-break-after:auto; }}
   .food {{ page-break-inside:avoid; break-inside:avoid; }}
   .cover-photo {{ print-color-adjust:exact; -webkit-print-color-adjust:exact; }}
@@ -941,13 +956,15 @@ p {{ margin:0; }}
         <span class="cover-badge"><span class="dot"></span>{total_foods} лучших кормов · 3 ценовые категории</span>
       </div>
     </div>
-    <div class="cover-photo">
-      {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
+    <div style="position:relative;">
+      <div class="cover-photo">
+        {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
+      </div>
       <div class="float-card">
         <div class="ico">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
         </div>
-        <div>
+        <div style="display:inline-block;vertical-align:middle;">
           <div class="label">Отобрано из</div>
           <div class="val">112 кормов</div>
         </div>
@@ -969,8 +986,8 @@ p {{ margin:0; }}
   <h2 class="section-title" style="margin-top: 4mm;">Почему именно эти корма для {name_g}</h2>
   <p class="section-sub">Мы не продаём корма. Мы анализируем составы по открытым данным производителей и подбираем под параметры конкретной собаки.</p>
 
-  <div class="profile-grid">
-    <div class="profile-card">
+  <table class="profile-grid">
+    <tr><td><div class="profile-card">
       <div class="hd">
         <div class="av">{_SVG_PAW_DRY.format(w=22)}</div>
         <div>
@@ -978,48 +995,51 @@ p {{ margin:0; }}
           <div class="sub">Профиль собаки</div>
         </div>
       </div>
-      <div class="profile-row"><span class="k">Порода</span><span class="v">{dog.breed}</span></div>
-      <div class="profile-row"><span class="k">Возраст</span><span class="v">{age_text}</span></div>
-      <div class="profile-row"><span class="k">Вес</span><span class="v">{dog.weight_kg} кг</span></div>
-      <div class="profile-row"><span class="k">Кондиция</span><span class="v">{condition_text} {condition_chip}</span></div>
-      <div class="profile-row"><span class="k">Активность</span><span class="v">{ACTIVITY_LABELS_DRY.get(dog.activity, dog.activity)}</span></div>
-      <div class="profile-row"><span class="k">Стоп-продукты</span><span class="v">{stop_text} {stop_chip}</span></div>
-    </div>
-
-    <div class="ai-quote">
+      <div class="profile-row"><span class="k">Порода</span><span class="v" style="float:right;">{dog.breed}</span></div>
+      <div class="profile-row"><span class="k">Возраст</span><span class="v" style="float:right;">{age_text}</span></div>
+      <div class="profile-row"><span class="k">Вес</span><span class="v" style="float:right;">{dog.weight_kg} кг</span></div>
+      <div class="profile-row"><span class="k">Кондиция</span><span class="v" style="float:right;">{condition_text} {condition_chip}</span></div>
+      <div class="profile-row"><span class="k">Активность</span><span class="v" style="float:right;">{ACTIVITY_LABELS_DRY.get(dog.activity, dog.activity)}</span></div>
+      <div class="profile-row"><span class="k">Стоп-продукты</span><span class="v" style="float:right;">{stop_text} {stop_chip}</span></div>
+    </div></td>
+    <td><div class="ai-quote">
       <span class="ai-tag">{_SVG_STAR} Разбор от AI-ассистента</span>
       <p>{getattr(result, 'ai_intro', '') or f'Для {name_g} мы подобрали корма' + (' <strong>без ' + ", ".join(decline(s, "gent") for s in dog.stop_products) + '</strong>' if dog.stop_products else '') + f' с учётом {CONDITION_LABELS_DRY.get(dog.condition, "текущей")} кондиции. Все составы разобраны по реальным ингредиентам — вы видите, за что платите.'}</p>
       <div class="signoff"><span class="dot"></span> сгенерировано на основе профиля {name_g}</div>
-    </div>
-  </div>
+    </div></td>
+    </tr>
+  </table>
 
   <h3 style="font-size: 12pt; margin-bottom: 4mm;">Как мы подбирали</h3>
-  <div class="steps-grid">
-    <div class="step">
+  <table class="steps-grid">
+    <tr><td><div class="step">
       <div class="num">01</div>
       <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg></div>
       <div class="ttl">Фильтр по параметрам</div>
       <div class="txt">Отсеяли корма по возрасту, весу, размеру породы и стоп-продуктам {name_g}.</div>
-    </div>
-    <div class="step">
+    </div></td>
+    <td><div class="step">
       <div class="num">02</div>
       <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
       <div class="ttl">Разбор состава</div>
       <div class="txt">Считаем <strong>% реального мяса</strong>, оцениваем источники.</div>
-    </div>
-    <div class="step">
+    </div></td>
+    <td><div class="step">
       <div class="num">03</div>
       <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 8l-4.2 4 1 5.8L12 15l-4.8 2.8 1-5.8L4 8l5.6-0.4z"/></svg></div>
       <div class="ttl">ТОП-3 в каждой категории</div>
       <div class="txt">По <strong>цене за кг</strong> разделили на бюджет, среднее и премиум.</div>
-    </div>
-  </div>
+    </div></td>
+    </tr>
+  </table>
 
-  <div class="cat-strip">
-    <div class="cat-pill budget"><span class="swatch"></span> Честный бюджет <span class="cnt">до 400 ₽/кг · стр. 3</span></div>
-    <div class="cat-pill middle"><span class="swatch"></span> Золотая середина <span class="cnt">400–800 ₽/кг · стр. 4</span></div>
-    <div class="cat-pill premium"><span class="swatch"></span> Лучшее из лучшего <span class="cnt">от 800 ₽/кг · стр. 5</span></div>
-  </div>
+  <table class="cat-strip">
+    <tr>
+    <td><div class="cat-pill budget"><span class="swatch"></span> Честный бюджет <span class="cnt">до 400 ₽/кг</span></div></td>
+    <td><div class="cat-pill middle"><span class="swatch"></span> Золотая середина <span class="cnt">400–800 ₽/кг</span></div></td>
+    <td><div class="cat-pill premium"><span class="swatch"></span> Лучшее из лучшего <span class="cnt">от 800 ₽/кг</span></div></td>
+    </tr>
+  </table>
 
   {_dry_page_foot(2, total_pages, doc_id)}
 </section>
@@ -1061,52 +1081,53 @@ p {{ margin:0; }}
   <p class="section-sub">Резкая смена → диарея и зуд на ровном месте. Идите по схеме — это всего одна неделя.</p>
 
   <div class="transition-strip">
-    <div class="transition-track">
-      <div class="tr-step-bar">
+    <table class="transition-track">
+      <tr><td><div class="tr-step-bar">
         <div class="days"><span class="num">1–2</span><span class="lbl">дни</span></div>
         <div class="tr-mix"><div class="old" style="flex:75;">75%</div><div class="new" style="flex:25;">25%</div></div>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Привыкание. Стул может стать мягче.</div>
-      </div>
-      <div class="tr-step-bar">
+      </div></td>
+      <td><div class="tr-step-bar">
         <div class="days"><span class="num">3–4</span><span class="lbl">дни</span></div>
         <div class="tr-mix"><div class="old" style="flex:50;">50%</div><div class="new" style="flex:50;">50%</div></div>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Половина на половину. Следите за стулом.</div>
-      </div>
-      <div class="tr-step-bar">
+      </div></td>
+      <td><div class="tr-step-bar">
         <div class="days"><span class="num">5–6</span><span class="lbl">дни</span></div>
         <div class="tr-mix"><div class="old" style="flex:25;">25%</div><div class="new" style="flex:75;">75%</div></div>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Новый корм — основа.</div>
-      </div>
-      <div class="tr-step-bar">
+      </div></td>
+      <td><div class="tr-step-bar">
         <div class="days"><span class="num">7+</span><span class="lbl">дни</span></div>
         <div class="tr-mix"><div class="new" style="flex:100;">100%</div></div>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Полный переход.</div>
-      </div>
-    </div>
+      </div></td>
+      </tr>
+    </table>
     <div class="tr-legend">
       <span><span class="sw old"></span> Старый корм</span>
       <span><span class="sw new"></span> Новый корм</span>
     </div>
   </div>
 
-  <div class="tips-grid">
-    <div class="tip warn">
+  <table class="tips-grid">
+    <tr><td><div class="tip warn">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
       <div><h4>Если диарея — вернитесь на шаг назад</h4><p>Уменьшите долю нового корма и задержитесь на 2–3 дня. Если стул не нормализовался <strong>за 48 часов</strong> — пишите в Telegram-бот.</p></div>
-    </div>
-    <div class="tip">
+    </div></td>
+    <td><div class="tip">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
       <div><h4>Как понять, что порция правильная</h4><p>Рёбра <strong>прощупываются, но не торчат</strong>. Талия видна сверху. Взвешивайте {name_a} раз в 2 недели.</p></div>
-    </div>
-    <div class="tip">
+    </div></td></tr>
+    <tr><td><div class="tip">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
       <div><h4>Кормите по графику</h4><p>Два раза в день в одно и то же время. Между кормлениями — только вода.</p></div>
-    </div>
-    <div class="tip">
+    </div></td>
+    <td><div class="tip">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-2 16H7z"/><path d="M9 4V2h6v2"/></svg></div>
       <div><h4>Свежая вода — всегда</h4><p>На каждые 100 г корма — <strong>200–300 мл воды</strong>. Меняйте воду 2 раза в день.</p></div>
-    </div>
-  </div>
+    </div></td></tr>
+  </table>
 
   {_dry_page_foot(7, total_pages, doc_id)}
 </section>
@@ -1124,16 +1145,18 @@ p {{ margin:0; }}
   </div>
 
   <h3 style="font-size: 12pt; margin-bottom: 4mm;">Связь с нами</h3>
-  <div class="contact-grid">
-    <div class="contact-card">
-      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg></div>
-      <div><div class="label">Telegram-бот</div><div class="val">@doggifood_bot</div></div>
-    </div>
-    <div class="contact-card">
-      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
-      <div><div class="label">Сайт</div><div class="val">kus.dogfine.ru</div></div>
-    </div>
-  </div>
+  <table class="contact-grid">
+    <tr>
+    <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:5mm;vertical-align:top;">
+      <div class="label" style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Telegram-бот</div>
+      <div style="font-size:12pt;font-weight:700;color:var(--ink);">@doggifood_bot</div>
+    </td>
+    <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:5mm;vertical-align:top;">
+      <div class="label" style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Сайт</div>
+      <div style="font-size:12pt;font-weight:700;color:var(--ink);">kus.dogfine.ru</div>
+    </td>
+    </tr>
+  </table>
 
   <div class="support-strip">
     <div>
