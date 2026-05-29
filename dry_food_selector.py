@@ -923,12 +923,6 @@ p {{ margin: 0; }}
 }}
 
 /* Profile — table wrapper for WeasyPrint */
-.profile-grid {{
-  display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 5mm;
-  margin-bottom: 7mm;
-}}
 .profile-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 4mm 0; margin-bottom: 7mm; }}
 .profile-grid-t td {{ width: 50%; vertical-align: top; }}
 .profile-card {{
@@ -1017,8 +1011,6 @@ p {{ margin: 0; }}
 
 /* Steps — table wrapper for WeasyPrint */
 .steps-grid {{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 4mm;
 }}
 .steps-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm 0; }}
@@ -1054,9 +1046,6 @@ p {{ margin: 0; }}
 /* Cat strip — table wrapper for WeasyPrint */
 .cat-strip {{
   margin-top: 6mm;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3mm;
 }}
 .cat-strip-t {{ margin-top: 6mm; width: 100%; border-collapse: separate; border-spacing: 2mm 0; }}
 .cat-strip-t td {{ vertical-align: top; }}
@@ -1539,9 +1528,6 @@ p {{ margin: 0; }}
   padding: 6mm 7mm;
 }}
 .transition-track {{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2mm;
   margin-bottom: 5mm;
 }}
 .transition-track-t {{ width: 100%; border-collapse: separate; border-spacing: 2mm 0; margin-bottom: 5mm; }}
@@ -1614,11 +1600,6 @@ p {{ margin: 0; }}
 .tr-legend .sw.new {{ background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }}
 
 /* Tips — table wrapper for WeasyPrint */
-.tips-grid {{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4mm;
-}}
 .tips-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm; }}
 .tips-grid-t td {{ vertical-align: top; }}
 .tip {{
@@ -1668,11 +1649,6 @@ p {{ margin: 0; }}
 }}
 
 /* Contact grid — table wrapper for WeasyPrint */
-.contact-grid {{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4mm;
-}}
 .contact-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm 0; }}
 .contact-grid-t td {{ vertical-align: top; }}
 .contact-card {{
