@@ -519,7 +519,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
       </td>
       <td>
         <div class="bag-photo">
-          <svg width="44" height="52"><use href="#bag-icon"/></svg>
+          <svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>
         </div>
       </td>
       <td><div class="body">
@@ -721,7 +721,7 @@ html, body {{
   margin: 16px auto;
   background: #fff;
   position: relative;
-  padding: 12mm 14mm 10mm;
+  padding: 12mm 14mm 16mm;
   box-shadow: 0 12px 32px -16px rgba(11,23,38,0.25);
   page-break-after: always;
   break-after: page;
@@ -740,26 +740,27 @@ html, body {{
 .page-foot strong {{ color: var(--ink-soft); font-weight: 600; }}
 
 .page-head {{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 4mm;
   padding-bottom: 3mm;
   border-bottom: 1px solid var(--border-soft);
 }}
-.page-head .logo {{ display: inline-flex; align-items: center; gap: 8px; }}
+.page-head .meta {{ float: right; }}
+.page-head .logo {{ display: inline-block; }}
 .page-head .logo .mark {{
   width: 26px; height: 26px;
   border-radius: 8px;
   background: var(--primary);
   color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-block; text-align: center; line-height: 26px;
+  vertical-align: middle; margin-right: 6px;
 }}
+.page-head .logo .mark svg {{ vertical-align: middle; }}
 .page-head .logo .name {{
   font-weight: 800;
   font-size: 16px;
   color: var(--primary);
   letter-spacing: -0.02em;
+  vertical-align: middle;
 }}
 .page-head .meta {{
   font-size: 9pt;
@@ -870,9 +871,7 @@ p {{ margin: 0; }}
 .cover-stats .divider {{ width: 1px; height: 24px; background: var(--border); }}
 
 .cover-badge {{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-block;
   margin-top: 8mm;
   padding: 8px 16px;
   background: var(--accent);
@@ -881,26 +880,29 @@ p {{ margin: 0; }}
   font-size: 10pt;
   border-radius: 100px;
   letter-spacing: -0.005em;
+  white-space: nowrap;
 }}
-.cover-badge .dot {{ width: 8px; height: 8px; border-radius: 50%; background: #fff; }}
+.cover-badge .dot {{ display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fff; vertical-align: middle; margin-right: 6px; }}
 
 /* Cover photo — WeasyPrint adapted */
-.cover-photo-wrap {{ position: relative; margin-top: 10mm; }}
 .cover-photo {{
+  margin-top: 10mm;
   border-radius: 14px;
-  max-height: 55mm;
-  overflow: hidden;
+  min-height: 55mm;
   background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm));
   position: relative;
 }}
-.cover-photo img {{ width: 100%; height: auto; display: block; }}
+.cover-photo img {{ width: 100%; height: auto; display: block; border-radius: 14px; max-height: 55mm; }}
 .float-card {{
-  position: absolute;
-  left: 8mm; bottom: 8mm;
-  background: rgba(255,255,255,0.96);
+  display: inline-block;
+  margin-top: -12mm;
+  margin-left: 8mm;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border-soft);
   border-radius: 12px;
   padding: 10px 14px;
-  box-shadow: 0 12px 30px -12px rgba(11,23,38,0.25);
+  box-shadow: 0 4px 12px -4px rgba(11,23,38,0.15);
 }}
 .float-card .ico {{
   width: 32px; height: 32px;
@@ -1050,23 +1052,26 @@ p {{ margin: 0; }}
 .cat-strip-t {{ margin-top: 6mm; width: 100%; border-collapse: separate; border-spacing: 2mm 0; }}
 .cat-strip-t td {{ vertical-align: top; }}
 .cat-pill {{
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
-  font-size: 9.5pt;
+  font-size: 8.5pt;
   font-weight: 600;
   color: var(--ink);
+  white-space: nowrap;
 }}
 .cat-pill.budget {{ background: #eef2f7; }}
 .cat-pill.middle {{ background: var(--primary-soft); color: var(--primary-dark); }}
 .cat-pill.premium {{ background: var(--accent-soft); color: var(--accent-deep); }}
 .cat-pill .swatch {{
+  display: inline-block;
   width: 8px; height: 8px; border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
 }}
 .cat-pill.budget .swatch {{ background: #64748b; }}
 .cat-pill.middle .swatch {{ background: var(--primary); }}
 .cat-pill.premium .swatch {{ background: var(--accent); }}
-.cat-pill .cnt {{ margin-left: auto; font-size: 8.5pt; font-weight: 600; opacity: 0.7; }}
+.cat-pill .cnt {{ font-size: 8.5pt; font-weight: 600; opacity: 0.7; white-space: nowrap; }}
 
 /* Category banner */
 .cat-banner {{
@@ -1559,26 +1564,30 @@ p {{ margin: 0; }}
   color: var(--ink-light);
 }}
 .tr-mix {{
-  display: flex;
+  width: 100%;
   height: 12mm;
+  border-collapse: collapse;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--border-soft);
+  table-layout: fixed;
 }}
-.tr-mix .old {{
-  background: repeating-linear-gradient(135deg, #cbd5e1 0 6px, #b8c4d4 6px 12px);
-  display: flex; align-items: center; justify-content: center;
+.tr-mix td {{
+  text-align: center;
+  vertical-align: middle;
   color: #fff;
   font-size: 9pt;
   font-weight: 700;
+  padding: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}}
+.tr-mix .old {{
+  background: #b8c4d4;
   text-shadow: 0 1px 0 rgba(11,23,38,0.2);
 }}
 .tr-mix .new {{
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  font-size: 9pt;
-  font-weight: 700;
 }}
 .tr-legend {{
   display: flex; justify-content: center;
@@ -1596,7 +1605,7 @@ p {{ margin: 0; }}
   margin-right: 6px;
   vertical-align: middle;
 }}
-.tr-legend .sw.old {{ background: repeating-linear-gradient(135deg, #cbd5e1 0 4px, #b8c4d4 4px 8px); }}
+.tr-legend .sw.old {{ background: #b8c4d4; }}
 .tr-legend .sw.new {{ background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }}
 
 /* Tips — table wrapper for WeasyPrint */
@@ -1715,7 +1724,7 @@ p {{ margin: 0; }}
     min-height: 297mm;
     max-height: 297mm;
     zoom: 1 !important;
-    padding: 12mm 14mm 10mm;
+    padding: 12mm 14mm 16mm;
   }}
   .page:last-of-type {{ page-break-after: auto; }}
   .food {{ page-break-inside: avoid; break-inside: avoid; }}
@@ -1755,22 +1764,6 @@ p {{ margin: 0; }}
   }})();
 </script>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="bag-icon" viewBox="0 0 48 56">
-      <path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-      <rect x="17" y="22" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
-      <path d="M14 38 H34 M14 42 H30" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      <circle cx="22" cy="9" r="0.8" fill="currentColor"/>
-      <circle cx="26" cy="9" r="0.8" fill="currentColor"/>
-    </symbol>
-    <symbol id="paw-icon" viewBox="0 0 24 24">
-      <circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/>
-      <circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/>
-      <path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z" fill="currentColor"/>
-    </symbol>
-  </defs>
-</svg>
 
 <!-- PAGE 1 — COVER -->
 <section class="page cover">
@@ -1803,18 +1796,16 @@ p {{ margin: 0; }}
         <span class="cover-badge"><span class="dot"></span>{total_foods} лучших кормов · 3 ценовые категории</span>
       </div>
     </div>
-    <div class="cover-photo-wrap">
-      <div class="cover-photo">
-        {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
+    <div class="cover-photo">
+      {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else ''}
+    </div>
+    <div class="float-card">
+      <div class="ico">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
       </div>
-      <div class="float-card">
-        <div class="ico">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-        </div>
-        <div style="display:inline-block;vertical-align:middle;">
-          <div class="label">Отобрано из</div>
-          <div class="val">112 кормов</div>
-        </div>
+      <div style="display:inline-block;vertical-align:middle;">
+        <div class="label">Отобрано из</div>
+        <div class="val">112 кормов</div>
       </div>
     </div>
   </div>
@@ -1882,9 +1873,9 @@ p {{ margin: 0; }}
 
   <table class="cat-strip-t">
     <tr>
-    <td><div class="cat-pill budget"><span class="swatch"></span> Честный бюджет <span class="cnt">до 400 ₽/кг</span></div></td>
-    <td><div class="cat-pill middle"><span class="swatch"></span> Золотая середина <span class="cnt">400–800 ₽/кг</span></div></td>
-    <td><div class="cat-pill premium"><span class="swatch"></span> Лучшее из лучшего <span class="cnt">от 800 ₽/кг</span></div></td>
+    <td><div class="cat-pill budget"><span class="swatch"></span> Честный бюджет · <span class="cnt">до 400 ₽/кг</span></div></td>
+    <td><div class="cat-pill middle"><span class="swatch"></span> Золотая середина · <span class="cnt">400–800 ₽/кг</span></div></td>
+    <td><div class="cat-pill premium"><span class="swatch"></span> Лучшее из лучшего · <span class="cnt">от 800 ₽/кг</span></div></td>
     </tr>
   </table>
 
@@ -1931,22 +1922,22 @@ p {{ margin: 0; }}
     <table class="transition-track-t">
       <tr><td><div class="tr-step-bar">
         <div class="days"><span class="num">1–2</span><span class="lbl">дни</span></div>
-        <div class="tr-mix"><div class="old" style="flex:75;">75%</div><div class="new" style="flex:25;">25%</div></div>
+        <table class="tr-mix"><tr><td class="old" style="width:75%;">75%</td><td class="new" style="width:25%;">25%</td></tr></table>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Привыкание. Стул может стать мягче.</div>
       </div></td>
       <td><div class="tr-step-bar">
         <div class="days"><span class="num">3–4</span><span class="lbl">дни</span></div>
-        <div class="tr-mix"><div class="old" style="flex:50;">50%</div><div class="new" style="flex:50;">50%</div></div>
+        <table class="tr-mix"><tr><td class="old" style="width:50%;">50%</td><td class="new" style="width:50%;">50%</td></tr></table>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Половина на половину. Следите за стулом.</div>
       </div></td>
       <td><div class="tr-step-bar">
         <div class="days"><span class="num">5–6</span><span class="lbl">дни</span></div>
-        <div class="tr-mix"><div class="old" style="flex:25;">25%</div><div class="new" style="flex:75;">75%</div></div>
+        <table class="tr-mix"><tr><td class="old" style="width:25%;">25%</td><td class="new" style="width:75%;">75%</td></tr></table>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Новый корм — основа.</div>
       </div></td>
       <td><div class="tr-step-bar">
         <div class="days"><span class="num">7+</span><span class="lbl">дни</span></div>
-        <div class="tr-mix"><div class="new" style="flex:100;">100%</div></div>
+        <table class="tr-mix"><tr><td class="new" style="width:100%;">100%</td></tr></table>
         <div style="font-size:8.5pt;color:var(--ink-soft);">Полный переход.</div>
       </div></td>
       </tr>
