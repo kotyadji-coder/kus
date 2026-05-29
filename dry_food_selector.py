@@ -467,14 +467,30 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         ingredients_text = ", ".join(f.get("ingredients_top5", []))
         ingredients_html = f'<div class="ingredients"><strong>Первые 5:</strong> {ingredients_text}</div>'
 
-        # Pros/cons
-        proscons = ""
+        # Pros/cons — use table wrapper for 2-column grid
+        pros_items = ""
+        cons_items = ""
         for p in rec.reasons_for:
-            proscons += f'<div class="pc pro"><span class="ic">{_SVG_CHECK_DRY}</span>{p}</div>\n'
+            pros_items += f'<div class="pc pro"><span class="ic">{_SVG_CHECK_DRY}</span>{p}</div>\n'
         for c in rec.reasons_against:
-            proscons += f'<div class="pc con"><span class="ic">{_SVG_WARN_DRY}</span>{c}</div>\n'
+            cons_items += f'<div class="pc con"><span class="ic">{_SVG_WARN_DRY}</span>{c}</div>\n'
 
-        # AI block — персональный разбор от AI или fallback на reasons_for
+        all_pc = []
+        for p in rec.reasons_for:
+            all_pc.append(f'<div class="pc pro"><span class="ic">{_SVG_CHECK_DRY}</span>{p}</div>')
+        for c in rec.reasons_against:
+            all_pc.append(f'<div class="pc con"><span class="ic">{_SVG_WARN_DRY}</span>{c}</div>')
+
+        # Build 2-column table for proscons
+        proscons_rows = ""
+        for i in range(0, len(all_pc), 2):
+            left = all_pc[i] if i < len(all_pc) else ""
+            right = all_pc[i + 1] if i + 1 < len(all_pc) else ""
+            proscons_rows += f"<tr><td>{left}</td><td>{right}</td></tr>\n"
+
+        proscons = f'<table class="proscons-t"><tbody>{proscons_rows}</tbody></table>' if all_pc else ''
+
+        # AI block
         ai_text = getattr(rec, 'ai_analysis', '') or (rec.reasons_for[0] if rec.reasons_for else "")
         ai_html = f'''<div class="ai-block">
           <div class="ai-h"><span class="ai-ico">{_SVG_STAR_SM}</span>Почему подходит {name_d}</div>
@@ -518,15 +534,13 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
           <div class="badges">{badges_html}</div>
         </div>
 
-        <div class="meat-scale">
-          <table class="meat-scale-inner"><tr>
-          <td><div class="meat-bar">
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
             <div class="meat-fill" style="width: {min(meat_pct, 100)}%;"></div>
             <div class="meat-label">% мяса</div>
-          </div></td>
-          <td><div class="meat-pct">{meat_pct}<span class="small">%</span></div></td>
-          </tr></table>
-        </div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">{meat_pct}<span class="small">%</span></div></td>
+        </tr></table>
 
         {nutri_html}
         {ingredients_html}
@@ -619,7 +633,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     if dog.stop_products:
         stop_chip = '<span class="chip bad">аллергия</span>'
 
-    # --- Full CSS (from design) ---
+    # --- Full CSS (from original design, adapted for WeasyPrint) ---
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -630,259 +644,1109 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root {{
-  --primary: #055ba9; --primary-dark: #04467f; --primary-soft: #e6f0fa; --primary-softer: #f3f8fd;
-  --accent: #f59e0b; --accent-deep: #d97706; --accent-soft: #fef3c7;
-  --ink: #0b1726; --ink-soft: #475569; --ink-light: #94a3b8;
-  --border: #e2e8f0; --border-soft: #eef2f7;
-  --bg: #ffffff; --bg-soft: #f7f9fc; --bg-warm: #fdfbf7;
-  --green: #16a34a; --green-soft: #dcfce7;
-  --red: #dc2626; --red-soft: #fee2e2;
-  --meat-from: #055ba9; --meat-to: #7cc2f0;
+  --primary: #055ba9;
+  --primary-dark: #04467f;
+  --primary-soft: #e6f0fa;
+  --primary-softer: #f3f8fd;
+  --accent: #f59e0b;
+  --accent-deep: #d97706;
+  --accent-soft: #fef3c7;
+  --accent-softer: #fffbeb;
+  --ink: #0b1726;
+  --ink-soft: #475569;
+  --ink-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-soft: #eef2f7;
+  --bg: #ffffff;
+  --bg-soft: #f7f9fc;
+  --bg-warm: #fdfbf7;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --amber: #d97706;
+  --meat-from: #055ba9;
+  --meat-to: #7cc2f0;
 }}
 * {{ box-sizing: border-box; }}
-html, body {{ margin:0; padding:0; background:#e6e9ef; font-family:"Golos Text",system-ui,sans-serif; color:var(--ink); font-size:11pt; line-height:1.45; -webkit-font-smoothing:antialiased; }}
-.mono {{ font-family:"JetBrains Mono",ui-monospace,monospace; }}
+html, body {{
+  margin: 0; padding: 0;
+  background: #e6e9ef;
+  font-family: "Golos Text", system-ui, sans-serif;
+  color: var(--ink);
+  font-size: 11pt;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}}
+.mono {{ font-family: "JetBrains Mono", ui-monospace, monospace; }}
 
-.toolbar {{ position:fixed; top:16px; right:16px; z-index:100; display:flex; gap:8px; background:#fff; border:1px solid var(--border); border-radius:12px; padding:8px; box-shadow:0 12px 30px -12px rgba(11,23,38,0.25); }}
-.toolbar button {{ font-family:inherit; font-size:13px; font-weight:600; padding:10px 16px; border:none; border-radius:8px; background:var(--primary); color:#fff; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }}
-.toolbar .hint {{ font-size:11px; color:var(--ink-light); align-self:center; padding:0 6px; }}
+/* Print toolbar */
+.toolbar {{
+  position: fixed;
+  top: 16px; right: 16px;
+  z-index: 100;
+  display: flex; gap: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 12px 30px -12px rgba(11,23,38,0.25);
+}}
+.toolbar button {{
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}}
+.toolbar .hint {{
+  font-size: 11px;
+  color: var(--ink-light);
+  align-self: center;
+  padding: 0 6px;
+}}
 
-.page {{ width:210mm; min-height:297mm; margin:16px auto; background:#fff; position:relative; padding:12mm 14mm 10mm; box-shadow:0 12px 32px -16px rgba(11,23,38,0.25); page-break-after:always; break-after:page; zoom:var(--page-zoom,1); }}
-.page:last-of-type {{ page-break-after:auto; }}
-.page-foot {{ position:absolute; left:0; right:0; bottom:8mm; text-align:center; font-size:8pt; color:var(--ink-light); letter-spacing:0.05em; }}
-.page-foot strong {{ color:var(--ink-soft); font-weight:600; }}
-.page-head {{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4mm; padding-bottom:3mm; border-bottom:1px solid var(--border-soft); }}
-.page-head .logo {{ display:inline-flex; align-items:center; gap:8px; }}
-.page-head .logo .mark {{ width:26px; height:26px; border-radius:8px; background:var(--primary); color:#fff; display:inline-flex; align-items:center; justify-content:center; }}
-.page-head .logo .name {{ font-weight:800; font-size:16px; color:var(--primary); letter-spacing:-0.02em; }}
-.page-head .meta {{ font-size:9pt; color:var(--ink-light); }}
-.page-head .meta strong {{ color:var(--ink-soft); font-weight:600; }}
+/* A4 page */
+.page {{
+  width: 210mm;
+  min-height: 297mm;
+  margin: 16px auto;
+  background: #fff;
+  position: relative;
+  padding: 12mm 14mm 10mm;
+  box-shadow: 0 12px 32px -16px rgba(11,23,38,0.25);
+  page-break-after: always;
+  break-after: page;
+  zoom: var(--page-zoom, 1);
+}}
+.page:last-of-type {{ page-break-after: auto; }}
 
-h1,h2,h3,h4 {{ margin:0; letter-spacing:-0.02em; color:var(--ink); }}
-h1 {{ font-size:34pt; font-weight:800; line-height:1.02; letter-spacing:-0.035em; }}
-h2 {{ font-size:22pt; font-weight:700; line-height:1.1; }}
-h3 {{ font-size:14pt; font-weight:700; }}
-h4 {{ font-size:11pt; font-weight:700; }}
-p {{ margin:0; }}
-.eyebrow {{ display:inline-block; font-size:9pt; font-weight:600; text-transform:uppercase; letter-spacing:0.14em; color:var(--primary); background:var(--primary-soft); padding:5px 12px; border-radius:100px; }}
-.section-title {{ font-size:16pt; font-weight:700; letter-spacing:-0.02em; color:var(--ink); margin-bottom:3mm; }}
-.section-sub {{ font-size:9.5pt; color:var(--ink-soft); margin-bottom:5mm; max-width:145mm; }}
+.page-foot {{
+  position: absolute;
+  left: 0; right: 0; bottom: 8mm;
+  text-align: center;
+  font-size: 8pt;
+  color: var(--ink-light);
+  letter-spacing: 0.05em;
+}}
+.page-foot strong {{ color: var(--ink-soft); font-weight: 600; }}
+
+.page-head {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4mm;
+  padding-bottom: 3mm;
+  border-bottom: 1px solid var(--border-soft);
+}}
+.page-head .logo {{ display: inline-flex; align-items: center; gap: 8px; }}
+.page-head .logo .mark {{
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+}}
+.page-head .logo .name {{
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}}
+.page-head .meta {{
+  font-size: 9pt;
+  color: var(--ink-light);
+}}
+.page-head .meta strong {{ color: var(--ink-soft); font-weight: 600; }}
+
+/* Typography */
+h1, h2, h3, h4 {{ margin: 0; letter-spacing: -0.02em; color: var(--ink); }}
+h1 {{ font-size: 34pt; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }}
+h2 {{ font-size: 22pt; font-weight: 700; line-height: 1.1; }}
+h3 {{ font-size: 14pt; font-weight: 700; }}
+h4 {{ font-size: 11pt; font-weight: 700; }}
+p {{ margin: 0; }}
+
+.eyebrow {{
+  display: inline-block;
+  font-size: 9pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 5px 12px;
+  border-radius: 100px;
+}}
+.section-title {{
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 3mm;
+}}
+.section-sub {{
+  font-size: 9.5pt;
+  color: var(--ink-soft);
+  margin-bottom: 5mm;
+  max-width: 145mm;
+}}
 
 /* Cover */
-.cover {{ padding:0; }}
-.cover .top-bar {{ height:6mm; background:linear-gradient(90deg,var(--primary) 0%,var(--primary) 55%,var(--accent) 100%); }}
-.cover-inner {{ padding:14mm 16mm 14mm; }}
-.cover-head {{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16mm; }}
-.cover-head .logo .name {{ font-size:22px; }}
-.cover-head .logo .mark {{ width:34px; height:34px; border-radius:10px; }}
-.cover-head .doc-id {{ text-align:right; font-size:9pt; color:var(--ink-light); line-height:1.6; }}
-.cover-head .doc-id .label {{ display:inline-block; font-size:8pt; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--primary); background:var(--primary-soft); padding:4px 10px; border-radius:100px; margin-bottom:6px; }}
-.cover-title-block {{ max-width:140mm; }}
-.cover-title-block .kicker {{ font-size:11pt; color:var(--ink-soft); font-weight:500; margin-bottom:6mm; display:inline-flex; align-items:center; gap:8px; }}
-.cover-title-block .kicker .dot {{ width:8px; height:8px; border-radius:50%; background:var(--accent); }}
-.cover-title-block .dog-name {{ font-size:56pt; font-weight:800; letter-spacing:-0.04em; line-height:0.95; color:var(--primary); margin:4mm 0 6mm; }}
-.cover-title-block .breed {{ font-size:14pt; font-weight:600; color:var(--ink); margin-bottom:4mm; }}
-.cover-stats {{ display:inline-flex; align-items:center; gap:10mm; font-size:11pt; color:var(--ink-soft); }}
-.cover-stats .stat strong {{ font-size:14pt; font-weight:700; color:var(--ink); }}
-.cover-stats .divider {{ width:1px; height:24px; background:var(--border); }}
-.cover-badge {{ display:inline-flex; align-items:center; gap:8px; margin-top:8mm; padding:8px 16px; background:var(--accent); color:#fff; font-weight:700; font-size:10pt; border-radius:100px; }}
-.cover-badge .dot {{ width:8px; height:8px; border-radius:50%; background:#fff; }}
-.cover-photo {{ margin-top:10mm; border-radius:14px; overflow:hidden; max-height:50mm; background:linear-gradient(135deg,var(--primary-soft),var(--bg-warm)); position:relative; color:var(--ink-light); font-size:10pt; }}
-.cover-photo img {{ width:100%; height:auto; display:block; }}
-.float-card {{ position:absolute; left:8mm; bottom:8mm; background:rgba(255,255,255,0.96); border-radius:12px; padding:10px 14px; box-shadow:0 12px 30px -12px rgba(11,23,38,0.25); }}
-.float-card .ico {{ width:32px; height:32px; border-radius:8px; background:var(--primary-soft); color:var(--primary); display:inline-block; text-align:center; line-height:32px; vertical-align:middle; margin-right:10px; }}
-.float-card .label {{ font-size:8pt; color:var(--ink-soft); display:inline-block; vertical-align:middle; }}
-.float-card .val {{ font-size:11pt; font-weight:700; color:var(--ink); display:inline-block; vertical-align:middle; margin-left:4px; }}
-.cover-footer {{ position:absolute; left:16mm; right:16mm; bottom:12mm; display:flex; justify-content:space-between; align-items:center; font-size:8.5pt; color:var(--ink-light); border-top:1px solid var(--border-soft); padding-top:5mm; }}
+.cover {{ padding: 0; }}
+.cover .top-bar {{
+  height: 6mm;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 55%, var(--accent) 100%);
+}}
+.cover-inner {{ padding: 14mm 16mm 14mm; }}
+.cover-head {{
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 16mm;
+}}
+.cover-head .logo .name {{ font-size: 22px; }}
+.cover-head .logo .mark {{ width: 34px; height: 34px; border-radius: 10px; }}
+.cover-head .doc-id {{
+  text-align: right;
+  font-size: 9pt;
+  color: var(--ink-light);
+  line-height: 1.6;
+}}
+.cover-head .doc-id .label {{
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 6px;
+}}
+.cover-title-block {{ max-width: 140mm; }}
+.cover-title-block .kicker {{
+  font-size: 11pt;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-bottom: 6mm;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}}
+.cover-title-block .kicker .dot {{
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+}}
+.cover-title-block .dog-name {{
+  font-size: 56pt;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: var(--primary);
+  margin: 4mm 0 6mm;
+}}
+.cover-title-block .breed {{
+  font-size: 14pt;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4mm;
+}}
+.cover-stats {{
+  display: inline-flex;
+  align-items: center;
+  gap: 10mm;
+  font-size: 11pt;
+  color: var(--ink-soft);
+}}
+.cover-stats .stat strong {{ font-size: 14pt; font-weight: 700; color: var(--ink); }}
+.cover-stats .divider {{ width: 1px; height: 24px; background: var(--border); }}
 
-/* Profile */
-.profile-grid {{ width:100%; border-collapse:separate; border-spacing:4mm 0; margin-bottom:7mm; }}
-.profile-grid td {{ width:50%; vertical-align:top; }}
-.profile-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:5mm 6mm; }}
-.profile-card .hd {{ display:flex; align-items:center; gap:10px; margin-bottom:4mm; padding-bottom:4mm; border-bottom:1px solid var(--border-soft); }}
-.profile-card .hd .av {{ width:44px; height:44px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
-.profile-card .hd .nm {{ font-size:14pt; font-weight:800; letter-spacing:-0.02em; color:var(--ink); }}
-.profile-card .hd .sub {{ font-size:9pt; color:var(--ink-light); margin-top:2px; }}
-.profile-row {{ padding:6px 0; border-bottom:1px dashed var(--border-soft); font-size:10pt; }}
-.profile-row:last-child {{ border-bottom:none; }}
-.profile-row .k {{ color:var(--ink-soft); }}
-.profile-row .v {{ font-weight:700; color:var(--ink); }}
-.profile-row .v .chip {{ display:inline-block; font-size:8.5pt; font-weight:700; padding:2px 8px; border-radius:100px; margin-left:4px; }}
-.chip.warn {{ background:var(--accent-soft); color:var(--accent-deep); }}
-.chip.bad {{ background:var(--red-soft); color:var(--red); }}
+.cover-badge {{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8mm;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 10pt;
+  border-radius: 100px;
+  letter-spacing: -0.005em;
+}}
+.cover-badge .dot {{ width: 8px; height: 8px; border-radius: 50%; background: #fff; }}
 
-.ai-quote {{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; border-radius:14px; padding:6mm 7mm; position:relative; display:flex; flex-direction:column; gap:4mm; }}
-.ai-quote::before {{ content:"\u201C"; position:absolute; top:-8mm; right:6mm; font-size:90pt; font-weight:800; color:rgba(255,255,255,0.16); line-height:1; }}
-.ai-quote .ai-tag {{ display:inline-flex; align-items:center; gap:6px; font-size:8pt; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; padding:4px 10px; border-radius:100px; background:rgba(255,255,255,0.18); align-self:flex-start; }}
-.ai-quote p {{ font-size:11pt; line-height:1.55; font-weight:500; }}
-.ai-quote .signoff {{ font-size:9pt; color:rgba(255,255,255,0.7); display:flex; align-items:center; gap:8px; }}
-.ai-quote .signoff .dot {{ width:6px; height:6px; border-radius:50%; background:var(--accent); }}
+/* Cover photo — WeasyPrint adapted */
+.cover-photo-wrap {{ position: relative; margin-top: 10mm; }}
+.cover-photo {{
+  border-radius: 14px;
+  max-height: 55mm;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm));
+  position: relative;
+}}
+.cover-photo img {{ width: 100%; height: auto; display: block; }}
+.float-card {{
+  position: absolute;
+  left: 8mm; bottom: 8mm;
+  background: rgba(255,255,255,0.96);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 12px 30px -12px rgba(11,23,38,0.25);
+}}
+.float-card .ico {{
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-block; text-align: center; line-height: 32px; vertical-align: middle; margin-right: 10px;
+}}
+.float-card .label {{ font-size: 8pt; color: var(--ink-soft); display: inline-block; vertical-align: middle; }}
+.float-card .val {{ font-size: 11pt; font-weight: 700; color: var(--ink); display: inline-block; vertical-align: middle; margin-left: 4px; }}
 
-.steps-grid {{ width:100%; border-collapse:separate; border-spacing:3mm 0; }}
-.steps-grid td {{ width:33%; vertical-align:top; }}
-.step {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:5mm; position:relative; }}
-.step .num {{ position:absolute; top:4mm; right:5mm; font-size:22pt; font-weight:800; color:var(--primary-soft); letter-spacing:-0.03em; line-height:1; }}
-.step .ico {{ width:36px; height:36px; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:4mm; }}
-.step .ttl {{ font-size:11pt; font-weight:700; color:var(--ink); margin-bottom:2mm; }}
-.step .txt {{ font-size:9.5pt; color:var(--ink-soft); line-height:1.5; }}
-.step .txt strong {{ color:var(--ink); font-weight:700; }}
+.cover-footer {{
+  position: absolute;
+  left: 16mm; right: 16mm; bottom: 12mm;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 8.5pt;
+  color: var(--ink-light);
+  border-top: 1px solid var(--border-soft);
+  padding-top: 5mm;
+}}
 
-.cat-strip {{ margin-top:6mm; width:100%; border-collapse:separate; border-spacing:2mm 0; }}
-.cat-pill {{ display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; font-size:9.5pt; font-weight:600; color:var(--ink); }}
-.cat-pill.budget {{ background:#eef2f7; }}
-.cat-pill.middle {{ background:var(--primary-soft); color:var(--primary-dark); }}
-.cat-pill.premium {{ background:var(--accent-soft); color:var(--accent-deep); }}
-.cat-pill .swatch {{ width:8px; height:8px; border-radius:50%; }}
-.cat-pill.budget .swatch {{ background:#64748b; }}
-.cat-pill.middle .swatch {{ background:var(--primary); }}
-.cat-pill.premium .swatch {{ background:var(--accent); }}
-.cat-pill .cnt {{ margin-left:auto; font-size:8.5pt; font-weight:600; opacity:0.7; }}
+/* Profile — table wrapper for WeasyPrint */
+.profile-grid {{
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 5mm;
+  margin-bottom: 7mm;
+}}
+.profile-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 4mm 0; margin-bottom: 7mm; }}
+.profile-grid-t td {{ width: 50%; vertical-align: top; }}
+.profile-card {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 5mm 6mm;
+}}
+.profile-card .hd {{
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4mm;
+  padding-bottom: 4mm;
+  border-bottom: 1px solid var(--border-soft);
+}}
+.profile-card .hd .av {{
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}}
+.profile-card .hd .nm {{ font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }}
+.profile-card .hd .sub {{ font-size: 9pt; color: var(--ink-light); margin-top: 2px; }}
+.profile-row {{
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-soft);
+  font-size: 10pt;
+}}
+.profile-row:last-child {{ border-bottom: none; }}
+.profile-row .k {{ color: var(--ink-soft); }}
+.profile-row .v {{ font-weight: 700; color: var(--ink); }}
+.profile-row .v .chip {{
+  display: inline-block;
+  font-size: 8.5pt;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-left: 4px;
+}}
+.chip.warn {{ background: var(--accent-soft); color: var(--accent-deep); }}
+.chip.bad {{ background: var(--red-soft); color: var(--red); }}
+.chip.ok {{ background: var(--green-soft); color: var(--green); }}
+
+.ai-quote {{
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 14px;
+  padding: 6mm 7mm;
+  position: relative;
+  display: flex; flex-direction: column;
+  gap: 4mm;
+}}
+.ai-quote::before {{
+  content: "\u201C";
+  position: absolute;
+  top: -8mm; right: 6mm;
+  font-size: 90pt;
+  font-weight: 800;
+  color: rgba(255,255,255,0.16);
+  line-height: 1;
+}}
+.ai-quote .ai-tag {{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.18);
+  align-self: flex-start;
+}}
+.ai-quote p {{
+  font-size: 11pt;
+  line-height: 1.55;
+  font-weight: 500;
+}}
+.ai-quote .signoff {{
+  font-size: 9pt;
+  color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 8px;
+}}
+.ai-quote .signoff .dot {{ width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }}
+
+/* Steps — table wrapper for WeasyPrint */
+.steps-grid {{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4mm;
+}}
+.steps-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm 0; }}
+.steps-grid-t td {{ width: 33%; vertical-align: top; }}
+.step {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 5mm;
+  position: relative;
+}}
+.step .num {{
+  position: absolute;
+  top: 4mm; right: 5mm;
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--primary-soft);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}}
+.step .ico {{
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 4mm;
+}}
+.step .ttl {{ font-size: 11pt; font-weight: 700; color: var(--ink); margin-bottom: 2mm; }}
+.step .txt {{ font-size: 9.5pt; color: var(--ink-soft); line-height: 1.5; }}
+.step .txt strong {{ color: var(--ink); font-weight: 700; }}
+
+/* Cat strip — table wrapper for WeasyPrint */
+.cat-strip {{
+  margin-top: 6mm;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3mm;
+}}
+.cat-strip-t {{ margin-top: 6mm; width: 100%; border-collapse: separate; border-spacing: 2mm 0; }}
+.cat-strip-t td {{ vertical-align: top; }}
+.cat-pill {{
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 9.5pt;
+  font-weight: 600;
+  color: var(--ink);
+}}
+.cat-pill.budget {{ background: #eef2f7; }}
+.cat-pill.middle {{ background: var(--primary-soft); color: var(--primary-dark); }}
+.cat-pill.premium {{ background: var(--accent-soft); color: var(--accent-deep); }}
+.cat-pill .swatch {{
+  width: 8px; height: 8px; border-radius: 50%;
+}}
+.cat-pill.budget .swatch {{ background: #64748b; }}
+.cat-pill.middle .swatch {{ background: var(--primary); }}
+.cat-pill.premium .swatch {{ background: var(--accent); }}
+.cat-pill .cnt {{ margin-left: auto; font-size: 8.5pt; font-weight: 600; opacity: 0.7; }}
 
 /* Category banner */
-.cat-banner {{ margin-bottom:3mm; padding:3mm 6mm; border-radius:10px; display:flex; align-items:center; justify-content:space-between; gap:6mm; }}
-.cat-banner.budget {{ background:#eef2f7; }}
-.cat-banner.middle {{ background:var(--primary-soft); }}
-.cat-banner.premium {{ background:var(--accent-soft); }}
-.cat-banner .left .eyebrow-line {{ font-size:8pt; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:1.5mm; }}
-.cat-banner .left .ttl {{ font-size:14pt; font-weight:800; letter-spacing:-0.03em; color:var(--ink); line-height:1; }}
-.cat-banner .left .sub {{ font-size:8pt; color:var(--ink-soft); margin-top:1mm; max-width:130mm; line-height:1.4; }}
-.cat-banner .price {{ text-align:right; font-family:"JetBrains Mono",ui-monospace,monospace; font-weight:500; }}
-.cat-banner .price .big {{ font-size:13pt; font-weight:700; color:var(--ink); letter-spacing:-0.02em; }}
-.cat-banner .price .sml {{ font-size:8.5pt; color:var(--ink-soft); }}
+.cat-banner {{
+  margin-bottom: 3mm;
+  padding: 3mm 6mm;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6mm;
+}}
+.cat-banner.budget {{ background: #eef2f7; }}
+.cat-banner.middle {{ background: var(--primary-soft); }}
+.cat-banner.premium {{ background: var(--accent-soft); }}
+.cat-banner .left .eyebrow-line {{
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1.5mm;
+}}
+.cat-banner.budget .left .eyebrow-line {{ color: #475569; }}
+.cat-banner.middle .left .eyebrow-line {{ color: var(--primary-dark); }}
+.cat-banner.premium .left .eyebrow-line {{ color: var(--accent-deep); }}
+.cat-banner .left .ttl {{
+  font-size: 14pt;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}}
+.cat-banner .left .sub {{
+  font-size: 8pt;
+  color: var(--ink-soft);
+  margin-top: 1mm;
+  max-width: 130mm;
+  line-height: 1.4;
+}}
+.cat-banner .price {{
+  text-align: right;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+}}
+.cat-banner .price .big {{
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}}
+.cat-banner .price .sml {{ font-size: 8.5pt; color: var(--ink-soft); }}
 
 /* Food card */
-.foods {{ display:flex; flex-direction:column; gap:2mm; }}
-.food {{ background:#fff; border:1px solid var(--border); border-radius:10px; padding:2.5mm 4mm 3mm; page-break-inside:avoid; break-inside:avoid; position:relative; }}
-.food-layout {{ width:100%; border-collapse:collapse; }}
-.food-layout td {{ vertical-align:top; padding:0 1.5mm; }}
-.food-layout td:first-child {{ width:9mm; }}
-.food-layout td:nth-child(2) {{ width:16mm; }}
-.food .rank {{ font-size:22pt; font-weight:800; color:var(--primary); letter-spacing:-0.05em; line-height:0.9; font-feature-settings:"tnum"; }}
-.food .rank .hash {{ font-size:11pt; font-weight:700; color:var(--primary-soft); vertical-align:super; margin-right:-2px; }}
-.food .rank-meta {{ font-size:6.5pt; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-light); margin-top:2mm; line-height:1.2; }}
-.bag-photo {{ width:16mm; min-height:20mm; max-height:20mm; border-radius:7px; flex-shrink:0; background:linear-gradient(180deg,#f1f4f9 0%,#e2e8f0 100%); border:1px solid var(--border); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:inset 0 -5mm 4mm -4mm rgba(11,23,38,0.06); }}
-.bag-photo::before {{ content:""; position:absolute; inset:0; background-image:repeating-linear-gradient(-45deg,transparent 0 6px,rgba(148,163,184,0.08) 6px 7px); }}
-.bag-photo svg {{ position:relative; z-index:1; color:var(--ink-light); }}
-.bag-photo .ph-label {{ position:absolute; bottom:0.5mm; left:50%; transform:translateX(-50%); font-size:5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-light); font-family:"JetBrains Mono",ui-monospace,monospace; white-space:nowrap; }}
-.food .body {{ min-width:0; }}
-.food .top {{ display:flex; align-items:flex-start; justify-content:space-between; gap:4mm; margin-bottom:2mm; }}
-.food .brand {{ font-size:12.5pt; font-weight:800; letter-spacing:-0.02em; color:var(--ink); line-height:1.05; }}
-.food .formula {{ font-size:9pt; color:var(--ink-soft); font-weight:500; margin-top:0.5mm; }}
-.food .origin {{ font-size:8pt; color:var(--ink-light); margin-top:1mm; display:flex; align-items:center; gap:6px; font-feature-settings:"tnum"; }}
-.food .origin .sep {{ width:3px; height:3px; border-radius:50%; background:var(--ink-light); }}
-.food .badges {{ display:flex; gap:4px; flex-wrap:wrap; flex-shrink:0; }}
-.badge {{ font-size:7pt; font-weight:700; padding:2px 7px; border-radius:100px; letter-spacing:0.02em; white-space:nowrap; }}
-.badge.green {{ background:var(--green-soft); color:var(--green); }}
-.badge.blue {{ background:var(--primary-soft); color:var(--primary); }}
-.badge.amber {{ background:var(--accent-soft); color:var(--accent-deep); }}
+.foods {{ display: flex; flex-direction: column; gap: 2mm; }}
+.food {{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2.5mm 4mm 3mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  position: relative;
+}}
+.food-layout {{ width: 100%; border-collapse: collapse; }}
+.food-layout td {{ vertical-align: top; padding: 0 1.5mm; }}
+.food-layout td:first-child {{ width: 9mm; }}
+.food-layout td:nth-child(2) {{ width: 16mm; }}
+.food .rank {{
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-feature-settings: "tnum";
+}}
+.food .rank .hash {{
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--primary-soft);
+  vertical-align: super;
+  margin-right: -2px;
+}}
+.food .rank-meta {{
+  font-size: 6.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  margin-top: 2mm;
+  line-height: 1.2;
+}}
 
-.meat-scale {{ margin:1.5mm 0; }}
-.meat-scale-inner {{ width:100%; border-collapse:collapse; }}
-.meat-scale-inner td:last-child {{ width:30px; text-align:right; padding-left:8px; }}
-.meat-scale .meat-bar {{ position:relative; height:6mm; background:var(--bg-soft); border:1px solid var(--border-soft); border-radius:6px; overflow:hidden; }}
-.meat-scale .meat-fill {{ position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,var(--meat-from) 0%,var(--meat-to) 100%); border-radius:6px 0 0 6px; }}
-.meat-scale .meat-fill::after {{ content:""; position:absolute; right:0; top:0; bottom:0; width:3px; background:#fff; box-shadow:1px 0 0 rgba(11,23,38,0.06); }}
-.meat-scale .meat-label {{ position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:7pt; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#fff; text-shadow:0 1px 0 rgba(11,23,38,0.2); z-index:1; }}
-.meat-scale .meat-pct {{ font-size:14pt; font-weight:800; letter-spacing:-0.03em; color:var(--primary); font-feature-settings:"tnum"; line-height:1; }}
-.meat-scale .meat-pct .small {{ font-size:9pt; font-weight:600; color:var(--ink-light); letter-spacing:0; margin-left:2px; }}
+/* Bag placeholder photo */
+.bag-photo {{
+  width: 16mm; height: 20mm;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #f1f4f9 0%, #e2e8f0 100%);
+  border: 1px solid var(--border);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 -5mm 4mm -4mm rgba(11,23,38,0.06);
+}}
+.bag-photo::before {{
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    rgba(148,163,184,0.08) 6px 7px
+  );
+}}
+.bag-photo svg {{ position: relative; z-index: 1; color: var(--ink-light); }}
+.bag-photo .ph-label {{
+  position: absolute;
+  bottom: 0.5mm;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}}
 
-.nutri {{ display:flex; flex-wrap:wrap; gap:0; margin:1mm 0 1.5mm; font-size:8pt; color:var(--ink-soft); }}
-.nutri .n {{ padding:0 8px 0 0; margin-right:8px; border-right:1px solid var(--border); font-feature-settings:"tnum"; }}
-.nutri .n:last-child {{ border-right:none; margin-right:0; }}
-.nutri .n strong {{ display:inline-block; color:var(--ink); font-weight:700; margin-left:2px; }}
-.nutri .n .lbl {{ color:var(--ink-light); }}
-.ingredients {{ font-size:7.5pt; color:var(--ink-soft); line-height:1.4; font-style:italic; margin-bottom:1.5mm; padding-left:7px; border-left:2px solid var(--border); }}
-.ingredients strong {{ font-style:normal; font-weight:700; color:var(--ink); }}
+.food .body {{ min-width: 0; }}
+.food .top {{
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 4mm;
+  margin-bottom: 2mm;
+}}
+.food .brand {{
+  font-size: 12.5pt;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.05;
+}}
+.food .formula {{
+  font-size: 9pt;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-top: 0.5mm;
+}}
+.food .origin {{
+  font-size: 8pt;
+  color: var(--ink-light);
+  margin-top: 1mm;
+  display: flex; align-items: center; gap: 6px;
+  font-feature-settings: "tnum";
+}}
+.food .origin .sep {{ width: 3px; height: 3px; border-radius: 50%; background: var(--ink-light); }}
+.food .badges {{ display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }}
+.badge {{
+  font-size: 7pt;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}}
+.badge.green {{ background: var(--green-soft); color: var(--green); }}
+.badge.blue {{ background: var(--primary-soft); color: var(--primary); }}
+.badge.amber {{ background: var(--accent-soft); color: var(--accent-deep); }}
 
-.proscons {{ margin-bottom:1.5mm; }}
-.pc {{ display:flex; align-items:flex-start; gap:5px; font-size:7.5pt; line-height:1.3; color:var(--ink); }}
-.pc .ic {{ flex:0 0 auto; width:11px; height:11px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-top:1px; }}
-.pc.pro .ic {{ background:var(--green-soft); color:var(--green); }}
-.pc.con .ic {{ background:var(--accent-soft); color:var(--accent-deep); }}
+/* Meat scale — table wrapper for WeasyPrint */
+.meat-scale-t {{
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5mm 0;
+}}
+.meat-scale-t td {{ vertical-align: middle; padding: 0; }}
+.meat-scale-t .meat-pct-cell {{ width: 30px; text-align: right; padding-left: 8px; }}
+.meat-bar {{
+  position: relative;
+  height: 6mm;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  overflow: hidden;
+}}
+.meat-fill {{
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, var(--meat-from) 0%, var(--meat-to) 100%);
+  border-radius: 6px 0 0 6px;
+}}
+.meat-fill::after {{
+  content: "";
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: #fff;
+  box-shadow: 1px 0 0 rgba(11,23,38,0.06);
+}}
+.meat-label {{
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(11,23,38,0.2);
+  z-index: 1;
+}}
+.meat-pct {{
+  font-size: 14pt;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-feature-settings: "tnum";
+  line-height: 1;
+}}
+.meat-pct .small {{
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--ink-light);
+  letter-spacing: 0;
+  margin-left: 2px;
+}}
 
-.ai-block {{ background:var(--primary-softer); border-left:3px solid var(--primary); border-radius:6px; padding:2mm 3mm; font-size:8pt; line-height:1.35; color:var(--ink); margin-bottom:2mm; }}
-.ai-block .ai-h {{ display:inline-flex; align-items:center; gap:4px; font-size:7pt; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--primary); margin-right:6px; vertical-align:1px; }}
-.ai-block .ai-h .ai-ico {{ width:11px; height:11px; border-radius:3px; background:var(--primary); color:#fff; display:inline-flex; align-items:center; justify-content:center; }}
+/* Nutrient line */
+.nutri {{
+  display: flex; flex-wrap: wrap;
+  gap: 0;
+  margin: 1mm 0 1.5mm;
+  font-size: 8pt;
+  color: var(--ink-soft);
+}}
+.nutri .n {{
+  padding: 0 8px 0 0;
+  margin-right: 8px;
+  border-right: 1px solid var(--border);
+  font-feature-settings: "tnum";
+}}
+.nutri .n:last-child {{ border-right: none; margin-right: 0; }}
+.nutri .n strong {{
+  display: inline-block;
+  color: var(--ink);
+  font-weight: 700;
+  margin-left: 2px;
+}}
+.nutri .n .lbl {{ color: var(--ink-light); }}
 
-.buy-row {{ display:flex; gap:5px; flex-wrap:wrap; }}
-.buy-btn {{ display:inline-flex; align-items:center; gap:5px; font-size:8pt; font-weight:700; padding:4px 10px; border-radius:6px; text-decoration:none; letter-spacing:-0.005em; border:1px solid var(--primary); color:var(--primary); background:#fff; }}
-.buy-btn.primary {{ background:var(--primary); color:#fff; }}
-.buy-btn .arr {{ font-size:10pt; line-height:1; margin-left:1px; transform:translateY(-1px); }}
+.ingredients {{
+  font-size: 7.5pt;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  font-style: italic;
+  margin-bottom: 1.5mm;
+  padding-left: 7px;
+  border-left: 2px solid var(--border);
+}}
+.ingredients strong {{ font-style: normal; font-weight: 700; color: var(--ink); }}
+.ingredients .pct {{ font-weight: 700; color: var(--primary); font-style: normal; }}
 
-/* Recommendation */
-.hero-rec {{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; border-radius:14px; padding:6mm 7mm; position:relative; margin-bottom:5mm; overflow:hidden; }}
-.hero-rec::before {{ content:""; position:absolute; right:-30mm; top:-30mm; width:100mm; height:100mm; border-radius:50%; background:radial-gradient(circle,rgba(245,158,11,0.35),transparent 60%); }}
-.hero-rec .tag {{ display:inline-flex; align-items:center; gap:6px; font-size:8pt; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; padding:4px 10px; border-radius:100px; background:var(--accent); color:var(--ink); margin-bottom:4mm; }}
-.hero-rec h3 {{ color:#fff; font-size:20pt; line-height:1.1; margin-bottom:3mm; }}
-.hero-rec p {{ font-size:10pt; line-height:1.5; color:rgba(255,255,255,0.92); max-width:140mm; }}
-.hero-rec p strong {{ color:#fff; font-weight:700; }}
+/* Proscons — table wrapper for 2-column grid */
+.proscons {{ margin-bottom: 1.5mm; }}
+.proscons-t {{ width: 100%; border-collapse: collapse; }}
+.proscons-t td {{ vertical-align: top; padding: 0.25mm 2mm 0.25mm 0; }}
+.pc {{
+  display: flex; align-items: flex-start; gap: 5px;
+  font-size: 7.5pt;
+  line-height: 1.3;
+  color: var(--ink);
+}}
+.pc .ic {{
+  flex: 0 0 auto;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}}
+.pc.pro .ic {{ background: var(--green-soft); color: var(--green); }}
+.pc.con .ic {{ background: var(--accent-soft); color: var(--accent-deep); }}
 
-.compare-wrap {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; overflow:hidden; }}
-.compare {{ width:100%; border-collapse:separate; border-spacing:0; font-size:10pt; }}
-.compare th,.compare td {{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--border-soft); }}
-.compare thead th {{ font-size:9pt; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink); background:var(--bg-soft); }}
-.compare tbody td.k {{ color:var(--ink-soft); font-weight:600; font-size:9.5pt; background:var(--bg-soft); }}
-.compare tbody tr:last-child td {{ border-bottom:none; }}
-.compare tbody td {{ font-feature-settings:"tnum"; color:var(--ink); }}
-.compare tbody td strong {{ font-weight:700; }}
-.compare .winner {{ background:var(--primary-softer); }}
-.compare .winner.head {{ background:var(--primary); color:#fff !important; border-color:var(--primary) !important; }}
-.compare th.col {{ font-feature-settings:"tnum"; letter-spacing:-0.005em; text-transform:none; font-size:11pt; font-weight:800; color:var(--ink); }}
-.compare th.col .sub {{ display:block; font-size:8pt; font-weight:600; color:var(--ink-light); text-transform:uppercase; letter-spacing:0.1em; margin-top:2px; }}
-.compare th.col.winner .sub {{ color:#fff; opacity:0.85; }}
-.compare .winner-tag {{ display:inline-block; font-size:7pt; font-weight:800; text-transform:uppercase; letter-spacing:0.14em; padding:2px 8px; border-radius:100px; background:var(--accent); color:var(--ink); margin-top:4px; }}
+.ai-block {{
+  background: var(--primary-softer);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  padding: 2mm 3mm;
+  font-size: 8pt;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-bottom: 2mm;
+}}
+.ai-block .ai-h {{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  margin-right: 6px;
+  vertical-align: 1px;
+}}
+.ai-block .ai-h .ai-ico {{
+  width: 11px; height: 11px;
+  border-radius: 3px;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+}}
+
+.buy-row {{
+  display: flex; gap: 5px;
+  flex-wrap: wrap;
+}}
+.buy-btn {{
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: #fff;
+}}
+.buy-btn.primary {{ background: var(--primary); color: #fff; }}
+.buy-btn .arr {{ font-size: 10pt; line-height: 1; margin-left: 1px; transform: translateY(-1px); }}
+
+/* Final recommendation */
+.hero-rec {{
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 14px;
+  padding: 6mm 7mm;
+  position: relative;
+  margin-bottom: 5mm;
+  overflow: hidden;
+}}
+.hero-rec::before {{
+  content: "";
+  position: absolute;
+  right: -30mm; top: -30mm;
+  width: 100mm; height: 100mm;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.35), transparent 60%);
+}}
+.hero-rec .tag {{
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: var(--ink);
+  margin-bottom: 4mm;
+}}
+.hero-rec h3 {{
+  color: #fff;
+  font-size: 20pt;
+  line-height: 1.1;
+  margin-bottom: 3mm;
+}}
+.hero-rec p {{
+  font-size: 10pt;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.92);
+  max-width: 140mm;
+}}
+.hero-rec p strong {{ color: #fff; font-weight: 700; }}
+
+.compare-wrap {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+}}
+.compare {{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 4mm;
+  font-size: 10pt;
+}}
+.compare th, .compare td {{
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft);
+}}
+.compare thead th {{
+  font-size: 9pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  background: var(--bg-soft);
+}}
+.compare thead th:first-child {{ border-top-left-radius: 10px; }}
+.compare thead th:last-child {{ border-top-right-radius: 10px; }}
+.compare tbody td.k {{
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 9.5pt;
+  background: var(--bg-soft);
+}}
+.compare tbody tr:last-child td {{ border-bottom: none; }}
+.compare tbody td {{
+  font-feature-settings: "tnum";
+  color: var(--ink);
+}}
+.compare tbody td strong {{ font-weight: 700; }}
+.compare .winner {{
+  background: var(--primary-softer);
+  position: relative;
+}}
+.compare .winner.head {{
+  background: var(--primary);
+  color: #fff !important;
+  border-color: var(--primary) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}}
+.compare th.col {{
+  font-feature-settings: "tnum";
+  letter-spacing: -0.005em;
+  text-transform: none;
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--ink);
+}}
+.compare th.col .sub {{
+  display: block;
+  font-size: 8pt;
+  font-weight: 600;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}}
+.compare th.col.winner .sub {{ color: #fff; opacity: 0.85; }}
+.compare .winner-tag {{
+  display: inline-block;
+  font-size: 7pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: var(--ink);
+  margin-top: 4px;
+}}
 
 /* Transition */
-.transition-strip {{ margin-bottom:6mm; background:#fff; border:1px solid var(--border-soft); border-radius:16px; padding:6mm 7mm; }}
-.transition-track {{ width:100%; border-collapse:separate; border-spacing:2mm 0; margin-bottom:5mm; }}
-.transition-track td {{ width:25%; vertical-align:top; }}
-.tr-step-bar {{ display:flex; flex-direction:column; align-items:stretch; gap:2mm; }}
-.tr-step-bar .days {{ font-size:9pt; font-weight:700; color:var(--ink); display:flex; align-items:baseline; gap:6px; }}
-.tr-step-bar .days .num {{ font-size:20pt; font-weight:800; color:var(--primary); letter-spacing:-0.04em; line-height:1; font-feature-settings:"tnum"; }}
-.tr-step-bar .days .lbl {{ font-size:8.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-light); }}
-.tr-mix {{ display:flex; height:12mm; border-radius:8px; overflow:hidden; border:1px solid var(--border-soft); }}
-.tr-mix .old {{ background:repeating-linear-gradient(135deg,#cbd5e1 0 6px,#b8c4d4 6px 12px); display:flex; align-items:center; justify-content:center; color:#fff; font-size:9pt; font-weight:700; text-shadow:0 1px 0 rgba(11,23,38,0.2); }}
-.tr-mix .new {{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:9pt; font-weight:700; }}
-.tr-legend {{ display:flex; justify-content:center; gap:5mm; font-size:8.5pt; color:var(--ink-soft); margin-top:4mm; padding-top:4mm; border-top:1px solid var(--border-soft); }}
-.tr-legend .sw {{ display:inline-block; width:14px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }}
-.tr-legend .sw.old {{ background:repeating-linear-gradient(135deg,#cbd5e1 0 4px,#b8c4d4 4px 8px); }}
-.tr-legend .sw.new {{ background:linear-gradient(135deg,var(--primary),var(--primary-dark)); }}
+.transition-strip {{
+  margin-bottom: 6mm;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 6mm 7mm;
+}}
+.transition-track {{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2mm;
+  margin-bottom: 5mm;
+}}
+.transition-track-t {{ width: 100%; border-collapse: separate; border-spacing: 2mm 0; margin-bottom: 5mm; }}
+.transition-track-t td {{ width: 25%; vertical-align: top; }}
+.tr-step-bar {{
+  display: flex; flex-direction: column;
+  align-items: stretch;
+  gap: 2mm;
+}}
+.tr-step-bar .days {{
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex; align-items: baseline; gap: 6px;
+}}
+.tr-step-bar .days .num {{
+  font-size: 20pt;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-feature-settings: "tnum";
+}}
+.tr-step-bar .days .lbl {{
+  font-size: 8.5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+}}
+.tr-mix {{
+  display: flex;
+  height: 12mm;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}}
+.tr-mix .old {{
+  background: repeating-linear-gradient(135deg, #cbd5e1 0 6px, #b8c4d4 6px 12px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 9pt;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(11,23,38,0.2);
+}}
+.tr-mix .new {{
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 9pt;
+  font-weight: 700;
+}}
+.tr-legend {{
+  display: flex; justify-content: center;
+  gap: 5mm;
+  font-size: 8.5pt;
+  color: var(--ink-soft);
+  margin-top: 4mm;
+  padding-top: 4mm;
+  border-top: 1px solid var(--border-soft);
+}}
+.tr-legend .sw {{
+  display: inline-block;
+  width: 14px; height: 10px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}}
+.tr-legend .sw.old {{ background: repeating-linear-gradient(135deg, #cbd5e1 0 4px, #b8c4d4 4px 8px); }}
+.tr-legend .sw.new {{ background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }}
 
-.tips-grid {{ width:100%; border-collapse:separate; border-spacing:3mm; }}
-.tip {{ background:#fff; border:1px solid var(--border-soft); border-radius:12px; padding:5mm 6mm; display:flex; gap:12px; align-items:flex-start; }}
-.tip .ic {{ flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
-.tip.warn .ic {{ background:var(--accent-soft); color:var(--accent-deep); }}
-.tip h4 {{ font-size:11pt; margin-bottom:2mm; }}
-.tip p {{ font-size:9.5pt; color:var(--ink-soft); line-height:1.5; }}
-.tip p strong {{ color:var(--ink); font-weight:700; }}
+/* Tips — table wrapper for WeasyPrint */
+.tips-grid {{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+}}
+.tips-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm; }}
+.tips-grid-t td {{ vertical-align: top; }}
+.tip {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 5mm 6mm;
+  display: flex; gap: 12px; align-items: flex-start;
+}}
+.tip .ic {{
+  flex: 0 0 auto;
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}}
+.tip.warn .ic {{ background: var(--accent-soft); color: var(--accent-deep); }}
+.tip h4 {{ font-size: 11pt; margin-bottom: 2mm; }}
+.tip p {{ font-size: 9.5pt; color: var(--ink-soft); line-height: 1.5; }}
+.tip p strong {{ color: var(--ink); font-weight: 700; }}
 
 /* Last page */
-.last-page {{ background:var(--bg-soft); }}
-.disclaimer-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:14px; padding:8mm; margin-bottom:6mm; position:relative; }}
-.disclaimer-card .quote {{ position:absolute; top:-8px; left:6mm; font-size:36pt; font-weight:800; color:var(--primary); line-height:1; }}
-.disclaimer-card p {{ font-size:10.5pt; line-height:1.6; color:var(--ink); font-style:italic; padding-left:14mm; }}
-.contact-grid {{ width:100%; border-collapse:separate; border-spacing:3mm 0; }}
-.contact-card {{ background:#fff; border:1px solid var(--border-soft); border-radius:12px; padding:6mm; display:flex; flex-direction:column; gap:4mm; align-items:flex-start; }}
-.contact-card .ico {{ width:44px; height:44px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:inline-flex; align-items:center; justify-content:center; }}
-.contact-card .label {{ font-size:8.5pt; color:var(--ink-light); text-transform:uppercase; letter-spacing:0.1em; font-weight:600; }}
-.contact-card .val {{ font-size:13pt; font-weight:700; color:var(--ink); letter-spacing:-0.01em; }}
-.support-strip {{ margin-top:6mm; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; border-radius:16px; padding:8mm 10mm; }}
-.support-strip h3 {{ color:#fff; font-size:18pt; margin-bottom:3mm; }}
-.support-strip p {{ font-size:11pt; line-height:1.5; color:rgba(255,255,255,0.85); }}
-.bye {{ text-align:center; margin-top:8mm; padding-top:6mm; border-top:1px solid var(--border-soft); font-size:9pt; color:var(--ink-light); }}
+.last-page {{ background: var(--bg-soft); }}
+.disclaimer-card {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 8mm;
+  margin-bottom: 6mm;
+  position: relative;
+}}
+.disclaimer-card .quote {{
+  position: absolute;
+  top: -8px; left: 6mm;
+  font-size: 36pt;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}}
+.disclaimer-card p {{
+  font-size: 10.5pt;
+  line-height: 1.6;
+  color: var(--ink);
+  font-style: italic;
+  padding-left: 14mm;
+}}
 
-@media (max-width:820px) {{ body {{ background:#eef0f4; }} .page {{ margin:10px auto; box-shadow:0 6px 18px -8px rgba(11,23,38,0.25); }} .toolbar {{ top:auto; right:12px; bottom:12px; padding:6px; border-radius:10px; }} .toolbar .hint {{ display:none; }} .toolbar button {{ padding:9px 13px; font-size:12px; }} }}
-@page {{ size:A4 portrait; margin:0; }}
+/* Contact grid — table wrapper for WeasyPrint */
+.contact-grid {{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4mm;
+}}
+.contact-grid-t {{ width: 100%; border-collapse: separate; border-spacing: 3mm 0; }}
+.contact-grid-t td {{ vertical-align: top; }}
+.contact-card {{
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 6mm;
+  display: flex; flex-direction: column; gap: 4mm;
+  align-items: flex-start;
+}}
+.contact-card .ico {{
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}}
+.contact-card .label {{ font-size: 8.5pt; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }}
+.contact-card .val {{ font-size: 13pt; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }}
+
+/* Support strip — table wrapper for WeasyPrint */
+.support-strip {{
+  margin-top: 6mm;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 16px;
+  padding: 8mm 10mm;
+}}
+.support-strip h3 {{ color: #fff; font-size: 18pt; margin-bottom: 3mm; }}
+.support-strip p {{ font-size: 11pt; line-height: 1.5; color: rgba(255,255,255,0.85); }}
+
+.bye {{
+  text-align: center;
+  margin-top: 8mm;
+  padding-top: 6mm;
+  border-top: 1px solid var(--border-soft);
+  font-size: 9pt;
+  color: var(--ink-light);
+}}
+.bye .heart {{ color: var(--accent); }}
+
+@media (max-width: 820px) {{
+  body {{ background: #eef0f4; }}
+  .page {{
+    margin: 10px auto;
+    box-shadow: 0 6px 18px -8px rgba(11,23,38,0.25);
+  }}
+  .toolbar {{
+    top: auto; right: 12px; bottom: 12px;
+    padding: 6px;
+    border-radius: 10px;
+  }}
+  .toolbar .hint {{ display: none; }}
+  .toolbar button {{ padding: 9px 13px; font-size: 12px; }}
+}}
+@page {{ size: A4 portrait; margin: 0; }}
 @media print {{
-  html,body {{ background:#fff; }}
-  .toolbar {{ display:none !important; }}
-  .page {{ margin:0; box-shadow:none; width:210mm; min-height:297mm; max-height:297mm; zoom:1 !important; padding:12mm 14mm 10mm; }}
-  .page:last-of-type {{ page-break-after:auto; }}
-  .food {{ page-break-inside:avoid; break-inside:avoid; }}
-  .cover-photo {{ print-color-adjust:exact; -webkit-print-color-adjust:exact; }}
-  .cat-banner,.hero-rec,.ai-quote,.support-strip,.transition-strip {{ print-color-adjust:exact; -webkit-print-color-adjust:exact; }}
-  .meat-fill {{ print-color-adjust:exact; -webkit-print-color-adjust:exact; }}
-  .tr-mix .old,.tr-mix .new {{ print-color-adjust:exact; -webkit-print-color-adjust:exact; }}
+  html, body {{ background: #fff; }}
+  .toolbar {{ display: none !important; }}
+  .page {{
+    margin: 0;
+    box-shadow: none;
+    width: 210mm;
+    min-height: 297mm;
+    max-height: 297mm;
+    zoom: 1 !important;
+    padding: 12mm 14mm 10mm;
+  }}
+  .page:last-of-type {{ page-break-after: auto; }}
+  .food {{ page-break-inside: avoid; break-inside: avoid; }}
+  .cover-photo {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
+  .cat-banner, .hero-rec, .ai-quote, .support-strip, .transition-strip {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
+  .meat-fill {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
+  .tr-mix .old, .tr-mix .new {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
 }}
 </style>
 </head>
@@ -921,6 +1785,13 @@ p {{ margin:0; }}
       <path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
       <rect x="17" y="22" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
       <path d="M14 38 H34 M14 42 H30" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="22" cy="9" r="0.8" fill="currentColor"/>
+      <circle cx="26" cy="9" r="0.8" fill="currentColor"/>
+    </symbol>
+    <symbol id="paw-icon" viewBox="0 0 24 24">
+      <circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/>
+      <circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/>
+      <path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z" fill="currentColor"/>
     </symbol>
   </defs>
 </svg>
@@ -956,7 +1827,7 @@ p {{ margin:0; }}
         <span class="cover-badge"><span class="dot"></span>{total_foods} лучших кормов · 3 ценовые категории</span>
       </div>
     </div>
-    <div style="position:relative;">
+    <div class="cover-photo-wrap">
       <div class="cover-photo">
         {'<img src="data:image/png;base64,' + getattr(result, 'cover_image_b64', '') + '" alt="' + name + '">' if getattr(result, 'cover_image_b64', '') else '<span>Фото ' + name_g + '</span>'}
       </div>
@@ -986,7 +1857,7 @@ p {{ margin:0; }}
   <h2 class="section-title" style="margin-top: 4mm;">Почему именно эти корма для {name_g}</h2>
   <p class="section-sub">Мы не продаём корма. Мы анализируем составы по открытым данным производителей и подбираем под параметры конкретной собаки.</p>
 
-  <table class="profile-grid">
+  <table class="profile-grid-t">
     <tr><td><div class="profile-card">
       <div class="hd">
         <div class="av">{_SVG_PAW_DRY.format(w=22)}</div>
@@ -1011,7 +1882,7 @@ p {{ margin:0; }}
   </table>
 
   <h3 style="font-size: 12pt; margin-bottom: 4mm;">Как мы подбирали</h3>
-  <table class="steps-grid">
+  <table class="steps-grid-t">
     <tr><td><div class="step">
       <div class="num">01</div>
       <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg></div>
@@ -1033,7 +1904,7 @@ p {{ margin:0; }}
     </tr>
   </table>
 
-  <table class="cat-strip">
+  <table class="cat-strip-t">
     <tr>
     <td><div class="cat-pill budget"><span class="swatch"></span> Честный бюджет <span class="cnt">до 400 ₽/кг</span></div></td>
     <td><div class="cat-pill middle"><span class="swatch"></span> Золотая середина <span class="cnt">400–800 ₽/кг</span></div></td>
@@ -1081,7 +1952,7 @@ p {{ margin:0; }}
   <p class="section-sub">Резкая смена → диарея и зуд на ровном месте. Идите по схеме — это всего одна неделя.</p>
 
   <div class="transition-strip">
-    <table class="transition-track">
+    <table class="transition-track-t">
       <tr><td><div class="tr-step-bar">
         <div class="days"><span class="num">1–2</span><span class="lbl">дни</span></div>
         <div class="tr-mix"><div class="old" style="flex:75;">75%</div><div class="new" style="flex:25;">25%</div></div>
@@ -1110,7 +1981,7 @@ p {{ margin:0; }}
     </div>
   </div>
 
-  <table class="tips-grid">
+  <table class="tips-grid-t">
     <tr><td><div class="tip warn">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
       <div><h4>Если диарея — вернитесь на шаг назад</h4><p>Уменьшите долю нового корма и задержитесь на 2–3 дня. Если стул не нормализовался <strong>за 48 часов</strong> — пишите в Telegram-бот.</p></div>
@@ -1145,16 +2016,22 @@ p {{ margin:0; }}
   </div>
 
   <h3 style="font-size: 12pt; margin-bottom: 4mm;">Связь с нами</h3>
-  <table class="contact-grid">
+  <table class="contact-grid-t">
     <tr>
-    <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:5mm;vertical-align:top;">
-      <div class="label" style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Telegram-бот</div>
-      <div style="font-size:12pt;font-weight:700;color:var(--ink);">@doggifood_bot</div>
-    </td>
-    <td style="background:#fff;border:1px solid var(--border-soft);border-radius:10px;padding:5mm;vertical-align:top;">
-      <div class="label" style="font-size:8pt;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2mm;">Сайт</div>
-      <div style="font-size:12pt;font-weight:700;color:var(--ink);">kus.dogfine.ru</div>
-    </td>
+    <td><div class="contact-card">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg></div>
+      <div>
+        <div class="label">Telegram-бот</div>
+        <div class="val">@doggifood_bot</div>
+      </div>
+    </div></td>
+    <td><div class="contact-card">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
+      <div>
+        <div class="label">Сайт</div>
+        <div class="val">kus.dogfine.ru</div>
+      </div>
+    </div></td>
     </tr>
   </table>
 
@@ -1166,7 +2043,7 @@ p {{ margin:0; }}
   </div>
 
   <div class="bye">
-    Спасибо, что доверили нам выбор корма для {name_g} ♥<br/>
+    Спасибо, что доверили нам выбор корма для {name_g} <span class="heart">♥</span><br/>
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
