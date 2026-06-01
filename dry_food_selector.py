@@ -1730,25 +1730,29 @@ p {{ margin: 0; }}
   .toolbar .hint {{ display: none; }}
   .toolbar button {{ padding: 9px 13px; font-size: 12px; }}
 }}
-@page {{ size: A4 portrait; margin: 0; }}
+@page {{ size: A4 portrait; margin: 8mm; }}
 @media print {{
   html, body {{ background: #fff; }}
   .toolbar {{ display: none !important; }}
   .page {{
     margin: 0;
     box-shadow: none;
-    width: 210mm;
-    min-height: 297mm;
-    max-height: 297mm;
+    width: auto;
+    min-height: auto;
+    max-height: none;
     zoom: 1 !important;
-    padding: 12mm 14mm 16mm;
+    padding: 8mm 10mm 10mm;
+    page-break-after: always;
+    break-after: page;
   }}
-  .page:last-of-type {{ page-break-after: auto; }}
-  .food {{ page-break-inside: avoid; break-inside: avoid; }}
+  .page:last-of-type {{ page-break-after: auto; break-after: auto; }}
+  .food {{ page-break-inside: avoid; break-inside: avoid; margin-bottom: 6mm; }}
+  .cat-header {{ page-break-inside: avoid; break-inside: avoid; }}
   .cover-photo {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
   .cat-banner, .hero-rec, .ai-quote, .support-strip, .transition-strip {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
   .meat-fill {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
   .tr-mix .old, .tr-mix .new {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
+  * {{ print-color-adjust: exact; -webkit-print-color-adjust: exact; }}
 }}
 </style>
 </head>
