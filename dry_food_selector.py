@@ -435,6 +435,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     name_a = decline_name(dog.name, "accs")
     total_pages = 8
     total_foods = len(result.budget) + len(result.mid) + len(result.premium)
+    total_foods_in_db = len(load_json("dry_foods.json")["foods"])
     stop_text = ", ".join(dog.stop_products) if dog.stop_products else "нет"
 
     # --- Detect food photo ---
@@ -445,7 +446,8 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
             for ext in ("jpg", "png", "webp"):
                 path = os.path.join(STATIC_DIR, f"{food_id}.{ext}")
                 if os.path.exists(path):
-                    _photo_cache[food_id] = f'<img src="/static/dry-foods/{food_id}.{ext}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
+                    abs_path = os.path.abspath(path)
+                    _photo_cache[food_id] = f'<img src="file://{abs_path}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
                     break
             else:
                 _photo_cache[food_id] = '<svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>'
@@ -1820,7 +1822,7 @@ p {{ margin: 0; }}
       </div>
       <div style="display:inline-block;vertical-align:middle;">
         <div class="label">Отобрано из</div>
-        <div class="val">112 кормов</div>
+        <div class="val">{total_foods_in_db} кормов</div>
       </div>
     </div>
   </div>
