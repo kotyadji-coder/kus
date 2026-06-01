@@ -441,16 +441,16 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     # --- Detect food photo ---
     STATIC_DIR = os.path.join(os.path.dirname(__file__), "static", "dry-foods")
     _photo_cache = {}
+    _SVG_BAG = '<svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>'
     def _food_photo_tag(food_id: str) -> str:
         if food_id not in _photo_cache:
             for ext in ("jpg", "png", "webp"):
                 path = os.path.join(STATIC_DIR, f"{food_id}.{ext}")
                 if os.path.exists(path):
-                    abs_path = os.path.abspath(path)
-                    _photo_cache[food_id] = f'<img src="file://{abs_path}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
+                    _photo_cache[food_id] = f'<img src="/static/dry-foods/{food_id}.{ext}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
                     break
             else:
-                _photo_cache[food_id] = '<svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>'
+                _photo_cache[food_id] = _SVG_BAG
         return _photo_cache[food_id]
 
     # --- Food card builder ---
@@ -2050,7 +2050,8 @@ def generate_dry_food_pdf(result: DryFoodResult, output_path: str = None) -> str
 
     try:
         from weasyprint import HTML as WeasyprintHTML
-        WeasyprintHTML(string=html).write_pdf(output_path)
+        base = os.path.dirname(__file__)
+        WeasyprintHTML(string=html, base_url=base).write_pdf(output_path)
     except (ImportError, OSError):
         html_path = output_path.replace(".pdf", ".html")
         with open(html_path, "w", encoding="utf-8") as f:
