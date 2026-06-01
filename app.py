@@ -308,6 +308,40 @@ async def api_breeds():
 # Админка (простая)
 # =====================================================================
 
+@app.get("/demo/dry", response_class=HTMLResponse)
+async def demo_dry():
+    """Демо-расчёт подбора сухого корма (публичный, без оплаты)."""
+    from dry_food_selector import DryFoodSelector, DogProfileDry, generate_dry_food_html
+
+    dog = DogProfileDry(
+        name="Барон",
+        breed="Лабрадор-ретривер",
+        age_months=36,
+        sex="male",
+        neutered=True,
+        weight_kg=32,
+        condition="chubby",
+        activity="moderate",
+        diagnoses=[],
+        stool="good",
+        stop_products=["курица"],
+    )
+    selector = DryFoodSelector()
+    result = selector.select(dog)
+    html = generate_dry_food_html(result)
+
+    # Inject demo banner before </body>
+    banner = '''<div style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#055ba9,#04467f);color:#fff;padding:14px 20px;text-align:center;box-shadow:0 -4px 20px rgba(0,0,0,0.15);font-family:system-ui,sans-serif;">
+      <div style="max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <span style="font-size:15px;">Это демо-пример для лабрадора Барона. Хотите подбор под свою собаку?</span>
+        <a href="/order" style="display:inline-block;padding:10px 24px;background:#f59e0b;color:#fff;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap;">Заказать подбор — 990 &#8381;</a>
+      </div>
+    </div>'''
+    html = html.replace("</body>", banner + "\n</body>")
+
+    return HTMLResponse(html)
+
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request, user: str = Depends(verify_admin)):
     orders = await list_orders(100)
