@@ -437,6 +437,20 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     total_foods = len(result.budget) + len(result.mid) + len(result.premium)
     stop_text = ", ".join(dog.stop_products) if dog.stop_products else "нет"
 
+    # --- Detect food photo ---
+    STATIC_DIR = os.path.join(os.path.dirname(__file__), "static", "dry-foods")
+    _photo_cache = {}
+    def _food_photo_tag(food_id: str) -> str:
+        if food_id not in _photo_cache:
+            for ext in ("jpg", "png", "webp"):
+                path = os.path.join(STATIC_DIR, f"{food_id}.{ext}")
+                if os.path.exists(path):
+                    _photo_cache[food_id] = f'<img src="/static/dry-foods/{food_id}.{ext}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
+                    break
+            else:
+                _photo_cache[food_id] = '<svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>'
+        return _photo_cache[food_id]
+
     # --- Food card builder ---
     def food_card(rec: FoodRecommendation, rank: int, cat_label: str, is_best_overall: bool = False) -> str:
         f = rec.food
@@ -519,7 +533,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
       </td>
       <td>
         <div class="bag-photo">
-          <svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>
+          {_food_photo_tag(f.get('id', ''))}
         </div>
       </td>
       <td><div class="body">
@@ -1183,6 +1197,7 @@ p {{ margin: 0; }}
   );
 }}
 .bag-photo svg {{ position: relative; z-index: 1; color: var(--ink-light); }}
+.bag-photo img {{ border-radius: 6px; }}
 .bag-photo .ph-label {{
   position: absolute;
   bottom: 0.5mm;
