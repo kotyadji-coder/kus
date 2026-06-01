@@ -1486,66 +1486,6 @@
       }
     },
     {
-      "id": "prolife_sensitive_lamb",
-      "brand": "Prolife",
-      "name": "Sensitive Adult Lamb & Rice Medium/Large",
-      "country": "Италия",
-      "price_category": "premium",
-      "price_per_kg": 850,
-      "size_suitable": [
-        "medium",
-        "large"
-      ],
-      "age_suitable": [
-        "adult"
-      ],
-      "grain_free": false,
-      "ingredients_top5": [
-        "свежее мясо ягнёнка 20%",
-        "дегидрированное мясо ягнёнка 18%",
-        "рис 14%",
-        "жир лосося",
-        "кукурузный глютен 4%"
-      ],
-      "protein_pct": 26,
-      "fat_pct": 14,
-      "fiber_pct": 2.5,
-      "ash_pct": 7,
-      "meat_estimate_pct": 48,
-      "main_protein_sources": [
-        "ягнёнок"
-      ],
-      "grain_sources": [
-        "рис"
-      ],
-      "preservatives": "натуральные",
-      "splitting_detected": false,
-      "pros": [
-        "48% ягнёнка",
-        "Жир лосося вместо куриного — для шерсти",
-        "Один мясной белок — гипоаллергенный",
-        "Стабильные поставки"
-      ],
-      "cons": [
-        "Кукурузный глютен 4% — небольшой, но есть"
-      ],
-      "special_traits": [
-        "hypoallergenic",
-        "skin_coat"
-      ],
-      "allergens_absent": [
-        "chicken",
-        "wheat",
-        "soy",
-        "beef"
-      ],
-      "availability_ru": "stable",
-      "buy_links": {
-        "ozon": "ozon.ru/search/?text=prolife+sensitive+lamb",
-        "wb": "wildberries.ru/catalog/0/search.aspx?search=prolife+sensitive+lamb"
-      }
-    },
-    {
       "id": "landor_lamb_rice_large",
       "brand": "Landor",
       "name": "Adult Large Breed Lamb & Rice",
