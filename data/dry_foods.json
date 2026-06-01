@@ -838,63 +838,6 @@
       }
     },
     {
-      "id": "mealfeel_functional_lamb",
-      "brand": "Mealfeel",
-      "name": "Functional Nutrition Adult Lamb",
-      "country": "Бельгия",
-      "price_category": "budget",
-      "price_per_kg": 350,
-      "size_suitable": [
-        "small",
-        "medium",
-        "large"
-      ],
-      "age_suitable": [
-        "adult"
-      ],
-      "grain_free": false,
-      "ingredients_top5": [
-        "дегидрированное мясо ягнёнка 20%",
-        "рис 18%",
-        "кукуруза",
-        "куриный жир",
-        "пульпа сахарной свёклы"
-      ],
-      "protein_pct": 24,
-      "fat_pct": 13,
-      "fiber_pct": 3,
-      "ash_pct": 7,
-      "meat_estimate_pct": 25,
-      "main_protein_sources": [
-        "ягнёнок"
-      ],
-      "grain_sources": [
-        "рис",
-        "кукуруза"
-      ],
-      "preservatives": "натуральные",
-      "splitting_detected": false,
-      "pros": [
-        "Бельгийское производство за бюджетную цену",
-        "Ягнёнок как основной белок",
-        "Стабильные поставки"
-      ],
-      "cons": [
-        "25% мяса — нижняя граница",
-        "Кукуруза"
-      ],
-      "special_traits": [],
-      "allergens_absent": [
-        "wheat",
-        "soy"
-      ],
-      "availability_ru": "stable",
-      "buy_links": {
-        "ozon": "ozon.ru/search/?text=mealfeel+lamb",
-        "wb": "wildberries.ru/catalog/0/search.aspx?search=mealfeel+lamb"
-      }
-    },
-    {
       "id": "primordial_puppy_chicken",
       "brand": "Primordial",
       "name": "Puppy Chicken & Sea Fish Grain-Free",
@@ -1660,69 +1603,6 @@
       "buy_links": {
         "ozon": "ozon.ru/search/?text=landor+lamb+rice+large",
         "wb": "wildberries.ru/catalog/0/search.aspx?search=landor+lamb+rice+large"
-      }
-    },
-    {
-      "id": "nutri_free_salmon",
-      "brand": "Nutri Free",
-      "name": "Adult Salmon Grain-Free",
-      "country": "Россия",
-      "price_category": "budget",
-      "price_per_kg": 380,
-      "size_suitable": [
-        "small",
-        "medium",
-        "large"
-      ],
-      "age_suitable": [
-        "adult"
-      ],
-      "grain_free": true,
-      "ingredients_top5": [
-        "дегидрированный лосось 22%",
-        "картофель",
-        "горох",
-        "жир куриный",
-        "дегидрированная сельдь 5%"
-      ],
-      "protein_pct": 27,
-      "fat_pct": 15,
-      "fiber_pct": 3,
-      "ash_pct": 7.5,
-      "meat_estimate_pct": 30,
-      "main_protein_sources": [
-        "лосось",
-        "сельдь"
-      ],
-      "grain_sources": [],
-      "preservatives": "натуральные",
-      "splitting_detected": false,
-      "pros": [
-        "Беззерновой в бюджетном сегменте",
-        "Рыба — редкий аллерген",
-        "Хорошо для шерсти"
-      ],
-      "cons": [
-        "Куриный жир",
-        "Картофель и горох",
-        "30% рыбы — средний показатель"
-      ],
-      "special_traits": [
-        "grain_free",
-        "skin_coat"
-      ],
-      "allergens_absent": [
-        "chicken",
-        "corn",
-        "wheat",
-        "soy",
-        "beef",
-        "lamb"
-      ],
-      "availability_ru": "stable",
-      "buy_links": {
-        "ozon": "ozon.ru/search/?text=nutri+free+salmon",
-        "wb": "wildberries.ru/catalog/0/search.aspx?search=nutri+free+salmon"
       }
     },
     {
