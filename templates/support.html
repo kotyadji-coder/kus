@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Поддержка — Кусь</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+           background: #f5f7fa; color: #333; padding: 20px; }
+
+    .admin-nav { display: flex; gap: 12px; margin-bottom: 20px; }
+    .admin-nav a { color: #055ba9; font-weight: 600; text-decoration: none; font-size: 14px;
+                   padding: 8px 16px; border-radius: 8px; background: #e6f0fa; }
+    .admin-nav a.active { background: #055ba9; color: #fff; }
+
+    .stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .stat { background: #fff; padding: 14px 18px; border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+    .stat .num { font-size: 26px; font-weight: 700; color: #055ba9; }
+    .stat .label { font-size: 12px; color: #888; }
+    .stat.warn .num { color: #d97706; }
+    .stat.good .num { color: #16a34a; }
+    .stat.bad .num { color: #dc2626; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tabs a { padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+               text-decoration: none; background: #e2e8f0; color: #555; }
+    .tabs a.active { background: #055ba9; color: #fff; }
+    .tabs .badge { display: inline-block; background: #dc2626; color: #fff;
+                   font-size: 11px; border-radius: 10px; padding: 1px 6px; margin-left: 4px; }
+
+    .conv { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 20px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+    .conv.pending { border-color: #fbbf24; box-shadow: 0 0 0 2px #fef3c7; }
+
+    .conv-header { padding: 14px 18px; background: #f8f9fb; border-bottom: 1px solid #e2e8f0;
+                   display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .conv-header .client { font-weight: 700; font-size: 15px; }
+    .conv-header .dog { font-size: 13px; color: #666; background: #eff6ff;
+                        padding: 2px 10px; border-radius: 20px; }
+    .conv-header .uid { font-size: 12px; color: #aaa; }
+    .badge-pending { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24;
+                     font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+    .msg { padding: 12px 18px; border-bottom: 1px solid #f0f4f8; font-size: 14px;
+           display: flex; gap: 12px; align-items: flex-start; }
+    .msg:last-of-type { border-bottom: none; }
+    .msg-in { background: #fff; }
+    .msg-in.unanswered { background: #fffbeb; }
+    .msg-ai { background: #f0f9f4; }
+    .msg-admin { background: #eff6ff; }
+
+    .msg-meta { flex: 0 0 80px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .role { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+    .role-client { background: #fee2e2; color: #dc2626; }
+    .role-ai     { background: #dcfce7; color: #16a34a; }
+    .role-admin  { background: #dbeafe; color: #1d4ed8; }
+    .msg-time { font-size: 11px; color: #aaa; }
+
+    .msg-body { flex: 1; }
+    .msg-text { line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+
+    .msg-rating { margin-top: 8px; display: flex; gap: 6px; }
+    .btn-rate { border: none; background: none; cursor: pointer; font-size: 18px;
+                padding: 2px 6px; border-radius: 6px; transition: background .15s; }
+    .btn-rate:hover { background: #f1f5f9; }
+    .btn-rate.rated-good { background: #dcfce7; }
+    .btn-rate.rated-bad  { background: #fee2e2; }
+
+    .reply-form { padding: 14px 18px; background: #f8f9fb; border-top: 2px solid #e2e8f0; }
+    .reply-form textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 8px;
+                           padding: 10px 12px; font-size: 14px; font-family: inherit;
+                           resize: vertical; min-height: 72px; }
+    .reply-form textarea:focus { outline: none; border-color: #055ba9; }
+    .reply-form-actions { display: flex; gap: 10px; margin-top: 8px; align-items: center; }
+    .btn-send { background: #055ba9; color: #fff; border: none; padding: 9px 20px;
+                border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-send:hover { background: #044a8c; }
+    .reply-hint { font-size: 12px; color: #999; }
+
+    .empty { color: #aaa; text-align: center; padding: 60px; font-size: 15px; }
+    h1 { color: #055ba9; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="admin-nav">
+    <a href="/admin">Заказы</a>
+    <a href="/admin/support" class="active">Поддержка</a>
+    <a href="/admin/evals">Эвалы</a>
+  </div>
+
+  <h1>Диалоги поддержки</h1>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num">{{ total_convs }}</div>
+      <div class="label">Всего диалогов</div>
+    </div>
+    <div class="stat {% if total_pending %}warn{% endif %}">
+      <div class="num">{{ total_pending }}</div>
+      <div class="label">Ожидают ответа</div>
+    </div>
+    <div class="stat good">
+      <div class="num">{{ ai_good }}</div>
+      <div class="label">Хорошие ответы ИИ</div>
+    </div>
+    <div class="stat bad">
+      <div class="num">{{ ai_bad }}</div>
+      <div class="label">Плохие ответы ИИ</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <a href="/admin/support?filter=all" class="{% if filter == 'all' %}active{% endif %}">Все</a>
+    <a href="/admin/support?filter=pending" class="{% if filter == 'pending' %}active{% endif %}">
+      Ожидают{% if total_pending %}<span class="badge">{{ total_pending }}</span>{% endif %}
+    </a>
+  </div>
+
+  {% if not conversations %}
+    <div class="empty">Пока нет обращений</div>
+  {% endif %}
+
+  {% for uid, conv in conversations %}
+  <div class="conv {% if conv.has_pending %}pending{% endif %}">
+
+    <div class="conv-header">
+      <span class="client">{{ conv.name }}</span>
+      {% if conv.username %}<span class="uid">@{{ conv.username }}</span>{% endif %}
+      <span class="uid">ID {{ uid }}</span>
+      {% if conv.order %}
+        <span class="dog">🐾 {{ conv.order.dog_name }} · {{ conv.order.breed }}</span>
+      {% endif %}
+      {% if conv.has_pending %}
+        <span class="badge-pending">⏳ Ожидает ответа</span>
+      {% endif %}
+    </div>
+
+    {% for msg in conv.messages %}
+      {% if msg.direction == 'in' %}
+        <div class="msg msg-in {% if msg.answered == 0 %}unanswered{% endif %}">
+          <div class="msg-meta">
+            <span class="role role-client">Клиент</span>
+            <span class="msg-time">{{ msg.time }}</span>
+          </div>
+          <div class="msg-body">
+            <div class="msg-text">{{ msg.message }}</div>
+          </div>
+        </div>
+      {% elif msg.is_ai %}
+        <div class="msg msg-ai">
+          <div class="msg-meta">
+            <span class="role role-ai">🤖 ИИ</span>
+            <span class="msg-time">{{ msg.time }}</span>
+          </div>
+          <div class="msg-body">
+            <div class="msg-text">{{ msg.message }}</div>
+            <div class="msg-rating">
+              <form method="post" action="/admin/support/rate" style="display:inline">
+                <input type="hidden" name="msg_id" value="{{ msg.id }}">
+                <input type="hidden" name="rating" value="1">
+                <button type="submit" class="btn-rate {% if msg.rating == 1 %}rated-good{% endif %}"
+                        title="Хороший ответ">👍</button>
+              </form>
+              <form method="post" action="/admin/support/rate" style="display:inline">
+                <input type="hidden" name="msg_id" value="{{ msg.id }}">
+                <input type="hidden" name="rating" value="-1">
+                <button type="submit" class="btn-rate {% if msg.rating == -1 %}rated-bad{% endif %}"
+                        title="Плохой ответ">👎</button>
+              </form>
+              <form method="post" action="/admin/support/rate" style="display:inline">
+                <input type="hidden" name="msg_id" value="{{ msg.id }}">
+                <input type="hidden" name="rating" value="0">
+                <button type="submit" class="btn-rate" title="Снять оценку" style="font-size:13px;color:#aaa">✕</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="msg msg-admin">
+          <div class="msg-meta">
+            <span class="role role-admin">👤 Вы</span>
+            <span class="msg-time">{{ msg.time }}</span>
+          </div>
+          <div class="msg-body">
+            <div class="msg-text">{{ msg.message }}</div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="reply-form">
+      <form method="post" action="/admin/support/reply">
+        <input type="hidden" name="user_id" value="{{ uid }}">
+        <textarea name="message" placeholder="Написать клиенту вручную (перекрывает ИИ)..."></textarea>
+        <div class="reply-form-actions">
+          <button type="submit" class="btn-send">Отправить</button>
+          <span class="reply-hint">или из бота: <code>/reply {{ uid }} текст</code></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+  {% endfor %}
+
+</body>
+</html>

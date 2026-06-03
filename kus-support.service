@@ -1,0 +1,11 @@
+[Unit]
+Description=Kus Support Agent (Claude AI)
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/kus
+ExecStart=/opt/kus/venv/bin/python /opt/kus/support_agent.py
+StandardOutput=journal
+StandardError=journal

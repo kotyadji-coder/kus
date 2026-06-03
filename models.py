@@ -194,6 +194,19 @@ async def update_order(order_id: int, **kwargs):
         await db.commit()
 
 
+async def get_order_by_telegram_user_id(telegram_user_id: int) -> dict | None:
+    """Последний выполненный заказ пользователя."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(
+            "SELECT * FROM orders WHERE telegram_user_id=? AND status='done' "
+            "ORDER BY created_at DESC LIMIT 1",
+            (telegram_user_id,),
+        ) as cursor:
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+
+
 async def list_orders(limit: int = 50) -> list[dict]:
     async with aiosqlite.connect(DB_PATH) as db:
         db.row_factory = aiosqlite.Row

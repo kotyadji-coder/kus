@@ -13,7 +13,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 import secrets
-from fastapi import FastAPI, Request, BackgroundTasks, HTTPException, Depends
+from fastapi import FastAPI, Form, Request, BackgroundTasks, HTTPException, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
@@ -350,61 +350,109 @@ async def admin_page(request: Request, user: str = Depends(verify_admin)):
 
 
 @app.get("/admin/support", response_class=HTMLResponse)
-async def admin_support(request: Request, user: str = Depends(verify_admin)):
-    from database import get_support_logs
-    logs = await get_support_logs(200)
-    # Группируем по user_id для удобного просмотра
-    conversations = {}
-    for log in reversed(list(logs)):
-        uid = log["user_id"]
+async def admin_support(request: Request, user: str = Depends(verify_admin),
+                        filter: str = "all"):
+    import aiosqlite as _aiosqlite
+    BOT_DB = os.path.join(os.path.dirname(__file__), "bot.db")
+    KUS_DB = os.path.join(os.path.dirname(__file__), "kus.db")
+
+    # Загружаем лог поддержки
+    async with _aiosqlite.connect(BOT_DB) as db:
+        db.row_factory = _aiosqlite.Row
+        async with db.execute(
+            "SELECT id, user_id, user_name, username, direction, message, "
+            "created_at, COALESCE(answered,1) as answered, "
+            "COALESCE(is_ai,0) as is_ai, COALESCE(rating,0) as rating "
+            "FROM support_log ORDER BY created_at"
+        ) as cur:
+            rows = [dict(r) for r in await cur.fetchall()]
+
+    # Загружаем заказы для подстановки имени собаки
+    orders_by_tg: dict = {}
+    try:
+        async with _aiosqlite.connect(KUS_DB) as db:
+            db.row_factory = _aiosqlite.Row
+            async with db.execute(
+                "SELECT telegram_user_id, dog_name, breed FROM orders "
+                "WHERE telegram_user_id IS NOT NULL AND status='done' "
+                "ORDER BY created_at DESC"
+            ) as cur:
+                for r in await cur.fetchall():
+                    tid = r["telegram_user_id"]
+                    if tid not in orders_by_tg:
+                        orders_by_tg[tid] = {"dog_name": r["dog_name"], "breed": r["breed"]}
+    except Exception:
+        pass
+
+    # Группируем по user_id
+    conversations: dict = {}
+    for row in rows:
+        uid = row["user_id"]
         if uid not in conversations:
-            conversations[uid] = {"name": log["user_name"], "username": log["username"], "messages": []}
-        conversations[uid]["messages"].append({
-            "direction": log["direction"],
-            "message": log["message"],
-            "time": log["created_at"],
-        })
-    html = """<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Поддержка — Кусь</title>
-    <style>
-    body{font-family:system-ui,sans-serif;background:#f5f7fa;margin:0;padding:20px;}
-    .container{max-width:800px;margin:0 auto;}
-    h1{color:#055ba9;margin-bottom:20px;}
-    .conv{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:16px;overflow:hidden;}
-    .conv-header{padding:14px 18px;background:#f8f9fb;border-bottom:1px solid #e2e8f0;font-weight:700;font-size:15px;}
-    .conv-header span{color:#888;font-weight:400;font-size:13px;margin-left:8px;}
-    .msg{padding:10px 18px;border-bottom:1px solid #f0f0f0;font-size:14px;display:flex;gap:10px;align-items:flex-start;}
-    .msg:last-child{border-bottom:none;}
-    .msg-in{background:#fff;}
-    .msg-out{background:#f0f6ff;}
-    .msg-dir{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;margin-top:2px;}
-    .msg-in .msg-dir{background:#fee2e2;color:#dc2626;}
-    .msg-out .msg-dir{background:#dcfce7;color:#16a34a;}
-    .msg-text{flex:1;line-height:1.5;}
-    .msg-time{flex:0 0 auto;font-size:11px;color:#999;margin-top:3px;}
-    .back{display:inline-block;margin-bottom:16px;color:#055ba9;text-decoration:none;font-weight:600;}
-    .empty{color:#999;text-align:center;padding:40px;}
-    </style></head><body><div class="container">
-    <a href="/admin" class="back">&larr; Заказы</a>
-    <h1>Диалоги поддержки</h1>"""
+            conversations[uid] = {
+                "name": row["user_name"] or "Без имени",
+                "username": row["username"] or "",
+                "messages": [],
+                "has_pending": False,
+                "order": orders_by_tg.get(uid),
+            }
+        msg = {**row, "time": (row["created_at"] or "")[:16]}
+        conversations[uid]["messages"].append(msg)
+        if row["direction"] == "in" and row["answered"] == 0:
+            conversations[uid]["has_pending"] = True
 
-    if not conversations:
-        html += '<div class="empty">Пока нет обращений</div>'
-    else:
-        for uid, conv in conversations.items():
-            name = conv["name"] or "Без имени"
-            uname = f'@{conv["username"]}' if conv["username"] else ""
-            html += f'<div class="conv"><div class="conv-header">{name} <span>{uname} · ID {uid}</span></div>'
-            for m in conv["messages"]:
-                cls = "msg-in" if m["direction"] == "in" else "msg-out"
-                label = "Клиент" if m["direction"] == "in" else "Вы"
-                time_str = m["time"][:16] if m["time"] else ""
-                text = m["message"].replace("<", "&lt;").replace(">", "&gt;")
-                html += f'<div class="msg {cls}"><div class="msg-dir">{label}</div><div class="msg-text">{text}</div><div class="msg-time">{time_str}</div></div>'
-            html += '</div>'
+    # Фильтрация
+    if filter == "pending":
+        conversations = {k: v for k, v in conversations.items() if v["has_pending"]}
 
-    html += '</div></body></html>'
-    return HTMLResponse(html)
+    # Сортировка: сначала с pending
+    sorted_convs = sorted(conversations.items(), key=lambda x: -x[1]["has_pending"])
+
+    total_pending = sum(1 for v in conversations.values() if v["has_pending"])
+    ai_good = sum(1 for r in rows if r["is_ai"] and r["rating"] == 1)
+    ai_bad = sum(1 for r in rows if r["is_ai"] and r["rating"] == -1)
+
+    return templates.TemplateResponse(request=request, name="support.html", context={
+        "conversations": sorted_convs,
+        "filter": filter,
+        "total_pending": total_pending,
+        "total_convs": len(conversations),
+        "ai_good": ai_good,
+        "ai_bad": ai_bad,
+    })
+
+
+@app.post("/admin/support/reply")
+async def admin_support_reply(
+    request: Request,
+    user_id: int = Form(...),
+    message: str = Form(...),
+    _user: str = Depends(verify_admin),
+):
+    """Ручной ответ из админки → отправляется клиенту в Telegram."""
+    from database import log_support as _log_support
+    import aiohttp as _aiohttp
+    bot_token = os.getenv("BOT_TOKEN", "")
+    async with _aiohttp.ClientSession() as session:
+        await session.post(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            json={"chat_id": user_id, "text": message},
+        )
+    await _log_support(user_id, "admin", "", "out", message, is_ai=0)
+    return RedirectResponse(url="/admin/support", status_code=303)
+
+
+@app.post("/admin/support/rate")
+async def admin_support_rate(
+    request: Request,
+    msg_id: int = Form(...),
+    rating: int = Form(...),
+    _user: str = Depends(verify_admin),
+):
+    """Оценка AI-ответа: 1 = хорошо, -1 = плохо."""
+    from database import rate_support_message
+    await rate_support_message(msg_id, rating)
+    return RedirectResponse(url="/admin/support", status_code=303)
 
 
 @app.get("/admin/evals/preview/{idx}", response_class=HTMLResponse)

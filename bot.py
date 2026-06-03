@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from datetime import datetime, timezone, timedelta
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart, Command
@@ -8,14 +9,16 @@ from aiogram.types import (
     BotCommand,
     CallbackQuery, Message,
     InlineKeyboardButton, InlineKeyboardMarkup,
-    ReplyKeyboardMarkup, KeyboardButton,
-    WebAppInfo,
+    ReplyKeyboardRemove,
 )
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from dotenv import load_dotenv
 
-from database import init_db, add_user, get_user, increment_step, get_users_at_step, log_support
+from database import (
+    init_db, add_user, get_user, increment_step, get_users_at_step,
+    log_support, set_support_until,
+)
 from messages import (
     WELCOME, TRUST, NATURAL_PRAISE, NATURAL, DRY_PRAISE, DRY,
 )
@@ -33,20 +36,8 @@ log = logging.getLogger(__name__)
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# Хранилище: user_id клиента → message_id последнего пересланного сообщения админу
-# Нужно для того, чтобы админ мог ответить реплаем
-_support_map: dict[int, int] = {}  # admin_message_id → client_user_id
-
-
-# ─── Главное меню (persistent keyboard) ──────────────────────────────────────
-
-def main_menu_keyboard():
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Подобрать рацион"), KeyboardButton(text="Помощь")],
-        ],
-        resize_keyboard=True,
-    )
+# Хранилище: admin_message_id → client_user_id (для ответа реплаем)
+_support_map: dict[int, int] = {}
 
 
 # ─── /start ───────────────────────────────────────────────────────────────────
@@ -74,18 +65,19 @@ async def cmd_start(message: Message):
         ]
     ])
     await message.answer(WELCOME.format(first_name=first_name), reply_markup=keyboard)
-    await message.answer("Выберите действие:", reply_markup=main_menu_keyboard())
+    await message.answer(
+        "Используйте меню / внизу или кнопки выше.",
+        reply_markup=ReplyKeyboardRemove(),
+    )
 
 
 # ─── Кнопка «Подобрать рацион» ───────────────────────────────────────────────
 
 @dp.message(F.text == "Подобрать рацион")
+@dp.message(Command("order"))
 async def btn_order(message: Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text="Открыть сайт",
-            url=BASE_URL,
-        )],
+        [InlineKeyboardButton(text="Открыть сайт", url=BASE_URL)],
     ])
     await message.answer(
         "На сайте вы можете узнать подробности и оформить подбор рациона — "
@@ -95,24 +87,58 @@ async def btn_order(message: Message):
     )
 
 
-# ─── Кнопка «Помощь» ─────────────────────────────────────────────────────────
+# ─── /help ────────────────────────────────────────────────────────────────────
 
 @dp.message(F.text == "Помощь")
+@dp.message(Command("help"))
 async def btn_help(message: Message):
-    await message.answer(
-        "Напишите ваш вопрос прямо сюда — я передам его специалисту. "
-        "Обычно отвечаем в течение 15 минут в рабочее время (10:00–20:00)."
-    )
-    # Ставим флаг, что следующее сообщение — вопрос в поддержку
-    await _mark_waiting_support(message.from_user.id)
+    user_id = message.from_user.id
+    user = await get_user(user_id)
+    support_until = user["support_until"] if user else None
+
+    if support_until and _is_support_active(support_until):
+        next_time = _next_reply_time()
+        await message.answer(
+            f"Напишите ваш вопрос прямо сюда — отвечу сегодня до {next_time} по московскому времени."
+        )
+    else:
+        await message.answer(
+            "Напишите ваш вопрос прямо сюда — я передам его специалисту. "
+            "Обычно отвечаем в течение 15 минут в рабочее время (10:00–20:00)."
+        )
+        await _mark_waiting_support(user_id)
 
 
-# Хранилище пользователей, ожидающих ответа поддержки
+# Хранилище пользователей, ожидающих ответа поддержки (только не-покупатели)
 _waiting_support: set[int] = set()
 
 
 async def _mark_waiting_support(user_id: int):
     _waiting_support.add(user_id)
+
+
+_REPLY_HOURS_MSK = [9, 14, 20]
+_MSK = timezone(timedelta(hours=3))
+
+
+def _is_support_active(support_until: str) -> bool:
+    """True если срок поддержки ещё не истёк."""
+    try:
+        until = datetime.fromisoformat(support_until)
+        if until.tzinfo is None:
+            until = until.replace(tzinfo=timezone.utc)
+        return until > datetime.now(timezone.utc)
+    except Exception:
+        return False
+
+
+def _next_reply_time() -> str:
+    """Следующее время ответа AI по МСК (09:00 / 14:00 / 20:00)."""
+    now = datetime.now(_MSK)
+    for h in _REPLY_HOURS_MSK:
+        if now.hour < h:
+            return f"{h:02d}:00"
+    return f"{_REPLY_HOURS_MSK[0]:02d}:00 (завтра)"
 
 
 # ─── Выбор трека ──────────────────────────────────────────────────────────────
@@ -141,6 +167,29 @@ async def choose_track(callback: CallbackQuery):
     await increment_step(user_id)
 
 
+# ─── Команда /reply USER_ID текст — ручное вмешательство в AI-диалог ────────
+
+@dp.message(Command("reply"), F.from_user.id == ADMIN_ID)
+async def cmd_admin_reply(message: Message):
+    """Синтаксис: /reply 123456789 Ваш текст ответа"""
+    parts = message.text.split(maxsplit=2)
+    if len(parts) < 3:
+        await message.answer("Использование: /reply USER_ID текст ответа")
+        return
+    try:
+        target_id = int(parts[1])
+    except ValueError:
+        await message.answer("USER_ID должен быть числом")
+        return
+    text = parts[2]
+    try:
+        await bot.send_message(target_id, text)
+        await log_support(target_id, "admin", "", "out", text, is_ai=0)
+        await message.answer(f"Отправлено пользователю {target_id}.")
+    except Exception as e:
+        await message.answer(f"Ошибка: {e}")
+
+
 # ─── Ответ админа (реплай на пересланное сообщение) ──────────────────────────
 
 @dp.message(F.chat.id == ADMIN_ID, F.reply_to_message)
@@ -161,27 +210,47 @@ async def admin_reply(message: Message):
         await message.reply(f"Ошибка отправки: {e}")
 
 
-# ─── Все остальные сообщения — пересылка в поддержку ─────────────────────────
+# ─── Все остальные сообщения ─────────────────────────────────────────────────
 
 @dp.message()
 async def user_message(message: Message):
     """Любое текстовое сообщение — fallback."""
-    user = message.from_user
-    user_id = user.id
+    sender = message.from_user
+    user_id = sender.id
+    name = sender.first_name or ""
+    uname = sender.username or ""
 
-    # Если пользователь не в режиме поддержки и не ожидает — игнорируем
-    # (чтобы не пересылать случайные сообщения)
+    # Покупатели с активным сроком поддержки → AI-очередь
+    user = await get_user(user_id)
+    support_until = user["support_until"] if user else None
+
+    if support_until:
+        if _is_support_active(support_until):
+            await log_support(user_id, name, uname, "in", message.text)
+            next_time = _next_reply_time()
+            await message.answer(
+                f"Спасибо за вопрос! Отвечу до {next_time} по московскому времени.",
+                
+            )
+            return
+        else:
+            await message.answer(
+                "Ваш период поддержки (7 дней) завершён.\n"
+                "Если хотите продолжить — оформите новый рацион.",
+                
+            )
+            return
+
+    # Не-покупатели: старая логика через _waiting_support
     if user_id not in _waiting_support:
         await message.answer(
             "Я — бот для подбора рациона. Используйте кнопки меню внизу.",
-            reply_markup=main_menu_keyboard(),
+            
         )
         return
 
     _waiting_support.discard(user_id)
 
-    name = user.first_name or ""
-    uname = user.username or ""
     username_display = f" (@{uname})" if uname else ""
     admin_text = (
         f"Вопрос от {name}{username_display}\n"
@@ -190,15 +259,15 @@ async def user_message(message: Message):
         f"{message.text}"
     )
 
-    # Логируем входящее сообщение
-    await log_support(user_id, name, uname, "in", message.text)
+    # answered=1: этим займётся Анастасия вручную, не AI
+    await log_support(user_id, name, uname, "in", message.text, answered=1)
 
     sent = await bot.send_message(ADMIN_ID, admin_text)
     _support_map[sent.message_id] = user_id
 
     await message.answer(
         "Вопрос отправлен. Ожидайте ответа — обычно в течение 15 минут.",
-        reply_markup=main_menu_keyboard(),
+        
     )
 
 
@@ -221,7 +290,7 @@ async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
         await bot.send_message(
             telegram_user_id,
             f"Готовим рацион для {order['dog_name']}! Как только будет готов — отправлю PDF сюда.",
-            reply_markup=main_menu_keyboard(),
+            
         )
         return True
 
@@ -238,6 +307,7 @@ async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
     )
     try:
         await bot.send_message(telegram_user_id, text)
+        await set_support_until(telegram_user_id)
         log.info(f"Delivered link for order #{order_id} to {telegram_user_id} via deep link")
         return True
     except Exception as e:
@@ -322,6 +392,7 @@ async def _delivery_loop():
                 try:
                     await bot.send_message(tg_id, text)
                     await update_order(order["id"], delivered=1)
+                    await set_support_until(tg_id)
                     log.info(f"Delivery loop: sent link for order #{order['id']} to {tg_id}")
                 except Exception as e:
                     log.error(f"Delivery loop: failed order #{order['id']}: {e}")
@@ -376,6 +447,8 @@ async def main():
 
     await bot.set_my_commands([
         BotCommand(command="start", description="Начать / Главное меню"),
+        BotCommand(command="order", description="Подобрать рацион"),
+        BotCommand(command="help", description="Задать вопрос специалисту"),
     ])
 
     # Добавляем колонки delivered/admin_notified если их нет

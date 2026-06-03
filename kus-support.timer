@@ -1,0 +1,10 @@
+[Unit]
+Description=Kus Support Agent — 09:00, 14:00, 20:00 МСК
+
+[Timer]
+# 06:00, 11:00, 17:00 UTC = 09:00, 14:00, 20:00 МСК
+OnCalendar=*-*-* 06:00,11:00,17:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
