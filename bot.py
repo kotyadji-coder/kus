@@ -20,7 +20,7 @@ from database import (
     log_support, set_support_until,
 )
 from messages import (
-    WELCOME, TRUST, NATURAL_PRAISE, NATURAL, DRY_PRAISE, DRY,
+    WELCOME, NATURAL_PRAISE, NATURAL, DRY_PRAISE, DRY,
 )
 
 load_dotenv()
@@ -65,10 +65,6 @@ async def cmd_start(message: Message):
         ]
     ])
     await message.answer(WELCOME.format(first_name=first_name), reply_markup=keyboard)
-    await message.answer(
-        "Используйте меню / внизу или кнопки выше.",
-        reply_markup=ReplyKeyboardRemove(),
-    )
 
 
 # ─── Кнопка «Подобрать рацион» ───────────────────────────────────────────────
@@ -152,9 +148,6 @@ async def choose_track(callback: CallbackQuery):
     await callback.answer()
 
     await add_user(user_id, first_name, track)
-
-    await bot.send_message(user_id, TRUST)
-    await asyncio.sleep(2)
 
     praise = NATURAL_PRAISE if track == "natural" else DRY_PRAISE
     await bot.send_message(user_id, praise)
