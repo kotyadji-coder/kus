@@ -205,9 +205,8 @@ async def user_message(message: Message):
 # ─── Доставка PDF по deep link ────────────────────────────────────────────────
 
 async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
-    """Привязывает telegram_user_id к заказу и отправляет PDF, если готов."""
+    """Привязывает telegram_user_id к заказу и отправляет ссылку, если готов."""
     from models import get_order, update_order
-    import aiohttp
 
     order = await get_order(order_id)
     if not order:
@@ -226,29 +225,24 @@ async def _deliver_order_by_id(telegram_user_id: int, order_id: int) -> bool:
         )
         return True
 
-    # PDF готов — отправляем
+    # HTML готов — отправляем ссылку
     diet_type = order["diet_type"]
     diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
-    caption = (
+    base_url = os.getenv("BASE_URL", "https://kus.dogfine.ru")
+    view_url = f"{base_url}/order/{order_id}/view"
+    text = (
         f"Вот ваш персональный {diet_label} для {order['dog_name']}!\n\n"
+        f"Открыть рацион: {view_url}\n\n"
+        f"На странице есть кнопка «Печать / Сохранить PDF».\n\n"
         f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
     )
-
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
-    async with aiohttp.ClientSession() as session:
-        with open(pdf_path, "rb") as f:
-            form = aiohttp.FormData()
-            form.add_field("chat_id", str(telegram_user_id))
-            form.add_field("caption", caption)
-            form.add_field("document", f, filename=os.path.basename(pdf_path))
-            async with session.post(url, data=form) as resp:
-                if resp.status == 200:
-                    log.info(f"Delivered order #{order_id} to {telegram_user_id} via deep link")
-                    return True
-                else:
-                    text = await resp.text()
-                    log.error(f"Failed to deliver order #{order_id}: {text}")
-                    return False
+    try:
+        await bot.send_message(telegram_user_id, text)
+        log.info(f"Delivered link for order #{order_id} to {telegram_user_id} via deep link")
+        return True
+    except Exception as e:
+        log.error(f"Failed to deliver order #{order_id}: {e}")
+        return False
 
 
 # ─── Планировщик рассылки ────────────────────────────────────────────────────
@@ -310,23 +304,25 @@ async def _delivery_loop():
             for row in rows:
                 order = dict(row)
                 tg_id = order["telegram_user_id"]
-                pdf_path = order["pdf_path"]
-                if not os.path.exists(pdf_path):
+                html_path = order["pdf_path"]
+                if not os.path.exists(html_path):
                     continue
 
                 diet_type = order["diet_type"]
                 diet_label = "натуральный рацион" if diet_type in ("barf", "cooked") else "подбор сухого корма"
-                caption = (
+                base_url = os.getenv("BASE_URL", "https://kus.dogfine.ru")
+                view_url = f"{base_url}/order/{order['id']}/view"
+                text = (
                     f"Готово! Вот ваш персональный {diet_label} для {order['dog_name']}.\n\n"
+                    f"Открыть рацион: {view_url}\n\n"
+                    f"На странице есть кнопка «Печать / Сохранить PDF».\n\n"
                     f"У вас есть 7 дней поддержки — задавайте любые вопросы прямо в этот чат."
                 )
 
                 try:
-                    from aiogram.types import FSInputFile
-                    doc = FSInputFile(pdf_path)
-                    await bot.send_document(tg_id, doc, caption=caption)
+                    await bot.send_message(tg_id, text)
                     await update_order(order["id"], delivered=1)
-                    log.info(f"Delivery loop: sent order #{order['id']} to {tg_id}")
+                    log.info(f"Delivery loop: sent link for order #{order['id']} to {tg_id}")
                 except Exception as e:
                     log.error(f"Delivery loop: failed order #{order['id']}: {e}")
 

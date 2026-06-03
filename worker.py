@@ -1,13 +1,12 @@
 """
-Фоновый воркер: после оплаты запускает расчёт, AI-персонализацию, генерацию PDF
-и доставку клиенту (Telegram + email).
+Фоновый воркер: после оплаты запускает расчёт, AI-персонализацию, генерацию HTML
+и доставку клиенту (ссылка в Telegram + email).
 """
 
 import asyncio
 import logging
 import os
 import smtplib
-from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
@@ -41,26 +40,26 @@ async def process_order(order: dict):
         diagnoses = parse_diagnoses(order.get("diagnoses") or "")
         stop_products = parse_stop_products(order.get("stop_products") or "")
 
-        # 2. Генерируем PDF
+        # 2. Генерируем HTML
         if diet_type in ("barf_and_dry", "cooked_and_dry"):
-            # Комбо: натуралка + сухой корм — два PDF
+            # Комбо: натуралка + сухой корм — два файла
             natural_type = "barf" if diet_type == "barf_and_dry" else "cooked"
             order_natural = {**order, "diet_type": natural_type}
-            pdf_natural = await _generate_natural_pdf(order_natural, diagnoses, stop_products)
-            pdf_dry = await _generate_dry_food_pdf(order, diagnoses, stop_products)
-            await _deliver(order, pdf_natural)
-            await _deliver(order, pdf_dry)
-            pdf_path = pdf_natural  # для записи в БД
+            html_natural = await _generate_natural_html(order_natural, diagnoses, stop_products)
+            html_dry = await _generate_dry_food_html(order, diagnoses, stop_products)
+            await _deliver(order, html_natural)
+            await _deliver(order, html_dry)
+            pdf_path = html_natural  # для записи в БД (поле переиспользуем)
         elif diet_type in ("barf", "cooked"):
-            pdf_path = await _generate_natural_pdf(order, diagnoses, stop_products)
+            pdf_path = await _generate_natural_html(order, diagnoses, stop_products)
             await _deliver(order, pdf_path)
         else:
-            pdf_path = await _generate_dry_food_pdf(order, diagnoses, stop_products)
+            pdf_path = await _generate_dry_food_html(order, diagnoses, stop_products)
             await _deliver(order, pdf_path)
 
         # 4. Обновляем статус
         await update_order(order_id, status="done", pdf_path=pdf_path)
-        log.info(f"Order #{order_id}: done! PDF: {pdf_path}")
+        log.info(f"Order #{order_id}: done! HTML: {pdf_path}")
 
         # 5. Уведомляем админа (нефатально)
         try:
@@ -77,9 +76,9 @@ async def process_order(order: dict):
 # Генерация PDF — натуралка
 # =====================================================================
 
-async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: list) -> str:
+async def _generate_natural_html(order: dict, diagnoses: list, stop_products: list) -> str:
     from calculator import DietCalculator, DogProfile
-    from pdf_generator import generate_pdf
+    from pdf_generator import generate_html
     from ai_adapter import generate_natural_intro, generate_natural_product_notes, generate_cover_image, generate_personal_analysis
 
     dog = DogProfile(
@@ -161,9 +160,11 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
 
     output_dir = os.path.join(os.path.dirname(__file__), "output")
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"order_{order['id']}_natural.pdf")
+    output_path = os.path.join(output_dir, f"order_{order['id']}_natural.html")
 
-    await asyncio.to_thread(generate_pdf, result, output_path)
+    html_content = await asyncio.to_thread(generate_html, result)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
     return output_path
 
 
@@ -171,8 +172,8 @@ async def _generate_natural_pdf(order: dict, diagnoses: list, stop_products: lis
 # Генерация PDF — сухой корм
 # =====================================================================
 
-async def _generate_dry_food_pdf(order: dict, diagnoses: list, stop_products: list) -> str:
-    from dry_food_selector import DryFoodSelector, DogProfileDry, generate_dry_food_pdf
+async def _generate_dry_food_html(order: dict, diagnoses: list, stop_products: list) -> str:
+    from dry_food_selector import DryFoodSelector, DogProfileDry, generate_dry_food_html
     from ai_adapter import generate_dry_food_analysis, generate_dry_food_intro, generate_dry_food_conclusion, generate_cover_image
 
     dog = DogProfileDry(
@@ -216,9 +217,11 @@ async def _generate_dry_food_pdf(order: dict, diagnoses: list, stop_products: li
 
     output_dir = os.path.join(os.path.dirname(__file__), "output")
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"order_{order['id']}_dry.pdf")
+    output_path = os.path.join(output_dir, f"order_{order['id']}_dry.html")
 
-    await asyncio.to_thread(generate_dry_food_pdf, result, output_path)
+    html_content = await asyncio.to_thread(generate_dry_food_html, result)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
     return output_path
 
 
@@ -226,43 +229,37 @@ async def _generate_dry_food_pdf(order: dict, diagnoses: list, stop_products: li
 # Доставка
 # =====================================================================
 
-async def _deliver(order: dict, pdf_path: str):
-    """Отправляет PDF в Telegram и/или на email."""
+BASE_URL = os.getenv("BASE_URL", "https://kus.dogfine.ru")
+
+
+async def _deliver(order: dict, html_path: str):
+    """Доставляет ссылку на расчёт в Telegram и/или на email."""
     delivered = False
 
-    # Telegram
+    # Telegram — доставка через bot.py delivery loop (по статусу done)
     tg_id = order.get("telegram_user_id")
     if tg_id and BOT_TOKEN:
-        try:
-            await _send_telegram_pdf(tg_id, pdf_path, order)
-            delivered = True
-            log.info(f"Order #{order['id']}: sent to Telegram {tg_id}")
-        except Exception as e:
-            log.error(f"Order #{order['id']}: Telegram delivery failed: {e}")
+        log.info(f"Order #{order['id']}: HTML ready, bot delivery loop will send link to {tg_id}")
+        delivered = True
 
     # Email
     email = order.get("email")
     if email and SMTP_USER:
         try:
-            await asyncio.to_thread(_send_email_pdf, email, pdf_path, order)
+            await asyncio.to_thread(_send_email_link, email, order)
             delivered = True
-            log.info(f"Order #{order['id']}: sent to {email}")
+            log.info(f"Order #{order['id']}: link sent to {email}")
         except Exception as e:
             log.error(f"Order #{order['id']}: Email delivery failed: {e}")
 
     if not delivered:
-        log.warning(f"Order #{order['id']}: PDF generated but not delivered (no Telegram/Email configured)")
+        log.warning(f"Order #{order['id']}: HTML generated but not delivered (no Telegram/Email configured)")
 
 
-async def _send_telegram_pdf(user_id: int, pdf_path: str, order: dict):
-    """Telegram delivery is handled by bot's delivery loop (bot.py).
-    Worker just marks the order as done — bot picks it up within 10 seconds."""
-    log.info(f"Order #{order['id']}: PDF ready, bot will deliver to {user_id}")
-
-
-def _send_email_pdf(email: str, pdf_path: str, order: dict):
-    """Отправляет PDF на email."""
+def _send_email_link(email: str, order: dict):
+    """Отправляет ссылку на расчёт на email."""
     diet_label = "натуральный рацион" if order["diet_type"] in ("barf", "cooked") else "подбор сухого корма"
+    view_url = f"{BASE_URL}/order/{order['id']}/view"
 
     msg = MIMEMultipart()
     msg["From"] = SMTP_FROM
@@ -271,17 +268,13 @@ def _send_email_pdf(email: str, pdf_path: str, order: dict):
 
     body = (
         f"Здравствуйте, {order['client_name']}!\n\n"
-        f"Во вложении — персональный {diet_label} для {order['dog_name']}.\n"
+        f"Готов персональный {diet_label} для {order['dog_name']}.\n\n"
+        f"Открыть рацион: {view_url}\n\n"
+        f"На странице есть кнопка «Печать / Сохранить PDF» — можно распечатать или сохранить как PDF.\n\n"
         f"У вас 7 дней поддержки. Пишите нам в Telegram: @doggifood_bot\n\n"
         f"С заботой о вашем питомце,\nКоманда Doggi"
     )
     msg.attach(MIMEText(body, "plain", "utf-8"))
-
-    with open(pdf_path, "rb") as f:
-        attachment = MIMEApplication(f.read(), _subtype="pdf")
-        attachment.add_header("Content-Disposition", "attachment",
-                              filename=os.path.basename(pdf_path))
-        msg.attach(attachment)
 
     with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
         server.login(SMTP_USER, SMTP_PASSWORD)

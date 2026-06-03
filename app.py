@@ -268,19 +268,17 @@ async def order_status(request: Request, order_id: int):
     })
 
 
-@app.get("/order/{order_id}/download")
-async def order_download(order_id: int):
-    """Скачать готовый PDF."""
-    from fastapi.responses import FileResponse
+@app.get("/order/{order_id}/view", response_class=HTMLResponse)
+async def order_view(order_id: int):
+    """Просмотр готового расчёта (HTML + кнопка печати)."""
     order = await get_order(order_id)
     if not order or order["status"] != "done" or not order.get("pdf_path"):
-        raise HTTPException(status_code=404, detail="PDF not found")
-    pdf_path = order["pdf_path"]
-    if not os.path.exists(pdf_path):
-        raise HTTPException(status_code=404, detail="PDF file not found")
-    dog_name = order["dog_name"].replace(" ", "_")
-    filename = f"Kus_{dog_name}.pdf"
-    return FileResponse(pdf_path, filename=filename, media_type="application/pdf")
+        raise HTTPException(status_code=404, detail="Расчёт не найден или ещё не готов")
+    html_path = order["pdf_path"]
+    if not os.path.exists(html_path):
+        raise HTTPException(status_code=404, detail="Файл расчёта не найден")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
 
 
 @app.get("/api/order/{order_id}/status")
