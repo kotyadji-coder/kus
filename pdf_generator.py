@@ -328,16 +328,12 @@ def generate_html(result: DietResult) -> str:
         for p in day_menu.morning:
             if p.grams > 0:
                 g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
-                hint = _spoon_hint(p.grams, p.product_id, p.product_name)
-                g_str = f'{g_str} <span class="spoon">{hint}</span>' if hint else g_str
                 morning_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
 
         evening_items = ""
         for p in day_menu.evening:
             if p.grams > 0:
                 g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
-                hint = _spoon_hint(p.grams, p.product_id, p.product_name)
-                g_str = f'{g_str} <span class="spoon">{hint}</span>' if hint else g_str
                 evening_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
 
         return f'''<div class="day{cls}">
@@ -362,6 +358,39 @@ def generate_html(result: DietResult) -> str:
 
     menu_page1_html = _menu_table(menu_page1)
     menu_page2_html = _menu_table(menu_page2)
+
+    # Легенда: как отмерить граммы без весов (ложки)
+    measure_legend = (
+        '<div style="margin-top:5mm;padding:4mm 6mm;background:var(--bg-warm,#f8f6f1);'
+        'border:1px solid var(--border,#e6e2d8);border-radius:10px;font-size:9pt;line-height:1.55;color:var(--ink-soft,#555);">'
+        '<strong style="color:var(--ink,#222);">Как отмерить без весов (примерно)</strong><br/>'
+        '<b>Мясо, фарш, субпродукты:</b> 1 ст.л. ≈ 15 г, 1 ч.л. ≈ 5 г — например, 60 г ≈ 4 ст.л.<br/>'
+        '<b>Тёртые овощи</b> (морковь, кабачок, тыква): 1 ст.л. ≈ 10 г — например, 15 г ≈ 1,5 ст.л.<br/>'
+        '<b>Творог:</b> 1 ст.л. ≈ 25 г. &nbsp;<b>Кефир / жидкость:</b> 1 ст.л. ≈ 15 мл.<br/>'
+        '<span style="color:var(--ink-light,#888);">Это ориентир для глаза. Точнее всего — недорогие кухонные весы с шагом 1 г, '
+        'особенно для мелких собак, где важен каждый грамм.</span>'
+        '</div>'
+    )
+
+    # Заметка-замена для менее доступного мяса (утка/кролик/баранина), если оно в меню
+    _SWAPPABLE = {"duck": "Утку", "rabbit": "Кролика", "lamb": "Баранину"}
+    _used_swap = []
+    for _d in result.weekly_menu:
+        for _p in _d.morning + _d.evening:
+            if _p.product_id in _SWAPPABLE and _SWAPPABLE[_p.product_id] not in _used_swap:
+                _used_swap.append(_SWAPPABLE[_p.product_id])
+    swap_note = ""
+    if _used_swap:
+        _items = ", ".join(_used_swap).lower()
+        swap_note = (
+            '<div style="margin-top:4mm;padding:4mm 6mm;background:var(--primary-soft,#eef4fb);'
+            'border-radius:10px;font-size:9pt;line-height:1.55;color:var(--ink-soft,#555);">'
+            f'<strong style="color:var(--ink,#222);">Не нашли в магазине?</strong> '
+            f'{_items.capitalize()} спокойно заменяйте на говядину, индейку или курицу '
+            f'(если они не в стоп-листе) — на балансе рациона это не скажется. '
+            f'Главное — чередовать 2–3 вида мяса.'
+            '</div>'
+        )
 
     # Week summary card
     total_week_grams = sum(
@@ -1489,6 +1518,8 @@ p {{ margin: 0; }}
     <tr><td colspan="2">{week_summary}</td></tr>
   </table>
 
+  {measure_legend}
+
   {_page_foot(4, total_pages, doc_id)}
 </section>
 
@@ -1512,6 +1543,8 @@ p {{ margin: 0; }}
       {'Цены ориентировочные — зависят от региона.' if result.cost_per_day > 0 else 'Разделите мясо на порции и заморозьте.'}
     </div>
   </div>
+
+  {swap_note}
 
   {_page_foot(5, total_pages, doc_id)}
 </section>

@@ -361,6 +361,7 @@ class DietCalculator:
             candidates = [
                 p for p in available
                 if p.get("availability", "supermarket") in allowed_avail
+                and not p.get("rare", False)  # редкое/труднодоступное (конина, оленина) не предлагаем
             ]
 
             # Фильтруем стоп-продукты

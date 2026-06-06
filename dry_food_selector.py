@@ -53,10 +53,11 @@ class FoodRecommendation:
 @dataclass
 class DryFoodResult:
     dog: DogProfileDry
-    budget: list[FoodRecommendation]     # 3 корма "Честный бюджет"
-    mid: list[FoodRecommendation]        # 3 корма "Золотая середина"
-    premium: list[FoodRecommendation]    # 3 корма "Лучшее из лучшего"
+    budget: list[FoodRecommendation]     # корма "Честный бюджет"
+    mid: list[FoodRecommendation]        # корма "Золотая середина"
+    premium: list[FoodRecommendation]    # корма "Лучшее из лучшего"
     warnings: list[str]
+    empty_categories: list[str] = field(default_factory=list)  # категории без подходящих кормов
 
 
 # ---------------------------------------------------------------------------
@@ -79,6 +80,32 @@ STOP_TO_ALLERGEN = {
     "баранина": "lamb", "ягнёнок": "lamb",
 }
 
+# Частые аллергены: токен в allergens_absent -> корни для поиска в составе (рус.)
+COMMON_ALLERGENS = {
+    "chicken": ["куриц", "куриный", "птица", "птиц"],
+    "beef": ["говядин", "говяж", "телятин"],
+    "corn": ["кукуруз"],
+    "wheat": ["пшениц", "пшеничн"],
+    "soy": ["соя", "соев"],
+}
+
+
+def _food_has_common_allergen(food: dict) -> bool:
+    """Корм содержит частый аллерген (курица/говядина/кукуруза/пшеница/соя),
+    если он не гарантирован отсутствующим, а его след найден в составе."""
+    absent = set(food.get("allergens_absent", []))
+    haystack = " ".join(
+        food.get("main_protein_sources", [])
+        + food.get("grain_sources", [])
+        + food.get("ingredients_top5", [])
+    ).lower()
+    for allergen, roots in COMMON_ALLERGENS.items():
+        if allergen in absent:
+            continue  # производитель гарантирует отсутствие
+        if any(root in haystack for root in roots):
+            return True
+    return False
+
 
 class DryFoodSelector:
 
@@ -99,44 +126,80 @@ class DryFoodSelector:
         # Фильтруем по базовым параметрам
         candidates = self._filter_candidates(dog, age_cat)
 
-        # Скорим каждый корм
-        scored = [(food, self._score(food, dog)) for food in candidates]
-        scored.sort(key=lambda x: x[1], reverse=True)
+        def _by_price(items, cat):
+            return [s for s in items if s[0]["price_category"] == cat]
 
-        # Разделяем по ценовым категориям
-        budget = [s for s in scored if s[0]["price_category"] == "budget"]
-        mid = [s for s in scored if s[0]["price_category"] == "mid"]
-        premium = [s for s in scored if s[0]["price_category"] == "premium"]
+        def _scored(foods):
+            s = [(f, self._score(f, dog)) for f in foods]
+            s.sort(key=lambda x: x[1], reverse=True)
+            return s
 
-        # Берём топ-3 из каждой (разные бренды!)
-        def top3(items):
-            result = []
-            used_brands = set()
-            for food, score in items:
-                brand = food["brand"]
-                if brand in used_brands:
-                    continue
-                used_brands.add(brand)
+        scored_strict = _scored(candidates)
+        # Смягчённый по возрасту пул — добор при дефиците (аллергены/стоп НЕ трогаем)
+        scored_relaxed = _scored(self._filter_candidates(dog, age_cat, relax_age=True))
+
+        # Пул по категории: сначала строгие, потом доборные; дедуп по id и бренду.
+        def pool(cat):
+            seen_ids, seen_brands, out = set(), set(), []
+            for src, is_relaxed in ((scored_strict, False), (scored_relaxed, True)):
+                for food, score in src:
+                    if food["price_category"] != cat:
+                        continue
+                    if food["id"] in seen_ids or food["brand"] in seen_brands:
+                        continue
+                    seen_ids.add(food["id"])
+                    seen_brands.add(food["brand"])
+                    out.append((food, score, is_relaxed))
+            return out
+
+        pools = {c: pool(c) for c in ("budget", "mid", "premium")}
+        avail = {c: len(pools[c]) for c in pools}
+        empty_categories = [c for c in ("budget", "mid", "premium") if avail[c] == 0]
+
+        # Всегда стремимся показать 9 кормов: по 3 на категорию, а слоты пустых
+        # категорий перераспределяем на непустые (в пределах доступного).
+        TARGET = 9
+        alloc = {c: min(3, avail[c]) for c in pools}
+        # Перераспределяем оставшиеся слоты по кругу (баланс категорий)
+        while sum(alloc.values()) < TARGET:
+            progressed = False
+            for c in ("mid", "premium", "budget"):
+                if sum(alloc.values()) >= TARGET:
+                    break
+                if alloc[c] < avail[c]:
+                    alloc[c] += 1
+                    progressed = True
+            if not progressed:
+                break
+
+        def build(cat):
+            recs = []
+            for food, score, _r in pools[cat][:alloc[cat]]:
                 reasons_for, reasons_against = self._build_reasons(food, dog)
-                result.append(FoodRecommendation(
+                recs.append(FoodRecommendation(
                     food=food,
                     score=round(score, 1),
                     reasons_for=reasons_for,
                     reasons_against=reasons_against,
                     meat_bar=food.get("meat_estimate_pct", 0),
                 ))
-                if len(result) >= 3:
-                    break
-            return result
+            return recs
 
-        warnings = self._generate_warnings(dog, scored)
+        budget_recs = build("budget")
+        mid_recs = build("mid")
+        premium_recs = build("premium")
+
+        is_allergic = any("аллерг" in d.lower() for d in dog.diagnoses)
+        relaxed_used = any(r for cat in pools for (_f, _s, r) in pools[cat][:alloc[cat]])
+        warnings = self._generate_warnings(dog, scored_strict, relaxed_used, is_allergic)
 
         return DryFoodResult(
             dog=dog,
-            budget=top3(budget),
-            mid=top3(mid),
-            premium=top3(premium),
+            budget=budget_recs,
+            mid=mid_recs,
+            premium=premium_recs,
             warnings=warnings,
+            empty_categories=empty_categories,
         )
 
     # --- Определение размера ---
@@ -174,22 +237,26 @@ class DryFoodSelector:
 
     # --- Фильтрация ---
 
-    def _filter_candidates(self, dog: DogProfileDry, age_cat: str) -> list[dict]:
+    def _filter_candidates(self, dog: DogProfileDry, age_cat: str,
+                           relax_age: bool = False) -> list[dict]:
         result = []
         stop_allergens = self._stop_to_allergens(dog.stop_products)
+        is_allergic = any("аллерг" in d.lower() for d in dog.diagnoses)
 
         for food in self.foods:
             # Размер
             if dog.size not in food.get("size_suitable", []):
-                # Giant подходит к large, mini к small
+                # Giant подходит к large, mini — к small
                 size_compatible = False
                 if dog.size == "giant" and "large" in food.get("size_suitable", []):
+                    size_compatible = True
+                if dog.size == "mini" and "small" in food.get("size_suitable", []):
                     size_compatible = True
                 if not size_compatible:
                     continue
 
-            # Возраст
-            if age_cat not in food.get("age_suitable", []):
+            # Возраст (relax_age снимает ограничение — fallback при дефиците кормов)
+            if not relax_age and age_cat not in food.get("age_suitable", []):
                 # senior может есть adult корм
                 if not (age_cat == "senior" and "adult" in food.get("age_suitable", [])):
                     continue
@@ -211,6 +278,11 @@ class DryFoodSelector:
                 if has_allergen:
                     break
             if has_allergen:
+                continue
+
+            # Аллергия без указанных аллергенов: исключаем корма с частыми
+            # аллергенами (курица/говядина/кукуруза/пшеница/соя)
+            if is_allergic and _food_has_common_allergen(food):
                 continue
 
             # Доступность
@@ -360,10 +432,24 @@ class DryFoodSelector:
 
     # --- Предупреждения ---
 
-    def _generate_warnings(self, dog: DogProfileDry, scored: list) -> list[str]:
+    def _generate_warnings(self, dog: DogProfileDry, scored: list,
+                           relaxed_used: bool = False,
+                           is_allergic: bool = False) -> list[str]:
         warnings = []
         if not scored:
             warnings.append("Не удалось найти подходящие корма. Попробуйте ослабить ограничения.")
+        if is_allergic:
+            warnings.append(
+                "У собаки аллергия, конкретные аллергены не указаны — мы исключили "
+                "корма с курицей, говядиной, кукурузой, пшеницей и соей. Если знаете "
+                "точный аллерген, укажите его — подбор станет точнее."
+            )
+        if relaxed_used:
+            warnings.append(
+                "Гипоаллергенных кормов для этого размера/возраста в продаже немного, "
+                "поэтому в некоторых категориях показаны корма для всех возрастов. "
+                "Для щенка уточните норму на упаковке."
+            )
         if dog.diagnoses:
             warnings.append("У собаки есть диагнозы — рекомендуем согласовать выбор корма с ветеринаром.")
         if dog.condition == "obese":
@@ -433,7 +519,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     name_g = decline_name(dog.name, "gent")
     name_d = decline_name(dog.name, "datv")
     name_a = decline_name(dog.name, "accs")
-    total_pages = 8
+    total_pages = 10
     total_foods = len(result.budget) + len(result.mid) + len(result.premium)
     total_foods_in_db = len(load_json("dry_foods.json")["foods"])
     stop_text = ", ".join(dog.stop_products) if dog.stop_products else "нет"
@@ -509,7 +595,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         # AI block
         ai_text = getattr(rec, 'ai_analysis', '') or (rec.reasons_for[0] if rec.reasons_for else "")
         ai_html = f'''<div class="ai-block">
-          <div class="ai-h"><span class="ai-ico">{_SVG_STAR_SM}</span>Почему подходит {name_d}</div>
+          <div class="ai-h"><span class="ai-ico">{_SVG_STAR_SM}</span>Чем подходит</div>
           {ai_text}
         </div>'''
 
@@ -568,9 +654,9 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     </div>'''
 
     # --- Category page builder ---
+    is_allergic = any("аллерг" in d.lower() for d in dog.diagnoses)
+
     def category_page(foods, cat_key, cat_css, page_num, best_overall_idx=-1):
-        if not foods:
-            return ""
         label, price_range = PRICE_LABELS[cat_key]
         cat_num = {"budget": 1, "mid": 2, "premium": 3}[cat_key]
         cat_names = {"budget": "бюджет", "mid": "среднее", "premium": "премиум"}
@@ -579,15 +665,7 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
                     "mid": "Лучший баланс цена / состав. Рекомендуем как основу.",
                     "premium": "Холистики и супер-премиум: максимум мяса, минимум углеводов."}[cat_key]
 
-        cards = ""
-        for i, rec in enumerate(foods):
-            is_best = (i == best_overall_idx)
-            cards += food_card(rec, i + 1, cat_names[cat_key], is_best)
-
-        return f'''<section class="page">
-  {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}")}
-
-  <div class="cat-banner {cat_css}">
+        banner = f'''<div class="cat-banner {cat_css}">
     <div class="left">
       <div class="eyebrow-line">Категория {cat_num} · {label.lower()}</div>
       <div class="ttl">Корма {price_range}</div>
@@ -597,7 +675,70 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
       <div class="big">{price_big}</div>
       <div class="sml">за килограмм</div>
     </div>
+  </div>'''
+
+        if not foods:
+            # Страница-заглушка: честно объясняем, почему в категории пусто
+            stub_extra = ""
+            if is_allergic and cat_key == "budget":
+                stub_title = "В этой ценовой категории мы ничего не рекомендуем"
+                stub_text = (
+                    f"У {name_g} аллергия, а гипоаллергенных кормов дешевле "
+                    f"{price_big.replace('≤ ', '').replace('≥ ', '')}/кг в России "
+                    f"по сути нет. Это не упущение подбора, а устройство рынка."
+                )
+                stub_hint = ("Экономия здесь обернётся лечением кожи и ЖКТ. "
+                             "Лучше взять корм из средней или премиум-категории — "
+                             "мы подобрали их с запасом.")
+                stub_extra = '''
+    <table class="stub-cols"><tr>
+      <td>
+        <div class="stub-h">Что чаще всего вызывает аллергию</div>
+        <ul class="stub-list">
+          <li><b>Курица</b> и куриное яйцо — аллерген №1</li>
+          <li><b>Говядина</b> и молочные продукты</li>
+          <li><b>Пшеница и кукуруза</b> — дешёвые злаки-наполнители</li>
+          <li><b>Соя</b></li>
+        </ul>
+      </td>
+      <td>
+        <div class="stub-h">Почему дёшево = аллергенно</div>
+        <p class="stub-p">Дешёвый корм дешёв именно потому, что сделан из самого доступного сырья — курицы, субпродуктов, кукурузы и пшеницы. А это и есть главные аллергены. Гипоаллергенный рацион требует <b>одного редкого белка</b> (ягнёнок, лосось, оленина) и <b>отказа от зерна</b> — такие компоненты дороже по определению, поэтому дешёвыми они не бывают.</p>
+      </td>
+    </tr></table>'''
+            else:
+                stub_title = "Подходящих кормов в этой категории не нашлось"
+                stub_text = (
+                    f"Под параметры {name_g} (размер, возраст и ограничения) в этой "
+                    f"ценовой категории корма с честным составом не попали."
+                )
+                stub_hint = "Смотрите другие категории — там есть достойные варианты."
+
+            return f'''<section class="page">
+  {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}")}
+
+  {banner}
+
+  <div class="stub-card">
+    <div class="stub-ico">{_SVG_WARN_DRY}</div>
+    <div class="stub-title">{stub_title}</div>
+    <p class="stub-text">{stub_text}</p>
+    <div class="stub-hint">{stub_hint}</div>
+    {stub_extra}
   </div>
+
+  {_dry_page_foot(page_num, total_pages, doc_id)}
+</section>'''
+
+        cards = ""
+        for i, rec in enumerate(foods):
+            is_best = (i == best_overall_idx)
+            cards += food_card(rec, i + 1, cat_names[cat_key], is_best)
+
+        return f'''<section class="page">
+  {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}")}
+
+  {banner}
 
   <div class="foods">
     {cards}
@@ -615,6 +756,16 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
         if not rec:
             return default
         return rec.food.get(key, default)
+
+    # Лучший общий — берём из непустой категории (mid → premium → budget)
+    best_overall = best_mid or best_premium or best_budget
+    _cat_label = {"budget": "Честный бюджет", "mid": "Золотая середина",
+                  "premium": "Премиум"}.get(
+                      best_overall.food.get("price_category") if best_overall else "", "Наш выбор")
+    # Бюджетная альтернатива — только если она есть
+    budget_alt = (f' Если бюджет ограничен — <strong>{_cell(best_budget, "brand")}</strong> '
+                  f'({_cell(best_budget, "price_per_kg")} ₽/кг) достойная альтернатива.'
+                  if best_budget else '')
 
     compare_html = ""
     if best_budget and best_mid and best_premium:
@@ -883,7 +1034,8 @@ p {{ margin: 0; }}
   font-size: 11pt;
   color: var(--ink-soft);
 }}
-.cover-stats .stat strong {{ font-size: 14pt; font-weight: 700; color: var(--ink); }}
+.cover-stats .stat strong {{ font-size: 14pt; font-weight: 700; color: var(--ink); white-space: nowrap; }}
+.cover-stats .stat div {{ white-space: nowrap; }}
 .cover-stats .divider {{ width: 1px; height: 24px; background: var(--border); }}
 
 .cover-badge {{
@@ -904,11 +1056,12 @@ p {{ margin: 0; }}
 .cover-photo {{
   margin-top: 10mm;
   border-radius: 14px;
-  min-height: 55mm;
+  overflow: hidden;
+  max-height: 60mm;
   background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm));
   position: relative;
 }}
-.cover-photo img {{ width: 100%; height: auto; display: block; border-radius: 14px; max-height: 55mm; }}
+.cover-photo img {{ width: 100%; height: auto; display: block; border-radius: 14px; }}
 .float-card {{
   display: inline-block;
   margin-top: -12mm;
@@ -949,6 +1102,10 @@ p {{ margin: 0; }}
   border-radius: 14px;
   padding: 5mm 6mm;
 }}
+.profile-card-wide {{ margin-bottom: 4mm; }}
+.profile-cols {{ width: 100%; border-collapse: collapse; }}
+.profile-cols td {{ width: 50%; vertical-align: top; padding: 0 6mm; }}
+.profile-cols td:first-child {{ border-right: 1px solid var(--border-soft); padding-left: 0; }}
 .profile-card .hd {{
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 4mm;
@@ -1100,6 +1257,35 @@ p {{ margin: 0; }}
 .cat-banner.budget {{ background: #eef2f7; }}
 .cat-banner.middle {{ background: var(--primary-soft); }}
 .cat-banner.premium {{ background: var(--accent-soft); }}
+
+/* Заглушка для пустой категории */
+.stub-card {{
+  margin-top: 14mm;
+  padding: 12mm 14mm;
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  background: #fcfdfe;
+  text-align: center;
+}}
+.stub-ico {{
+  width: 44px; height: 44px; margin: 0 auto 6mm;
+  color: var(--accent);
+}}
+.stub-ico svg {{ width: 44px; height: 44px; }}
+.stub-title {{ font-size: 14pt; font-weight: 700; color: var(--ink); margin-bottom: 4mm; }}
+.stub-text {{ font-size: 11pt; line-height: 1.6; color: var(--ink-soft); max-width: 130mm; margin: 0 auto 6mm; }}
+.stub-hint {{
+  display: inline-block;
+  font-size: 10.5pt; font-weight: 600; color: var(--primary);
+  background: var(--primary-soft);
+  padding: 8px 16px; border-radius: 100px;
+}}
+.stub-cols {{ width: 100%; border-collapse: collapse; margin-top: 10mm; text-align: left; }}
+.stub-cols td {{ width: 50%; vertical-align: top; padding: 0 5mm; }}
+.stub-cols td:first-child {{ border-right: 1px solid var(--border-soft); }}
+.stub-h {{ font-size: 10.5pt; font-weight: 700; color: var(--ink); margin-bottom: 3mm; }}
+.stub-list {{ margin: 0; padding-left: 5mm; font-size: 10pt; line-height: 1.7; color: var(--ink-soft); }}
+.stub-p {{ margin: 0; font-size: 10pt; line-height: 1.6; color: var(--ink-soft); }}
 .cat-banner .left .eyebrow-line {{
   font-size: 8pt;
   font-weight: 700;
@@ -1843,33 +2029,31 @@ p {{ margin: 0; }}
 
   <div class="eyebrow">Профиль и метод подбора</div>
   <h2 class="section-title" style="margin-top: 4mm;">Почему именно эти корма для {name_g}</h2>
-  <p class="section-sub">Мы не продаём корма. Мы анализируем составы по открытым данным производителей и подбираем под параметры конкретной собаки.</p>
+  <p class="section-sub">{getattr(result, 'ai_intro', '') or 'Мы не продаём корма — анализируем составы по открытым данным производителей и подбираем под параметры конкретной собаки. По реальным ингредиентам видно, за что вы платите.'}</p>
 
-  <table class="profile-grid-t">
-    <tr><td><div class="profile-card">
-      <div class="hd">
-        <div class="av">{_SVG_PAW_DRY.format(w=22)}</div>
-        <div>
-          <div class="nm">{dog.name}</div>
-          <div class="sub">Профиль собаки</div>
-        </div>
+  <div class="profile-card profile-card-wide">
+    <div class="hd">
+      <div class="av">{_SVG_PAW_DRY.format(w=22)}</div>
+      <div>
+        <div class="nm">{dog.name}</div>
+        <div class="sub">Профиль собаки</div>
       </div>
-      <div class="profile-row"><span class="k">Порода</span><span class="v" style="float:right;">{dog.breed}</span></div>
-      <div class="profile-row"><span class="k">Возраст</span><span class="v" style="float:right;">{age_text}</span></div>
-      <div class="profile-row"><span class="k">Вес</span><span class="v" style="float:right;">{dog.weight_kg} кг</span></div>
-      <div class="profile-row"><span class="k">Кондиция</span><span class="v" style="float:right;">{condition_text} {condition_chip}</span></div>
-      <div class="profile-row"><span class="k">Активность</span><span class="v" style="float:right;">{ACTIVITY_LABELS_DRY.get(dog.activity, dog.activity)}</span></div>
-      <div class="profile-row"><span class="k">Стоп-продукты</span><span class="v" style="float:right;">{stop_text} {stop_chip}</span></div>
-    </div></td>
-    <td><div class="ai-quote">
-      <span class="ai-tag">{_SVG_STAR} Разбор от AI-ассистента</span>
-      <p>{getattr(result, 'ai_intro', '') or f'Для {name_g} мы подобрали корма' + (' <strong>без ' + ", ".join(decline(s, "gent") for s in dog.stop_products) + '</strong>' if dog.stop_products else '') + f' с учётом {CONDITION_LABELS_DRY.get(dog.condition, "текущей")} кондиции. Все составы разобраны по реальным ингредиентам — вы видите, за что платите.'}</p>
-      <div class="signoff"><span class="dot"></span> сгенерировано на основе профиля {name_g}</div>
-    </div></td>
-    </tr>
-  </table>
+    </div>
+    <table class="profile-cols"><tr>
+      <td>
+        <div class="profile-row"><span class="k">Порода</span><span class="v" style="float:right;">{dog.breed}</span></div>
+        <div class="profile-row"><span class="k">Возраст</span><span class="v" style="float:right;">{age_text}</span></div>
+        <div class="profile-row"><span class="k">Вес</span><span class="v" style="float:right;">{dog.weight_kg} кг</span></div>
+      </td>
+      <td>
+        <div class="profile-row"><span class="k">Кондиция</span><span class="v" style="float:right;">{condition_text} {condition_chip}</span></div>
+        <div class="profile-row"><span class="k">Активность</span><span class="v" style="float:right;">{ACTIVITY_LABELS_DRY.get(dog.activity, dog.activity)}</span></div>
+        <div class="profile-row"><span class="k">Стоп-продукты</span><span class="v" style="float:right;">{stop_text} {stop_chip}</span></div>
+      </td>
+    </tr></table>
+  </div>
 
-  <h3 style="font-size: 12pt; margin-bottom: 4mm;">Как мы подбирали</h3>
+  <h3 style="font-size: 12pt; margin: 6mm 0 4mm;">Как мы подбирали</h3>
   <table class="steps-grid-t">
     <tr><td><div class="step">
       <div class="num">01</div>
@@ -1886,7 +2070,7 @@ p {{ margin: 0; }}
     <td><div class="step">
       <div class="num">03</div>
       <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 8l-4.2 4 1 5.8L12 15l-4.8 2.8 1-5.8L4 8l5.6-0.4z"/></svg></div>
-      <div class="ttl">ТОП-3 в каждой категории</div>
+      <div class="ttl">Лучшие в каждой категории</div>
       <div class="txt">По <strong>цене за кг</strong> разделили на бюджет, среднее и премиум.</div>
     </div></td>
     </tr>
@@ -1921,17 +2105,76 @@ p {{ margin: 0; }}
 
   <div class="hero-rec">
     <span class="tag">{_SVG_STAR} Наш выбор</span>
-    <h3>{_cell(best_mid, "brand", "—")}<br/>{_cell(best_mid, "name", "")}</h3>
-    <p>{getattr(result, 'ai_conclusion', '') or f'Золотая середина · ~{_cell(best_mid, "price_per_kg", "?")} ₽/кг. <strong>~{_cell(best_mid, "meat_estimate_pct", "?")}% мяса</strong>, жирность <strong>{_cell(best_mid, "fat_pct", "?")}%</strong>. Если бюджет ограничен — <strong>{_cell(best_budget, "brand", "—")}</strong> ({_cell(best_budget, "price_per_kg", "?")} ₽/кг) достойная альтернатива.'}</p>
+    <h3>{_cell(best_overall, "brand", "—")}<br/>{_cell(best_overall, "name", "")}</h3>
+    <p>{getattr(result, 'ai_conclusion', '') or f'{_cat_label} · ~{_cell(best_overall, "price_per_kg", "?")} ₽/кг. <strong>~{_cell(best_overall, "meat_estimate_pct", "?")}% мяса</strong>, жирность <strong>{_cell(best_overall, "fat_pct", "?")}%</strong>.{budget_alt}'}</p>
   </div>
 
-  <h3 style="font-size: 12pt; margin-bottom: 3mm;">Лучшее из каждой категории — рядом</h3>
-  {compare_html}
+  {'<h3 style="font-size: 12pt; margin-bottom: 3mm;">Лучшее из каждой категории — рядом</h3>' + compare_html if compare_html else ''}
 
   {_dry_page_foot(6, total_pages, doc_id)}
 </section>
 
-<!-- PAGE 7 — TRANSITION -->
+<!-- PAGE 7 — HOW TO CHOOSE -->
+<section class="page">
+  {_dry_page_head("<strong>Как выбирать сухой корм</strong> · памятка")}
+
+  <div class="eyebrow">На будущее</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Как читать состав и не вестись на упаковку</h2>
+  <p class="section-sub">Этой памятки хватит, чтобы оценить любой корм в магазине самостоятельно — без нас.</p>
+
+  <table class="tips-grid-t">
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+      <div><h4>Читайте состав по порядку</h4><p>Ингредиенты идут по убыванию массы. На первых 2–3 местах должно стоять <strong>мясо с указанием вида и %</strong> («дегидрированная индейка 26%»), а не зерно.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></div>
+      <div><h4>Конкретика, а не «мука»</h4><p>«Дегидрированное мясо ягнёнка» — хорошо. «Мясо и продукты животного происхождения» без вида — плохо: непонятно, что внутри.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div><h4>Цифры, на которые смотреть</h4><p>Зола <strong>≤ 8%</strong>, понятные консерванты (токоферолы — витамин E), без сахара и ароматизаторов. % мяса важнее громкого бренда.</p></div>
+    </div></td>
+    <td><div class="tip warn">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+      <div><h4>Красные флаги</h4><p>Кукуруза/пшеница на первых местах, сахар, целлюлоза, и «сплиттинг» — когда зерно дробят на 3–4 строчки, чтобы спрятать его реальную долю.</p></div>
+    </div></td></tr>
+  </table>
+
+  {_dry_page_foot(7, total_pages, doc_id)}
+</section>
+
+<!-- PAGE 8 — HOW TO FEED -->
+<section class="page">
+  {_dry_page_head("<strong>Как кормить сухим кормом</strong> · правила")}
+
+  <div class="eyebrow">Правила кормления</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Чтобы корм работал, а не просто стоял в миске</h2>
+  <p class="section-sub">Даже идеальный корм можно испортить неправильным кормлением. Несколько простых правил.</p>
+
+  <table class="tips-grid-t">
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-2 16H7z"/><path d="M9 4V2h6v2"/></svg></div>
+      <div><h4>Норма — по упаковке, по весу</h4><p>Берите норму для целевого веса и делите на <strong>2 кормления</strong>. Дальше корректируйте по кондиции: рёбра прощупываются, талия видна сверху.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s7 8 7 13a7 7 0 01-14 0c0-5 7-13 7-13z"/></svg></div>
+      <div><h4>Вода — всегда и много</h4><p>Сухой корм почти без влаги, поэтому воды нужно в <strong>2–3 раза больше</strong> объёма корма. Свежая миска, меняйте 2 раза в день.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 8l-4.2 4 1 5.8L12 15l-4.8 2.8 1-5.8L4 8l5.6-0.4z"/></svg></div>
+      <div><h4>Лакомства — максимум 10%</h4><p>Угощения и добавки — не больше <strong>10% дневных калорий</strong>, иначе рацион разбалансируется. На этот объём уменьшайте порцию корма.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l1 13h14l1-13M9 7V4h6v3"/></svg></div>
+      <div><h4>Не мешайте с натуралкой в одной миске</h4><p>Сухой корм и сырое/варёное перевариваются с разной скоростью. Хотите сочетать — давайте в <strong>разные кормления</strong>. Храните корм герметично, в сухом тёмном месте.</p></div>
+    </div></td></tr>
+  </table>
+
+  {_dry_page_foot(8, total_pages, doc_id)}
+</section>
+
+<!-- PAGE 9 — TRANSITION -->
 <section class="page">
   {_dry_page_head(f"<strong>Переход на новый корм</strong> · 7+ дней")}
 
@@ -1988,10 +2231,10 @@ p {{ margin: 0; }}
     </div></td></tr>
   </table>
 
-  {_dry_page_foot(7, total_pages, doc_id)}
+  {_dry_page_foot(9, total_pages, doc_id)}
 </section>
 
-<!-- PAGE 8 — DISCLAIMER -->
+<!-- PAGE 10 — DISCLAIMER -->
 <section class="page last-page">
   {_dry_page_head("<strong>Дисклеймер и контакты</strong>")}
 
@@ -2035,7 +2278,7 @@ p {{ margin: 0; }}
     © 2026 Кусь · Doggi · kus.dogfine.ru
   </div>
 
-  {_dry_page_foot(8, total_pages, doc_id)}
+  {_dry_page_foot(10, total_pages, doc_id)}
 </section>
 
 </body>

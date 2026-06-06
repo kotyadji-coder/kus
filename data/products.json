@@ -126,6 +126,7 @@
       "notes": "Диетическое, гипоаллергенное. Бывает сложно найти.",
       "contraindications": [],
       "common_allergen": false,
+      "rare": true,
       "price_per_kg": 550
     },
     {
@@ -158,6 +159,7 @@
       "notes": "Экзотическое диетическое мясо. Гипоаллергенное.",
       "contraindications": [],
       "common_allergen": false,
+      "rare": true,
       "price_per_kg": 1200
     }
   ],

@@ -354,19 +354,19 @@ def generate_dry_food_analysis(food: dict, dog_profile: dict) -> str:
 Стоп-продукты: {dog_profile.get('stop_products', [])}
 Диагнозы: {dog_profile.get('diagnoses', [])}
 
-Напиши 2-3 предложения: почему этот корм подходит или не подходит именно этой собаке.
-Будь конкретен — упоминай кличку, породу, особенности.
-Если в корме есть проблемы — скажи честно.
-Тон: экспертный, но понятный обычному человеку. Без emoji.""", max_tokens=2000)
+Напиши КОРОТКО — 1-2 предложения (до 30 слов): чем этот корм хорош для такой собаки.
+НЕ упоминай кличку. Пиши по делу: состав, % мяса, особенности под параметры собаки.
+Если у корма есть слабое место — упомяни одним словом, но это рекомендованный корм, не ругай его.
+Тон: экспертный, ёмкий. Без emoji, без воды.""", max_tokens=300)
     return result or ""
 
 
 def generate_dry_food_intro(dog_profile: dict) -> str:
     """Персональное вступление для PDF с подбором корма."""
-    result = _ask(f"""Напиши короткое (3-4 предложения) вступление для PDF-документа с подборкой сухих кормов.
-Обращайся к владельцу на «вы». Упомяни кличку и породу.
-Объясни принцип подбора: анализ состава, не маркетинг. 3 ценовые категории, по 3 корма.
-Тон: дружелюбный, экспертный. Без emoji.
+    result = _ask(f"""Напиши очень короткое вступление (РОВНО 2 предложения, до 40 слов) для PDF с подборкой сухих кормов.
+Обращайся к владельцу на «вы». Упомяни кличку и породу один раз.
+Суть: подбор по анализу состава, а не по маркетингу. Без перечисления категорий.
+Тон: дружелюбный, экспертный, ёмкий. Без emoji, без воды.
 
 Кличка: {dog_profile.get('name')}
 Порода: {dog_profile.get('breed')}
@@ -385,8 +385,9 @@ def generate_dry_food_conclusion(budget_foods: list, mid_foods: list, premium_fo
             foods_summary.append(f"{cat}: {fd.get('brand','')} {fd.get('name','')} (~{fd.get('meat_estimate_pct','')}% мяса, {fd.get('price_per_kg','')} руб/кг)")
 
     result = _ask(f"""Напиши краткий итог (3-4 предложения) — какой корм лучше всего подходит этой собаке.
-Выдели ОДИН лучший вариант из всех 9 и объясни почему.
-Также скажи, какой лучший в бюджетной категории.
+Выдели ОДИН лучший вариант из перечисленных и объясни почему.
+Если в списке есть бюджетный вариант — кратко назови лучший из бюджетных как альтернативу.
+Если бюджетных кормов в списке НЕТ (например, у собаки аллергия и дешёвых гипоаллергенных не существует) — НЕ выдумывай их, можешь это отметить одной фразой.
 
 Собака: {dog_profile.get('name')}, {dog_profile.get('breed')}, {dog_profile.get('weight_kg')}кг, кондиция: {dog_profile.get('condition')}
 Стоп: {dog_profile.get('stop_products', [])}
@@ -443,6 +444,80 @@ _BREED_EN = {
     "кавказская овчарка": "Caucasian Shepherd",
     "метис": "Mixed breed dog", "дворняга": "Mixed breed dog",
     "дворняжка": "Mixed breed dog",
+    # --- Дополнение: остальные породы из breeds.json ---
+    "американский бульдог": "American Bulldog",
+    "американский кокер-спаниель": "American Cocker Spaniel",
+    "английский бульдог": "English Bulldog",
+    "английский кокер-спаниель": "English Cocker Spaniel",
+    "басенджи": "Basenji",
+    "бельгийская овчарка (малинуа)": "Belgian Malinois",
+    "бишон фризе": "Bichon Frise",
+    "бобтейл": "Old English Sheepdog",
+    "болонка (мальтийская)": "Maltese",
+    "бордоский дог": "Dogue de Bordeaux",
+    "бриар": "Briard",
+    "бультерьер": "Bull Terrier",
+    "вельш-корги кардиган": "Cardigan Welsh Corgi",
+    "выжла (венгерская легавая)": "Vizsla",
+    "дратхаар": "German Wirehaired Pointer",
+    "карликовый пинчер (цвергпинчер)": "Miniature Pinscher",
+    "кеесхонд (вольфшпиц)": "Keeshond",
+    "китайская хохлатая": "Chinese Crested Dog",
+    "колли (длинношёрстный)": "Rough Collie",
+    "курцхаар": "German Shorthaired Pointer",
+    "левретка (итальянский грейхаунд)": "Italian Greyhound",
+    "леонбергер": "Leonberger",
+    "миттельшнауцер": "Standard Schnauzer",
+    "немецкий дог": "Great Dane",
+    "ньюфаундленд": "Newfoundland",
+    "папильон": "Papillon",
+    "пекинес": "Pekingese",
+    "пудель (большой)": "Standard Poodle",
+    "пудель (карликовый)": "Miniature Poodle",
+    "пудель (той)": "Toy Poodle",
+    "ризеншнауцер": "Giant Schnauzer",
+    "сенбернар": "Saint Bernard",
+    "сиба-ину (шиба-ину)": "Shiba Inu",
+    "скотч-терьер": "Scottish Terrier",
+    "среднеазиатская овчарка (алабай)": "Central Asian Shepherd",
+    "такса (стандартная)": "Dachshund",
+    "такса (миниатюрная)": "Miniature Dachshund",
+    "тибетский мастиф": "Tibetan Mastiff",
+    "фокстерьер (гладкошёрстный)": "Smooth Fox Terrier",
+    "чау-чау": "Chow Chow",
+    "шарпей": "Shar Pei",
+    "шпиц немецкий (средний)": "German Spitz",
+    "эрдельтерьер": "Airedale Terrier",
+    "южноафриканский бурбуль": "Boerboel",
+    "метис (мини, до 5 кг)": "small mixed breed dog",
+    "метис (малый, 5-10 кг)": "small mixed breed dog",
+    "метис (средний, 10-25 кг)": "medium-sized mixed breed dog",
+    "метис (крупный, 25-45 кг)": "large mixed breed dog",
+    "метис (гигант, 45+ кг)": "large mixed breed dog",
+    "аргентинский дог": "Dogo Argentino",
+    "австралийская овчарка (аусси)": "Australian Shepherd",
+    "английский мастиф": "English Mastiff",
+    "бладхаунд": "Bloodhound",
+    "грейхаунд": "Greyhound",
+    "ирландский волкодав": "Irish Wolfhound",
+    "комондор": "Komondor",
+    "лхаса апсо": "Lhasa Apso",
+    "норвич-терьер": "Norwich Terrier",
+    "пойнтер": "English Pointer",
+    "русский чёрный терьер": "Black Russian Terrier",
+    "тоса-ину": "Tosa Inu",
+    "уиппет": "Whippet",
+    "фила бразилейро": "Fila Brasileiro",
+    "ховаварт": "Hovawart",
+    "шотландский терьер": "Scottish Terrier",
+    "энтлебухер зенненхунд": "Entlebucher Mountain Dog",
+    "восточноевропейская овчарка": "German Shepherd",
+    "русский спаниель": "Russian Spaniel",
+    "московская сторожевая": "Moscow Watchdog",
+    "лайка (западносибирская)": "West Siberian Laika",
+    "лайка (восточносибирская)": "East Siberian Laika",
+    "русско-европейская лайка": "Russo-European Laika",
+    "южнорусская овчарка": "South Russian Ovcharka",
 }
 
 
