@@ -45,6 +45,12 @@ PROFILES = [
     {"name": "Дуся", "breed": "Мопс", "age_months": 72, "sex": "female", "neutered": True,
      "weight_kg": 10, "condition": "obese", "activity": "lazy", "diet_type": "cooked",
      "budget": "supermarket", "stop_products": [], "diagnoses": [], "label": "Ожирение, мопс"},
+    # Граничный случай: очень мелкая варёная собака с жидким стулом —
+    # ловит нулевые дозы/цены и неделимые добавки (кейс «Зоя»).
+    {"name": "Зоя", "breed": "Йоркширский терьер", "age_months": 24, "sex": "female", "neutered": True,
+     "weight_kg": 2.0, "condition": "thin", "activity": "moderate", "diet_type": "cooked",
+     "budget": "supermarket", "stop_products": [], "diagnoses": ["аллергия"], "stool": "loose",
+     "label": "Мелкая, варёнка, жидкий стул"},
 ]
 
 
@@ -58,7 +64,7 @@ def run_evals() -> list[dict]:
             name=profile["name"], breed=profile["breed"], age_months=profile["age_months"],
             sex=profile["sex"], neutered=profile["neutered"], weight_kg=profile["weight_kg"],
             current_food="dry", condition=profile["condition"], activity=profile["activity"],
-            diagnoses=profile.get("diagnoses", []), stool="good",
+            diagnoses=profile.get("diagnoses", []), stool=profile.get("stool", "good"),
             diet_type=profile["diet_type"], budget=profile["budget"],
             stop_products=profile.get("stop_products", []),
         )
@@ -159,6 +165,33 @@ def run_evals() -> list[dict]:
             passed += 1
         else:
             checks.append(("Наполненность меню", "fail", f"Только {total_products} позиций за неделю — мало"))
+
+        # 8. Дозы добавок без нулей и пустот (важно для мелких собак)
+        total += 1
+        import re
+        bad_doses = []
+        for s in result.supplements:
+            dose = str(s.get("dosage", ""))
+            note = str(s.get("notes", ""))
+            # «0 мл», «0 капсул», «0 мг», «0 табл» и т.п. в дозе или примечании
+            if re.search(r"(^|[^\d.,])0\s*(мл|капсул|мг|табл|ч\.л|ст\.л|МЕ|шт)", dose + " " + note):
+                bad_doses.append(f"{s.get('name')}: {dose}")
+            if not dose.strip():
+                bad_doses.append(f"{s.get('name')}: пустая доза")
+        if not bad_doses:
+            checks.append(("Дозы добавок", "ok", f"{len(result.supplements)} добавок, нулей нет"))
+            passed += 1
+        else:
+            checks.append(("Дозы добавок", "fail", "; ".join(bad_doses[:3])))
+
+        # 9. Стоимость не схлопывается в 0 при отображении
+        total += 1
+        disp_day = max(5, int(round(result.cost_per_day / 5) * 5)) if result.cost_per_day > 0 else 0
+        if result.cost_per_day <= 0 or disp_day > 0:
+            checks.append(("Стоимость", "ok", f"{disp_day} руб/день (расчёт {result.cost_per_day:.1f})"))
+            passed += 1
+        else:
+            checks.append(("Стоимость", "fail", f"Отображается 0 руб/день при расчёте {result.cost_per_day:.1f}"))
 
         score = round(passed / total * 100)
         results.append({

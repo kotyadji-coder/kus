@@ -63,7 +63,7 @@
                 <div class="status-text">Готовим рацион...</div>
                 <div class="status-desc">AI анализирует данные и рассчитывает персональный план.<br>Обычно это занимает 1-2 минуты.</div>
                 {% if not order.telegram_user_id %}
-                <div style="margin-top:20px;background:#f0f6ff;border-radius:12px;padding:16px;text-align:left;">
+                <div style="margin-top:20px;background:#f0f6ff;border-radius:12px;padding:16px;text-align:center;">
                     <div style="font-weight:700;font-size:14px;color:#055ba9;margin-bottom:6px;">Получить PDF в Telegram</div>
                     <div style="font-size:13px;color:#666;line-height:1.5;margin-bottom:10px;">Напишите боту /start — и рацион придёт в чат автоматически. Там же 7 дней поддержки.</div>
                     <a href="https://t.me/doggifood_bot?start=order_{{ order.id }}" target="_blank" class="tg-btn">
@@ -82,10 +82,17 @@
                     <br><br>У вас 7 дней поддержки — задавайте любые вопросы!
                 </div>
                 {% if order.pdf_path %}
+                {% set is_combo = order.diet_type in ('barf_and_dry', 'cooked_and_dry') %}
                 <a href="/order/{{ order.id }}/view" class="view-btn" target="_blank">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    Открыть рацион
+                    {% if is_combo %}Открыть натуральный рацион{% else %}Открыть рацион{% endif %}
                 </a>
+                {% if is_combo %}
+                <a href="/order/{{ order.id }}/view?part=dry" class="view-btn" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Открыть подбор сухого корма
+                </a>
+                {% endif %}
                 {% endif %}
                 {% if not order.telegram_user_id %}
                 <a href="https://t.me/doggifood_bot?start=order_{{ order.id }}" target="_blank" class="tg-btn">

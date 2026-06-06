@@ -115,6 +115,18 @@ def _fmt_egg_or_grams(grams: float, product_id: str = "", product_name: str = ""
     return _fmt_grams(grams)
 
 
+def _spoon_hint(grams: float, product_id: str = "", product_name: str = "") -> str:
+    """Подсказка-эквивалент в ложках для мелких порций (когда весы не помогут).
+    1 ч.л. ≈ 5 г, 1 ст.л. ≈ 15 г. Для яиц и крупных порций не нужна."""
+    if _is_egg(product_id, product_name) or grams <= 0 or grams >= 45:
+        return ""
+    if grams < 15:
+        n = max(1, round(grams / 5))
+        return f"≈ {n} ч.л."
+    n = max(1, round(grams / 15))
+    return f"≈ {n} ст.л."
+
+
 # SVG icons used throughout the PDF
 _SVG_PAW = '<svg width="{w}" height="{w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg>'
 _SVG_CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
@@ -316,12 +328,16 @@ def generate_html(result: DietResult) -> str:
         for p in day_menu.morning:
             if p.grams > 0:
                 g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
+                hint = _spoon_hint(p.grams, p.product_id, p.product_name)
+                g_str = f'{g_str} <span class="spoon">{hint}</span>' if hint else g_str
                 morning_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
 
         evening_items = ""
         for p in day_menu.evening:
             if p.grams > 0:
                 g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
+                hint = _spoon_hint(p.grams, p.product_id, p.product_name)
+                g_str = f'{g_str} <span class="spoon">{hint}</span>' if hint else g_str
                 evening_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
 
         return f'''<div class="day{cls}">
@@ -689,7 +705,7 @@ p {{ margin: 0; }}
   font-size: 11pt;
   color: var(--ink-soft);
 }}
-.cover-stats .stat strong {{ font-size: 14pt; font-weight: 700; color: var(--ink); }}
+.cover-stats .stat strong {{ font-size: 14pt; font-weight: 700; color: var(--ink); white-space: nowrap; }}
 .cover-stats .divider {{ width: 1px; height: 24px; background: var(--border); }}
 
 .cover-badge {{
@@ -929,6 +945,7 @@ p {{ margin: 0; }}
 .item .nm {{ color: var(--ink); }}
 .item .leader {{ flex: 1; border-bottom: 1px dotted var(--ink-light); margin: 0 2px; transform: translateY(-3px); }}
 .item .g {{ font-weight: 600; font-feature-settings: "tnum"; color: var(--ink); white-space: nowrap; }}
+.item .g .spoon {{ font-weight: 400; font-size: 8pt; color: var(--ink-light); }}
 
 /* ===== PAGE 5 — Shopping list =========================================== */
 .shop-grid {{
@@ -1491,7 +1508,7 @@ p {{ margin: 0; }}
 
   <div class="shop-tip">
     <div>
-      <strong>{'≈' + str(int(round(result.cost_per_day / 50) * 50)) + ' руб/день · ≈' + str(int(round(result.cost_per_month / 500) * 500)) + ' руб/мес' if result.cost_per_day > 0 else 'Совет'}</strong>
+      <strong>{'≈' + str(max(5, int(round(result.cost_per_day / 5) * 5))) + ' руб/день · ≈' + str(max(50, int(round(result.cost_per_month / 50) * 50))) + ' руб/мес' if result.cost_per_day > 0 else 'Совет'}</strong>
       {'Цены ориентировочные — зависят от региона.' if result.cost_per_day > 0 else 'Разделите мясо на порции и заморозьте.'}
     </div>
   </div>

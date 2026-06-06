@@ -490,52 +490,76 @@ class DietCalculator:
             return round(value)  # до 1
         return round(value / 5) * 5  # до 5
 
+    @staticmethod
+    def _fmt_num(value: float) -> str:
+        """Печатает число без лишнего '.0' и с дробями для половин/четвертей."""
+        fractions = {0.25: "¼", 0.5: "½", 0.75: "¾"}
+        whole = int(value)
+        frac = round(value - whole, 2)
+        frac_str = fractions.get(frac)
+        if whole == 0 and frac_str:
+            return frac_str
+        if frac_str:
+            return f"{whole}{frac_str}"
+        if value == whole:
+            return str(whole)
+        return f"{value:g}"
+
     def _calc_supplements(self, dog: DogProfile, ideal_weight: float, ca_p_ratio: float) -> list[dict]:
         supps = []
 
         # Рыбий жир — всегда
-        # 1 ч.л. ≈ 5 мл, 1 капсула ≈ 1 мл (1000мг)
-        fish_oil_ml = self._round_practical(ideal_weight / 5)
-        fish_oil_tsp = self._round_practical(fish_oil_ml / 5)
-        if fish_oil_tsp < 1:
-            dosage_text = f"{fish_oil_ml:.0f} мл в день"
-            measure_hint = f"≈ {int(fish_oil_ml)} капсул(а) по 1000 мг"
+        # 1 ч.л. ≈ 5 мл, 1 капсула ≈ 1 мл (1000 мг). Доза ~0.2 мл/кг.
+        fish_oil_ml = ideal_weight / 5
+        caps_per_day = fish_oil_ml  # 1 капсула ≈ 1 мл
+        if caps_per_day >= 2:
+            # Крупная собака — удобнее мерить чайными ложками
+            fish_oil_tsp = self._round_practical(fish_oil_ml / 5)
+            if fish_oil_tsp >= 1:
+                dosage_text = f"{self._fmt_num(fish_oil_tsp)} ч.л. в день"
+                measure_hint = f"≈ {round(fish_oil_ml)} мл или {round(caps_per_day)} капсул по 1000 мг"
+            else:
+                dosage_text = f"{round(caps_per_day)} капсулы в день"
+                measure_hint = f"≈ {round(fish_oil_ml)} мл, с едой"
+            frequency = "Ежедневно"
+        elif caps_per_day >= 0.85:
+            dosage_text = "1 капсула в день"
+            measure_hint = "1000 мг, с едой"
+            frequency = "Ежедневно"
         else:
-            dosage_text = f"{fish_oil_tsp:.0g} ч.л. в день" if fish_oil_tsp == int(fish_oil_tsp) else f"{fish_oil_tsp} ч.л. в день"
-            measure_hint = f"≈ {fish_oil_ml:.0f} мл"
+            # Меньше капсулы в день — даём долю или удобную альтернативу через день
+            dosage_text = "½ капсулы в день"
+            measure_hint = "или 1 капсула (1000 мг) через день — так не нужно делить"
+            frequency = "Ежедневно"
         supps.append({
             "name": "Рыбий жир (Омега-3)",
             "dosage": dosage_text,
-            "frequency": "Ежедневно",
+            "frequency": frequency,
             "notes": f"С едой. Лососёвое масло или капсулы ({measure_hint}).",
         })
 
         # Кальций — при варке или плохом Ca:P
         if dog.diet_type == "cooked" or ca_p_ratio < 1.1:
-            # ~50 мг кальция на 1 кг массы тела в день (NRC)
+            # ~50 мг кальция (элемент) на 1 кг массы тела в день (NRC)
             ca_mg_day = round(ideal_weight * 50 / 50) * 50
             if ca_mg_day < 200:
                 ca_mg_day = 200
-            # Кальция цитрат: таблетки обычно 500 мг
-            tablets_500 = ca_mg_day / 500
-            if tablets_500 <= 0.5:
-                citrate_dose = "1/2 таблетки (500 мг)"
-            elif tablets_500 <= 1:
-                citrate_dose = "1 таблетка (500 мг)"
-            elif tablets_500 <= 1.5:
-                citrate_dose = "1.5 таблетки (500 мг)"
-            else:
-                citrate_dose = f"{round(tablets_500)} таблетки (500 мг)"
+            # Считаем в таблетках по 200 мг кальция (элемент) — типичный цитрат.
+            # Округляем до половины таблетки, минимум полтаблетки.
+            TAB_CA_MG = 200
+            tabs = max(0.5, round(ca_mg_day / TAB_CA_MG * 2) / 2)
+            citrate_dose = f"{self._fmt_num(tabs)} табл. в день (по {TAB_CA_MG} мг кальция в таблетке)"
             supps.append({
                 "name": "Кальция цитрат",
-                "dosage": f"{ca_mg_day} мг в день",
+                "dosage": f"{ca_mg_day} мг кальция в день",
                 "frequency": "Ежедневно, разделить на кормления",
                 "notes": (
                     f"Обязателен при варёном рационе — без костей кальция критически мало. "
-                    f"Аптека: кальция цитрат {citrate_dose} в день (усваивается на 40-50%, "
-                    f"можно с едой и без). Замена: кальция глюконат или карбонат (давать с едой). "
+                    f"Аптека: кальция цитрат — {citrate_dose}, усваивается на 40-50%, "
+                    f"можно с едой и без. Точнее всего дозируется молотая яичная скорлупа "
+                    f"(½ ч.л. ≈ 1000 мг кальция — берите долю под норму). "
                     f"Ветеринарные добавки: Canina Calcium Citrate, 8in1 Excel Calcium, "
-                    f"Wolmar Pro Bio Calcium — содержат кальций + витамин D3 для лучшего усвоения."
+                    f"Wolmar Pro Bio Calcium — содержат кальций + витамин D3 для усвоения."
                 ),
             })
 
@@ -571,13 +595,20 @@ class DietCalculator:
                 "notes": f"1 капсула «Аевит» или токоферол. Особенно важен при сыром кормлении.",
             })
 
-        # Пробиотик — при проблемах со стулом
+        # Пробиотик — при проблемах со стулом (доза по весу)
         if dog.stool in ("loose", "high_volume"):
+            if ideal_weight < 5:
+                prob_dose = "½ капсулы (или ½ саше) в день"
+            elif ideal_weight < 15:
+                prob_dose = "1 капсула (саше) в день"
+            else:
+                prob_dose = "1-2 капсулы (саше) в день"
             supps.append({
                 "name": "Пробиотик для собак",
-                "dosage": "1 капсула в день",
+                "dosage": prob_dose,
                 "frequency": "Курсами — 14 дней в месяц",
-                "notes": "FortiFlora, Ветом 1.1, Pro-Kolin или аптечный Линекс.",
+                "notes": "FortiFlora, Ветом 1.1, Pro-Kolin или аптечный Линекс. "
+                         "Для мелких собак уточните точную дозу по инструкции к препарату.",
             })
 
         # --- Определяем breed_info для дальнейших проверок ---

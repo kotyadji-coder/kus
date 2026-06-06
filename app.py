@@ -269,12 +269,18 @@ async def order_status(request: Request, order_id: int):
 
 
 @app.get("/order/{order_id}/view", response_class=HTMLResponse)
-async def order_view(order_id: int):
-    """Просмотр готового расчёта (HTML + кнопка печати)."""
+async def order_view(order_id: int, part: str = "natural"):
+    """Просмотр готового расчёта (HTML + кнопка печати).
+
+    Для комбо-заказов part=dry открывает подбор сухого корма (отдельный файл),
+    путь к которому в БД не хранится — выводим из имени order_{id}_dry.html."""
     order = await get_order(order_id)
     if not order or order["status"] != "done" or not order.get("pdf_path"):
         raise HTTPException(status_code=404, detail="Расчёт не найден или ещё не готов")
     html_path = order["pdf_path"]
+    is_combo = order["diet_type"] in ("barf_and_dry", "cooked_and_dry")
+    if part == "dry" and is_combo:
+        html_path = os.path.join(os.path.dirname(html_path), f"order_{order_id}_dry.html")
     if not os.path.exists(html_path):
         raise HTTPException(status_code=404, detail="Файл расчёта не найден")
     with open(html_path, "r", encoding="utf-8") as f:
