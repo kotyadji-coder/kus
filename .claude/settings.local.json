@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -f \"git add\")",
+      "Bash(pkill -f \"git commit\")",
+      "Bash(rm -f /mnt/5.42-opt/kus/.git/index.lock)",
+      "Bash(git reset *)"
+    ]
+  }
+}
