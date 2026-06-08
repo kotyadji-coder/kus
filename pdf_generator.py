@@ -193,9 +193,9 @@ def generate_html(result: DietResult) -> str:
 
     # Склонения клички
     name = dog.name  # именительный
-    name_g = decline_name(dog.name, "gent")  # родительный (кого? Барона)
-    name_d = decline_name(dog.name, "datv")  # дательный (кому? Барону)
-    name_a = decline_name(dog.name, "accs")  # винительный (кого? Барона)
+    name_g = decline_name(dog.name, "gent", dog.sex)  # родительный (кого? Барона)
+    name_d = decline_name(dog.name, "datv", dog.sex)  # дательный (кому? Барону)
+    name_a = decline_name(dog.name, "accs", dog.sex)  # винительный (кого? Барона)
 
     # Сезонная пометка
     _season = dog.season

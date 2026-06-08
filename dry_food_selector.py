@@ -5,6 +5,7 @@
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from datetime import date
 from declension import decline_name, decline
@@ -502,8 +503,29 @@ def _dry_page_head(meta_text: str) -> str:
   </div>'''
 
 
+def _renumber_pages(html: str) -> str:
+    """Проставляет сквозные номера страниц по факту собранных секций.
+
+    Каждый футер/обложка содержит плейсхолдеры §PG§ (порядковый номер) и §TOT§
+    (всего). Считаем реальное число секций и нумеруем их по порядку — номера
+    больше не «врут» при разбивке категорий на несколько страниц.
+    """
+    total = html.count("§PG§")
+    counter = {"i": 0}
+
+    def _next(_m):
+        counter["i"] += 1
+        return str(counter["i"])
+
+    html = re.sub("§PG§", _next, html)
+    html = html.replace("§TOT§", str(total))
+    return html
+
+
 def _dry_page_foot(num: int, total: int, doc_id: str) -> str:
-    return f'<div class="page-foot">стр. <strong>{num}</strong> / {total} · Кусь · {doc_id}</div>'
+    # Номер и общее число страниц проставляются динамически в конце сборки
+    # (см. _renumber_pages): секций может быть больше из-за разбивки категорий.
+    return f'<div class="page-foot">стр. <strong>§PG§</strong> / §TOT§ · Кусь · {doc_id}</div>'
 
 
 def generate_dry_food_html(result: DryFoodResult) -> str:
@@ -516,9 +538,9 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
 
     # Склонения клички
     name = dog.name
-    name_g = decline_name(dog.name, "gent")
-    name_d = decline_name(dog.name, "datv")
-    name_a = decline_name(dog.name, "accs")
+    name_g = decline_name(dog.name, "gent", dog.sex)
+    name_d = decline_name(dog.name, "datv", dog.sex)
+    name_a = decline_name(dog.name, "accs", dog.sex)
     total_pages = 10
     total_foods = len(result.budget) + len(result.mid) + len(result.premium)
     total_foods_in_db = len(load_json("dry_foods.json")["foods"])
@@ -730,22 +752,31 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
   {_dry_page_foot(page_num, total_pages, doc_id)}
 </section>'''
 
-        cards = ""
-        for i, rec in enumerate(foods):
-            is_best = (i == best_overall_idx)
-            cards += food_card(rec, i + 1, cat_names[cat_key], is_best)
+        # Разбиваем карточки по 2 на страницу, чтобы секция помещалась в один A4
+        # (раньше 3 карточки переполняли лист → полупустые «хвосты» и съехавшие
+        # номера страниц). Баннер категории — только на первой странице.
+        CARDS_PER_PAGE = 2
+        chunks = [foods[i:i + CARDS_PER_PAGE] for i in range(0, len(foods), CARDS_PER_PAGE)]
+        sections = []
+        for ci, chunk in enumerate(chunks):
+            cards = ""
+            for j, rec in enumerate(chunk):
+                gi = ci * CARDS_PER_PAGE + j
+                is_best = (gi == best_overall_idx)
+                cards += food_card(rec, gi + 1, cat_names[cat_key], is_best)
+            part = f" · часть {ci + 1}/{len(chunks)}" if len(chunks) > 1 else ""
+            sections.append(f'''<section class="page">
+  {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}{part}")}
 
-        return f'''<section class="page">
-  {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}")}
-
-  {banner}
+  {banner if ci == 0 else ''}
 
   <div class="foods">
     {cards}
   </div>
 
   {_dry_page_foot(page_num, total_pages, doc_id)}
-</section>'''
+</section>''')
+        return "\n".join(sections)
 
     # --- Build comparison table ---
     best_budget = result.budget[0] if result.budget else None
@@ -1945,7 +1976,7 @@ p {{ margin: 0; }}
 <body>
 
 <div class="toolbar">
-  <span class="hint">A4 · {total_pages} страниц</span>
+  <span class="hint">A4 · §TOT§ страниц</span>
   <button onclick="window.print()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
     Печать / Сохранить PDF
@@ -2019,7 +2050,7 @@ p {{ margin: 0; }}
   <div class="cover-footer">
     <div>kus.dogfine.ru · @doggifood_bot</div>
     <div>Кусь · Подбор сухого корма</div>
-    <div>стр. 1 / {total_pages}</div>
+    <div>стр. §PG§ / §TOT§</div>
   </div>
 </section>
 
@@ -2139,6 +2170,22 @@ p {{ margin: 0; }}
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
       <div><h4>Красные флаги</h4><p>Кукуруза/пшеница на первых местах, сахар, целлюлоза, и «сплиттинг» — когда зерно дробят на 3–4 строчки, чтобы спрятать его реальную долю.</p></div>
     </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></div>
+      <div><h4>Гарантированный анализ</h4><p>На обороте ищите цифры: <strong>белок 26–32%</strong>, жир 12–18%, клетчатка ≤ 5%. Слишком мало белка — корм «разбавлен» зерном.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg></div>
+      <div><h4>«Беззерновой» — не синоним «лучше»</h4><p>Grain-free часто просто меняет зерно на горох/картофель. Смотрите на <strong>долю мяса</strong>, а не на громкую надпись на лицевой стороне.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <div><h4>Калорийность = размер порции</h4><p>Смотрите <strong>ккал/100 г</strong>. Чем калорийнее корм, тем меньше порция — и наоборот. По этой цифре считается суточная норма, а не «на глаз».</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Срок и условия хранения</h4><p>Берите упаковку со <strong>свежей датой</strong> и закрывайте герметично. Прогорклый жир — частая причина отказа от еды и расстройства ЖКТ.</p></div>
+    </div></td></tr>
   </table>
 
   {_dry_page_foot(7, total_pages, doc_id)}
@@ -2168,6 +2215,22 @@ p {{ margin: 0; }}
     <td><div class="tip">
       <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l1 13h14l1-13M9 7V4h6v3"/></svg></div>
       <div><h4>Не мешайте с натуралкой в одной миске</h4><p>Сухой корм и сырое/варёное перевариваются с разной скоростью. Хотите сочетать — давайте в <strong>разные кормления</strong>. Храните корм герметично, в сухом тёмном месте.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Режим — по часам</h4><p>Кормите в <strong>одно и то же время</strong>, 2 раза в день. Миску не оставляйте больше чем на 15–20 минут: так проще следить за аппетитом и не перекармливать.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/><path d="M18 4l2 2-2 2"/></svg></div>
+      <div><h4>Не кормите со стола</h4><p>Человеческая еда сбивает рацион и приучает попрошайничать. Солёное, копчёное, сладкое и кости варёные — <strong>под запретом</strong>, даже «по чуть-чуть».</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+      <div><h4>Покой до и после еды</h4><p>Не нагружайте собаку <strong>час до и после</strong> кормления. Активные игры на полный желудок у крупных пород повышают риск заворота желудка.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></div>
+      <div><h4>Взвешивайте раз в 2 недели</h4><p>Корректируйте порцию по факту: рёбра прощупываются, талия видна сверху. <strong>±10%</strong> к норме с упаковки — это нормально, собаки разные.</p></div>
     </div></td></tr>
   </table>
 
@@ -2283,7 +2346,7 @@ p {{ margin: 0; }}
 
 </body>
 </html>"""
-    return html
+    return _renumber_pages(html)
 
 
 def generate_dry_food_pdf(result: DryFoodResult, output_path: str = None) -> str:

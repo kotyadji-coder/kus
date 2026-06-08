@@ -155,11 +155,6 @@ class DietCalculator:
     # --- Идеальный вес ---
 
     def _calc_ideal_weight(self, dog: DogProfile, breed_info: Optional[dict]) -> float:
-        if breed_info:
-            breed_avg = (breed_info["weight_min"] + breed_info["weight_max"]) / 2
-        else:
-            breed_avg = dog.weight_kg
-
         condition_adj = {
             "thin": 1.10,       # нужно набрать ~10%
             "athletic": 1.0,    # вес ок
@@ -167,6 +162,15 @@ class DietCalculator:
             "obese": 0.80,      # скинуть ~20%
         }
         adj = condition_adj.get(dog.condition, 1.0)
+
+        # У метиса/беспородной нет породного эталона веса — нельзя выдавать
+        # середину широкого бакета за «идеал» (это давало фантомный недовес).
+        # Ориентир только на текущий вес с поправкой на кондицию тела.
+        is_mixed = "метис" in (dog.breed or "").lower()
+        if is_mixed or not breed_info:
+            return dog.weight_kg * adj
+
+        breed_avg = (breed_info["weight_min"] + breed_info["weight_max"]) / 2
 
         if dog.condition == "athletic":
             return dog.weight_kg
