@@ -18,6 +18,46 @@ def load_json(filename: str):
 
 
 # ---------------------------------------------------------------------------
+# Стоп-продукты — единый источник правды
+# ---------------------------------------------------------------------------
+# Пользователь пишет "курица" -> в названии продукта ищем подстроку "кур".
+# Этой же логикой фильтруются и подбор меню (_select_products), и тексты в PDF
+# (примеры костей, советы по замене мяса). Не дублировать матчинг где-либо ещё.
+STOP_SYNONYMS = {
+    "курица": "кур", "курятина": "кур", "куриный": "кур",
+    "говядина": "говяж", "говяжий": "говяж",
+    "свинина": "свин", "свиной": "свин",
+    "баранина": "баран", "бараний": "баран",
+    "утка": "ут", "утиный": "ут",
+    "кролик": "кролик", "крольчатина": "кролик",
+    "индейка": "индей", "индюшка": "индей", "индюшачий": "индей",
+    "рыба": "рыб", "лосось": "лосос", "минтай": "минтай",
+    "молоко": "молок", "творог": "творог", "кефир": "кефир",
+    "яйцо": "яйц",
+}
+
+
+def stop_roots(stop_products: list[str]) -> set[str]:
+    """Корни стоп-продуктов для подстрочного матча по названию продукта."""
+    roots = set()
+    for s in stop_products or []:
+        s_stripped = s.strip().lower()
+        if not s_stripped:
+            continue
+        if s_stripped in STOP_SYNONYMS:
+            roots.add(STOP_SYNONYMS[s_stripped])
+        else:
+            roots.add(s_stripped[:4] if len(s_stripped) >= 4 else s_stripped)
+    return roots
+
+
+def is_stopped(name: str, roots: set[str]) -> bool:
+    """Содержит ли название продукта/ингредиента стоп-корень."""
+    n = name.lower()
+    return any(r in n for r in roots)
+
+
+# ---------------------------------------------------------------------------
 # Входные данные (анкета)
 # ---------------------------------------------------------------------------
 
@@ -348,7 +388,7 @@ class DietCalculator:
     def _select_products(self, dog: DogProfile, distribution: dict) -> dict[str, list]:
         """Для каждой группы подбирает конкретные продукты с граммовками."""
         result = {}
-        stop_lower = [s.lower() for s in dog.stop_products]
+        roots = stop_roots(dog.stop_products)
 
         for group, grams in distribution.items():
             if grams <= 0:
@@ -368,36 +408,11 @@ class DietCalculator:
                 and not p.get("rare", False)  # редкое/труднодоступное (конина, оленина) не предлагаем
             ]
 
-            # Фильтруем стоп-продукты
-            # Словарь синонимов: пользователь пишет "курица" -> ищем "кур" в названии
-            STOP_SYNONYMS = {
-                "курица": "кур", "курятина": "кур", "куриный": "кур",
-                "говядина": "говяж", "говяжий": "говяж",
-                "свинина": "свин", "свиной": "свин",
-                "баранина": "баран", "бараний": "баран",
-                "утка": "ут", "утиный": "ут",
-                "кролик": "кролик", "крольчатина": "кролик",
-                "индейка": "индей", "индюшка": "индей", "индюшачий": "индей",
-                "рыба": "рыб", "лосось": "лосос", "минтай": "минтай",
-                "молоко": "молок", "творог": "творог", "кефир": "кефир",
-                "яйцо": "яйц",
-            }
-            stop_roots = set()
-            for s in stop_lower:
-                s_stripped = s.strip()
-                if s_stripped in STOP_SYNONYMS:
-                    stop_roots.add(STOP_SYNONYMS[s_stripped])
-                else:
-                    # Берём первые 3-4 буквы как корень
-                    stop_roots.add(s_stripped[:4] if len(s_stripped) >= 4 else s_stripped)
-
-            filtered = [
-                p for p in candidates
-                if not any(root in p["name"].lower() for root in stop_roots)
-            ]
+            # Фильтруем стоп-продукты (матчинг — модульный stop_roots/is_stopped)
+            filtered = [p for p in candidates if not is_stopped(p["name"], roots)]
             if filtered:
                 candidates = filtered
-            elif stop_roots:
+            elif roots:
                 # Все продукты в группе содержат стоп-продукт — пропускаем группу
                 continue
 

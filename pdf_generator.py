@@ -7,7 +7,7 @@ import os
 import base64
 import io
 from datetime import date
-from calculator import DietResult, DietCalculator, DogProfile
+from calculator import DietResult, DietCalculator, DogProfile, stop_roots
 from declension import decline_name
 
 try:
@@ -186,6 +186,35 @@ def generate_html(result: DietResult) -> str:
     pronoun_him = "её" if is_female else "его"
     verb_refused = "отказалась" if is_female else "отказался"
     adj_active = "активна" if is_female else "активен"
+
+    # Stop-list-aware тексты обучающих блоков: пример костей и советы по замене
+    # мяса не должны называть продукт из стоп-листа клиента (матчинг — как в меню).
+    _stop_roots = stop_roots(dog.stop_products)
+    # Здесь сравниваем два канонических слова (кандидат vs стоп), поэтому матчим
+    # по совпадению КОРНЕЙ, а не подстрокой: корень «говядины» — «говяж», как
+    # подстрока в слове «говядина» он не содержится (is_stopped тут не годится).
+    def _meat_stopped(noun: str) -> bool:
+        return bool(stop_roots([noun]) & _stop_roots)
+    # Пример источника костей — первый вид, которого нет в стоп-листе.
+    _bone_candidates = [
+        ("куриные спинки, шеи, крылья", "курица"),
+        ("индюшачьи шеи и спинки", "индейка"),
+        ("утиные шеи", "утка"),
+        ("кроличьи рёбрышки", "кролик"),
+    ]
+    bone_example = next(
+        (phrase for phrase, test in _bone_candidates if not _meat_stopped(test)),
+        "мясные кости птицы или кролика (любые не из стоп-листа)",
+    )
+    # Виды мяса для совета «не нашли в магазине — замените на…», без стоп-продуктов.
+    _swap_candidates = [("говядину", "говядина"), ("индейку", "индейка"), ("курицу", "курица")]
+    _allowed_swaps = [label for label, test in _swap_candidates if not _meat_stopped(test)]
+    if len(_allowed_swaps) >= 2:
+        swap_meats = ", ".join(_allowed_swaps[:-1]) + " или " + _allowed_swaps[-1]
+    elif _allowed_swaps:
+        swap_meats = _allowed_swaps[0]
+    else:
+        swap_meats = "другой доступный вид мяса не из стоп-листа"
 
     # QR-код на бота
     qr_b64 = _generate_qr_b64("https://t.me/doggifood_bot")
@@ -386,8 +415,8 @@ def generate_html(result: DietResult) -> str:
             '<div style="margin-top:4mm;padding:4mm 6mm;background:var(--primary-soft,#eef4fb);'
             'border-radius:10px;font-size:9pt;line-height:1.55;color:var(--ink-soft,#555);">'
             f'<strong style="color:var(--ink,#222);">Не нашли в магазине?</strong> '
-            f'{_items.capitalize()} спокойно заменяйте на говядину, индейку или курицу '
-            f'(если они не в стоп-листе) — на балансе рациона это не скажется. '
+            f'{_items.capitalize()} спокойно заменяйте на {swap_meats} '
+            f'— на балансе рациона это не скажется. '
             f'Главное — чередовать 2–3 вида мяса.'
             '</div>'
         )
@@ -1611,7 +1640,7 @@ p {{ margin: 0; }}
   if dog.diet_type == 'cooked' else
   '<div style="font-size:9.5pt;line-height:1.6;color:var(--ink);">' + chr(10) +
   '<p style="margin-bottom:3mm;"><strong>Мясо</strong> — давайте сырым, порезанным на куски по размеру пасти. Промороженное мясо (3+ дня в морозилке при −18°C) безопасно. Размораживайте в холодильнике 12 часов.</p>' + chr(10) +
-  '<p style="margin-bottom:3mm;"><strong>Кости</strong> — только сырые мясные кости (куриные спинки, шеи, крылья). Никогда не давайте варёные кости — они раскалываются на острые осколки! Кости — это источник кальция, не игрушка.</p>' + chr(10) +
+  '<p style="margin-bottom:3mm;"><strong>Кости</strong> — только сырые мясные кости (' + bone_example + '). Никогда не давайте варёные кости — они раскалываются на острые осколки! Кости — это источник кальция, не игрушка.</p>' + chr(10) +
   '<p style="margin-bottom:3mm;"><strong>Субпродукты</strong> — печень, сердце, почки, рубец. Давайте сырыми. Печень — не более 5% рациона (богата витамином A). Рубец — зелёный (неочищенный) полезнее белого.</p>' + chr(10) +
   '<p style="margin-bottom:3mm;"><strong>Рыба</strong> — сырая морская рыба 2 раза в неделю. Речную рыбу давать нельзя (паразиты). Мелкую рыбу можно целиком, крупную — без головы и хребта.</p>' + chr(10) +
   '<p style="margin-bottom:3mm;"><strong>Овощи</strong> — сырые, измельчённые в блендере или натёртые на мелкой тёрке. Собаки не умеют переваривать целлюлозу — без измельчения овощи пройдут транзитом.</p>' + chr(10) +
