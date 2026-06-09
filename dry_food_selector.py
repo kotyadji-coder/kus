@@ -18,6 +18,24 @@ def load_json(filename: str):
         return json.load(f)
 
 
+def _balanced_chunks(items, maxsize=3):
+    """Бьёт список на страницы по <= maxsize карточек, раскладывая ОСТАТОК поровну,
+    чтобы не было полупустого «хвоста» из одинокой карточки.
+    4 -> [2,2] (а не [3,1]), 5 -> [3,2], 7 -> [3,2,2]. Одинокая карточка только
+    если в категории всего 1 корм. Проверено на переполнение: tools/measure_dry.py."""
+    n = len(items)
+    if n == 0:
+        return []
+    pages = (n + maxsize - 1) // maxsize  # минимум страниц
+    base, rem = divmod(n, pages)          # base или base+1 карточек на страницу
+    sizes = [base + 1] * rem + [base] * (pages - rem)
+    chunks, i = [], 0
+    for s in sizes:
+        chunks.append(items[i:i + s])
+        i += s
+    return chunks
+
+
 # ---------------------------------------------------------------------------
 # Профиль собаки (вход)
 # ---------------------------------------------------------------------------
@@ -551,14 +569,32 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
     _photo_cache = {}
     _SVG_BAG = '<svg width="44" height="52" viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 16 Q12 10 18 10 L20 7 H28 L30 10 Q36 10 36 16 L38 50 Q38 52 36 52 H12 Q10 52 10 50 Z"/><rect x="17" y="22" width="14" height="10" rx="1.5" stroke-width="1.4"/><path d="M14 38 H34 M14 42 H30" stroke-width="1.2" stroke-linecap="round"/><circle cx="22" cy="9" r="0.8" fill="currentColor"/><circle cx="26" cy="9" r="0.8" fill="currentColor"/></svg>'
     def _food_photo_tag(food_id: str) -> str:
+        # Встраиваем картинку как base64-миниатюру: отчёт остаётся самодостаточным
+        # (открывается standalone-файлом / в headless-браузере / в PDF без живого сервера).
         if food_id not in _photo_cache:
+            tag = _SVG_BAG
             for ext in ("jpg", "png", "webp"):
                 path = os.path.join(STATIC_DIR, f"{food_id}.{ext}")
-                if os.path.exists(path):
-                    _photo_cache[food_id] = f'<img src="/static/dry-foods/{food_id}.{ext}" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">'
-                    break
-            else:
-                _photo_cache[food_id] = _SVG_BAG
+                if not os.path.exists(path):
+                    continue
+                try:
+                    import base64
+                    from io import BytesIO
+                    from PIL import Image
+                    img = Image.open(path)
+                    if img.mode not in ("RGB", "L"):
+                        img = img.convert("RGB")
+                    img.thumbnail((240, 240), Image.LANCZOS)  # карточка ~16×20мм
+                    buf = BytesIO()
+                    img.save(buf, format="JPEG", quality=72, optimize=True)
+                    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+                    tag = (f'<img src="data:image/jpeg;base64,{b64}" alt="" '
+                           f'style="width:100%;height:100%;object-fit:contain;'
+                           f'position:relative;z-index:1;">')
+                except Exception:
+                    tag = _SVG_BAG
+                break
+            _photo_cache[food_id] = tag
         return _photo_cache[food_id]
 
     # --- Food card builder ---
@@ -752,18 +788,20 @@ def generate_dry_food_html(result: DryFoodResult) -> str:
   {_dry_page_foot(page_num, total_pages, doc_id)}
 </section>'''
 
-        # Разбиваем карточки по 2 на страницу, чтобы секция помещалась в один A4
-        # (раньше 3 карточки переполняли лист → полупустые «хвосты» и съехавшие
-        # номера страниц). Баннер категории — только на первой странице.
-        CARDS_PER_PAGE = 2
-        chunks = [foods[i:i + CARDS_PER_PAGE] for i in range(0, len(foods), CARDS_PER_PAGE)]
+        # 2 карточки на лист: в Chromium (движок, которым клиент печатает «Сохранить
+        # PDF») 3 карточки НЕ влезают в A4 и вытекают на 2-ю страницу, ломая сквозную
+        # нумерацию. Проверка — рендером Chromium, tools/report_qa. Остаток делим
+        # балансно (4 -> 2+2). Одинокая карточка при 3 кормах в категории пока
+        # неизбежна (2+1) — открытый вопрос #3 по компоновке «хвоста».
+        chunks = _balanced_chunks(foods, maxsize=2)
         sections = []
+        gi = 0  # сквозной номер корма в категории (чанки разного размера)
         for ci, chunk in enumerate(chunks):
             cards = ""
-            for j, rec in enumerate(chunk):
-                gi = ci * CARDS_PER_PAGE + j
+            for rec in chunk:
                 is_best = (gi == best_overall_idx)
                 cards += food_card(rec, gi + 1, cat_names[cat_key], is_best)
+                gi += 1
             part = f" · часть {ci + 1}/{len(chunks)}" if len(chunks) > 1 else ""
             sections.append(f'''<section class="page">
   {_dry_page_head(f"<strong>Категория {cat_num} / 3</strong> · {cat_names[cat_key]}{part}")}
@@ -1510,8 +1548,13 @@ p {{ margin: 0; }}
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #fff;
-  text-shadow: 0 1px 0 rgba(11,23,38,0.2);
-  z-index: 1;
+  /* Тёмная обводка-halo: лейбл читается и на синей заливке, и на светлой части
+     полосы (при низком % мяса заливка короче лейбла), и поверх белого разделителя. */
+  text-shadow:
+    0 0 1px rgba(11,23,38,0.9),
+    0 0 2px rgba(11,23,38,0.65),
+    0 1px 1px rgba(11,23,38,0.55);
+  z-index: 2;
 }}
 .meat-pct {{
   font-size: 14pt;
