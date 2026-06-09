@@ -17,6 +17,10 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "project-5c6fc698-9b69-4d2d-95d")
 GOOGLE_CREDS_PATH = os.getenv("GOOGLE_APPLICATION_CREDENTIALS",
     os.path.join(os.path.dirname(__file__), "google-credentials.json"))
+# Путь из .env прописан как на самом сервере (/opt/kus/...). Если код запущен не
+# на сервере, а через сетевое монтирование диска — этот абсолютный путь не виден;
+# тогда берём google-credentials.json рядом с кодом. На сервере поведение прежнее.
+_CODE_LOCAL_CREDS = os.path.join(os.path.dirname(__file__), "google-credentials.json")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 FALLBACK_MODELS = ["gemini-3.5-flash", "gemini-2.5-flash"]
 
@@ -32,8 +36,10 @@ def _get_client():
         from google import genai
 
         # Способ 1: Vertex AI через service account (надёжнее, облачная квота)
-        if os.path.exists(GOOGLE_CREDS_PATH):
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDS_PATH
+        creds = GOOGLE_CREDS_PATH if os.path.exists(GOOGLE_CREDS_PATH) else (
+            _CODE_LOCAL_CREDS if os.path.exists(_CODE_LOCAL_CREDS) else None)
+        if creds:
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds
             _client = genai.Client(
                 vertexai=True,
                 project=GOOGLE_CLOUD_PROJECT,
