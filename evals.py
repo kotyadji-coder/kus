@@ -3,7 +3,7 @@
 Запускается из админки или командой `python evals.py`.
 """
 
-from calculator import DietCalculator, DogProfile
+from calculator import DietCalculator, DogProfile, stop_roots, is_stopped
 
 PROFILES = [
     {"name": "Рекс", "breed": "Немецкая овчарка", "age_months": 36, "sex": "male", "neutered": True,
@@ -94,19 +94,15 @@ def run_evals() -> list[dict]:
         else:
             checks.append(("Калорийность", "fail", f"{int(result.mer_kcal)} ккал = {int(kcal_per_kg)} ккал/кг — вне нормы"))
 
-        # 3. Стоп-продукты не попали в меню
+        # 3. Стоп-продукты не попали в меню (матчинг — единый, из calculator)
         total += 1
-        stop_roots = set()
-        stop_synonyms = {"курица": "кур", "говядина": "говяж", "свинина": "свин", "баранина": "баран"}
-        for s in dog.stop_products:
-            stop_roots.add(stop_synonyms.get(s.lower(), s.lower()[:4]))
+        roots = stop_roots(dog.stop_products)
 
         violated = []
         for day in result.weekly_menu:
             for p in day.morning + day.evening:
-                for root in stop_roots:
-                    if root in p.product_name.lower():
-                        violated.append(f"{day.day_name}: {p.product_name}")
+                if is_stopped(p.product_name, roots):
+                    violated.append(f"{day.day_name}: {p.product_name}")
 
         if not violated:
             checks.append(("Стоп-продукты", "ok", f"Стоп: {dog.stop_products or 'нет'} — чисто"))
