@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Кусь · Подбор сухого корма · Граф</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --primary: #055ba9;
+  --primary-dark: #04467f;
+  --primary-soft: #e6f0fa;
+  --primary-softer: #f3f8fd;
+  --accent: #f59e0b;
+  --accent-deep: #d97706;
+  --accent-soft: #fef3c7;
+  --accent-softer: #fffbeb;
+  --ink: #0b1726;
+  --ink-soft: #475569;
+  --ink-light: #94a3b8;
+  --border: #e2e8f0;
+  --border-soft: #eef2f7;
+  --bg: #ffffff;
+  --bg-soft: #f7f9fc;
+  --bg-warm: #fdfbf7;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --amber: #d97706;
+  --meat-from: #055ba9;
+  --meat-to: #7cc2f0;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #e6e9ef;
+  font-family: "Golos Text", system-ui, sans-serif;
+  color: var(--ink);
+  font-size: 11pt;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+/* Print toolbar */
+.toolbar {
+  position: fixed;
+  top: 16px; right: 16px;
+  z-index: 100;
+  display: flex; gap: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 12px 30px -12px rgba(11,23,38,0.25);
+}
+.toolbar button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.toolbar .hint {
+  font-size: 11px;
+  color: var(--ink-light);
+  align-self: center;
+  padding: 0 6px;
+}
+
+/* A4 page */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 16px auto;
+  background: #fff;
+  position: relative;
+  padding: 12mm 14mm 16mm;
+  box-shadow: 0 12px 32px -16px rgba(11,23,38,0.25);
+  page-break-after: always;
+  break-after: page;
+  zoom: var(--page-zoom, 1);
+}
+.page:last-of-type { page-break-after: auto; }
+
+.page-foot {
+  position: absolute;
+  left: 0; right: 0; bottom: 8mm;
+  text-align: center;
+  font-size: 8pt;
+  color: var(--ink-light);
+  letter-spacing: 0.05em;
+}
+.page-foot strong { color: var(--ink-soft); font-weight: 600; }
+
+.page-head {
+  margin-bottom: 4mm;
+  padding-bottom: 3mm;
+  border-bottom: 1px solid var(--border-soft);
+}
+.page-head .meta { float: right; }
+.page-head .logo { display: inline-block; }
+.page-head .logo .mark {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  display: inline-block; text-align: center; line-height: 26px;
+  vertical-align: middle; margin-right: 6px;
+}
+.page-head .logo .mark svg { vertical-align: middle; }
+.page-head .logo .name {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+  vertical-align: middle;
+}
+.page-head .meta {
+  font-size: 9pt;
+  color: var(--ink-light);
+}
+.page-head .meta strong { color: var(--ink-soft); font-weight: 600; }
+
+/* Typography */
+h1, h2, h3, h4 { margin: 0; letter-spacing: -0.02em; color: var(--ink); }
+h1 { font-size: 34pt; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; }
+h2 { font-size: 22pt; font-weight: 700; line-height: 1.1; }
+h3 { font-size: 14pt; font-weight: 700; }
+h4 { font-size: 11pt; font-weight: 700; }
+p { margin: 0; }
+
+.eyebrow {
+  display: inline-block;
+  font-size: 9pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 5px 12px;
+  border-radius: 100px;
+}
+.section-title {
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 3mm;
+}
+.section-sub {
+  font-size: 9.5pt;
+  color: var(--ink-soft);
+  margin-bottom: 5mm;
+  max-width: 145mm;
+}
+
+/* Cover */
+.cover { padding: 0; }
+.cover .top-bar {
+  height: 6mm;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 55%, var(--accent) 100%);
+}
+.cover-inner { padding: 14mm 16mm 14mm; }
+.cover-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 16mm;
+}
+.cover-head .logo .name { font-size: 22px; }
+.cover-head .logo .mark { width: 34px; height: 34px; border-radius: 10px; }
+.cover-head .doc-id {
+  text-align: right;
+  font-size: 9pt;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+.cover-head .doc-id .label {
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 6px;
+}
+.cover-title-block { max-width: 140mm; }
+.cover-title-block .kicker {
+  font-size: 11pt;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-bottom: 6mm;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cover-title-block .kicker .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+}
+.cover-title-block .dog-name {
+  font-size: 56pt;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: var(--primary);
+  margin: 4mm 0 6mm;
+}
+.cover-title-block .breed {
+  font-size: 14pt;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4mm;
+}
+.cover-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 10mm;
+  font-size: 11pt;
+  color: var(--ink-soft);
+}
+.cover-stats .stat strong { font-size: 14pt; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.cover-stats .stat div { white-space: nowrap; }
+.cover-stats .divider { width: 1px; height: 24px; background: var(--border); }
+
+.cover-badge {
+  display: inline-block;
+  margin-top: 8mm;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 10pt;
+  border-radius: 100px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+.cover-badge .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fff; vertical-align: middle; margin-right: 6px; }
+
+/* Cover photo — WeasyPrint adapted */
+.cover-photo {
+  margin-top: 10mm;
+  border-radius: 14px;
+  overflow: hidden;
+  max-height: 60mm;
+  background: linear-gradient(135deg, var(--primary-soft), var(--bg-warm));
+  position: relative;
+}
+.cover-photo img { width: 100%; height: auto; display: block; border-radius: 14px; }
+.float-card {
+  display: inline-block;
+  margin-top: -12mm;
+  margin-left: 8mm;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 12px -4px rgba(11,23,38,0.15);
+}
+.float-card .ico {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-block; text-align: center; line-height: 32px; vertical-align: middle; margin-right: 10px;
+}
+.float-card .label { font-size: 8pt; color: var(--ink-soft); display: inline-block; vertical-align: middle; }
+.float-card .val { font-size: 11pt; font-weight: 700; color: var(--ink); display: inline-block; vertical-align: middle; margin-left: 4px; }
+
+.cover-footer {
+  position: absolute;
+  left: 16mm; right: 16mm; bottom: 12mm;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 8.5pt;
+  color: var(--ink-light);
+  border-top: 1px solid var(--border-soft);
+  padding-top: 5mm;
+}
+
+/* Profile — table wrapper for WeasyPrint */
+.profile-grid-t { width: 100%; border-collapse: separate; border-spacing: 4mm 0; margin-bottom: 7mm; }
+.profile-grid-t td { width: 50%; vertical-align: top; }
+.profile-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 5mm 6mm;
+}
+.profile-card-wide { margin-bottom: 4mm; }
+.profile-cols { width: 100%; border-collapse: collapse; }
+.profile-cols td { width: 50%; vertical-align: top; padding: 0 6mm; }
+.profile-cols td:first-child { border-right: 1px solid var(--border-soft); padding-left: 0; }
+.profile-card .hd {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4mm;
+  padding-bottom: 4mm;
+  border-bottom: 1px solid var(--border-soft);
+}
+.profile-card .hd .av {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.profile-card .hd .nm { font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+.profile-card .hd .sub { font-size: 9pt; color: var(--ink-light); margin-top: 2px; }
+.profile-row {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-soft);
+  font-size: 10pt;
+}
+.profile-row:last-child { border-bottom: none; }
+.profile-row .k { color: var(--ink-soft); }
+.profile-row .v { font-weight: 700; color: var(--ink); }
+.profile-row .v .chip {
+  display: inline-block;
+  font-size: 8.5pt;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-left: 4px;
+}
+.chip.warn { background: var(--accent-soft); color: var(--accent-deep); }
+.chip.bad { background: var(--red-soft); color: var(--red); }
+.chip.ok { background: var(--green-soft); color: var(--green); }
+
+.ai-quote {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 14px;
+  padding: 6mm 7mm;
+  position: relative;
+  display: flex; flex-direction: column;
+  gap: 4mm;
+}
+.ai-quote::before {
+  content: "“";
+  position: absolute;
+  top: -8mm; right: 6mm;
+  font-size: 90pt;
+  font-weight: 800;
+  color: rgba(255,255,255,0.16);
+  line-height: 1;
+}
+.ai-quote .ai-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.18);
+  align-self: flex-start;
+}
+.ai-quote p {
+  font-size: 11pt;
+  line-height: 1.55;
+  font-weight: 500;
+}
+.ai-quote .signoff {
+  font-size: 9pt;
+  color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 8px;
+}
+.ai-quote .signoff .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* Steps — table wrapper for WeasyPrint */
+.steps-grid {
+  gap: 4mm;
+}
+.steps-grid-t { width: 100%; border-collapse: separate; border-spacing: 3mm 0; }
+.steps-grid-t td { width: 33%; vertical-align: top; }
+.step {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 5mm;
+  position: relative;
+}
+.step .num {
+  position: absolute;
+  top: 4mm; right: 5mm;
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--primary-soft);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.step .ico {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 4mm;
+}
+.step .ttl { font-size: 11pt; font-weight: 700; color: var(--ink); margin-bottom: 2mm; }
+.step .txt { font-size: 9.5pt; color: var(--ink-soft); line-height: 1.5; }
+.step .txt strong { color: var(--ink); font-weight: 700; }
+
+/* Cat strip — table wrapper for WeasyPrint */
+.cat-strip {
+  margin-top: 6mm;
+}
+.cat-strip-t { margin-top: 6mm; width: 100%; border-collapse: separate; border-spacing: 2mm 0; }
+.cat-strip-t td { vertical-align: top; }
+.cat-pill {
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.cat-pill.budget { background: #eef2f7; }
+.cat-pill.middle { background: var(--primary-soft); color: var(--primary-dark); }
+.cat-pill.premium { background: var(--accent-soft); color: var(--accent-deep); }
+.cat-pill .swatch {
+  display: inline-block;
+  width: 8px; height: 8px; border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.cat-pill.budget .swatch { background: #64748b; }
+.cat-pill.middle .swatch { background: var(--primary); }
+.cat-pill.premium .swatch { background: var(--accent); }
+.cat-pill .cnt { font-size: 8.5pt; font-weight: 600; opacity: 0.7; white-space: nowrap; }
+
+/* Category banner */
+.cat-banner {
+  margin-bottom: 3mm;
+  padding: 3mm 6mm;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6mm;
+}
+.cat-banner.budget { background: #eef2f7; }
+.cat-banner.middle { background: var(--primary-soft); }
+.cat-banner.premium { background: var(--accent-soft); }
+
+/* Заглушка для пустой категории */
+.stub-card {
+  margin-top: 14mm;
+  padding: 12mm 14mm;
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  background: #fcfdfe;
+  text-align: center;
+}
+.stub-ico {
+  width: 44px; height: 44px; margin: 0 auto 6mm;
+  color: var(--accent);
+}
+.stub-ico svg { width: 44px; height: 44px; }
+.stub-title { font-size: 14pt; font-weight: 700; color: var(--ink); margin-bottom: 4mm; }
+.stub-text { font-size: 11pt; line-height: 1.6; color: var(--ink-soft); max-width: 130mm; margin: 0 auto 6mm; }
+.stub-hint {
+  display: inline-block;
+  font-size: 10.5pt; font-weight: 600; color: var(--primary);
+  background: var(--primary-soft);
+  padding: 8px 16px; border-radius: 100px;
+}
+.stub-cols { width: 100%; border-collapse: collapse; margin-top: 10mm; text-align: left; }
+.stub-cols td { width: 50%; vertical-align: top; padding: 0 5mm; }
+.stub-cols td:first-child { border-right: 1px solid var(--border-soft); }
+.stub-h { font-size: 10.5pt; font-weight: 700; color: var(--ink); margin-bottom: 3mm; }
+.stub-list { margin: 0; padding-left: 5mm; font-size: 10pt; line-height: 1.7; color: var(--ink-soft); }
+.stub-p { margin: 0; font-size: 10pt; line-height: 1.6; color: var(--ink-soft); }
+.cat-banner .left .eyebrow-line {
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1.5mm;
+}
+.cat-banner.budget .left .eyebrow-line { color: #475569; }
+.cat-banner.middle .left .eyebrow-line { color: var(--primary-dark); }
+.cat-banner.premium .left .eyebrow-line { color: var(--accent-deep); }
+.cat-banner .left .ttl {
+  font-size: 14pt;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}
+.cat-banner .left .sub {
+  font-size: 8pt;
+  color: var(--ink-soft);
+  margin-top: 1mm;
+  max-width: 130mm;
+  line-height: 1.4;
+}
+.cat-banner .price {
+  text-align: right;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 500;
+}
+.cat-banner .price .big {
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.cat-banner .price .sml { font-size: 8.5pt; color: var(--ink-soft); }
+
+/* Food card */
+.foods { display: flex; flex-direction: column; gap: 2mm; }
+.food {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2.5mm 4mm 3mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  position: relative;
+}
+.food-layout { width: 100%; border-collapse: collapse; }
+.food-layout td { vertical-align: top; padding: 0 1.5mm; }
+.food-layout td:first-child { width: 9mm; }
+.food-layout td:nth-child(2) { width: 16mm; }
+.food .rank {
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  font-feature-settings: "tnum";
+}
+.food .rank .hash {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--primary-soft);
+  vertical-align: super;
+  margin-right: -2px;
+}
+.food .rank-meta {
+  font-size: 6.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  margin-top: 2mm;
+  line-height: 1.2;
+}
+
+/* Bag placeholder photo */
+.bag-photo {
+  width: 16mm; height: 20mm;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #f1f4f9 0%, #e2e8f0 100%);
+  border: 1px solid var(--border);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 -5mm 4mm -4mm rgba(11,23,38,0.06);
+}
+.bag-photo::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    rgba(148,163,184,0.08) 6px 7px
+  );
+}
+.bag-photo svg { position: relative; z-index: 1; color: var(--ink-light); }
+.bag-photo img { border-radius: 6px; }
+.bag-photo .ph-label {
+  position: absolute;
+  bottom: 0.5mm;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}
+
+.food .body { min-width: 0; }
+.food .top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 4mm;
+  margin-bottom: 2mm;
+}
+.food .brand {
+  font-size: 12.5pt;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.05;
+}
+.food .formula {
+  font-size: 9pt;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-top: 0.5mm;
+}
+.food .origin {
+  font-size: 8pt;
+  color: var(--ink-light);
+  margin-top: 1mm;
+  display: flex; align-items: center; gap: 6px;
+  font-feature-settings: "tnum";
+}
+.food .origin .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-light); }
+.food .badges { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
+.badge {
+  font-size: 7pt;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge.green { background: var(--green-soft); color: var(--green); }
+.badge.blue { background: var(--primary-soft); color: var(--primary); }
+.badge.amber { background: var(--accent-soft); color: var(--accent-deep); }
+
+/* Meat scale — table wrapper for WeasyPrint */
+.meat-scale-t {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5mm 0;
+}
+.meat-scale-t td { vertical-align: middle; padding: 0; }
+.meat-scale-t .meat-pct-cell { width: 30px; text-align: right; padding-left: 8px; }
+.meat-bar {
+  position: relative;
+  height: 6mm;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.meat-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, var(--meat-from) 0%, var(--meat-to) 100%);
+  border-radius: 6px 0 0 6px;
+}
+.meat-fill::after {
+  content: "";
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: #fff;
+  box-shadow: 1px 0 0 rgba(11,23,38,0.06);
+}
+.meat-label {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #fff;
+  /* Тёмная обводка-halo: лейбл читается и на синей заливке, и на светлой части
+     полосы (при низком % мяса заливка короче лейбла), и поверх белого разделителя. */
+  text-shadow:
+    0 0 1px rgba(11,23,38,0.9),
+    0 0 2px rgba(11,23,38,0.65),
+    0 1px 1px rgba(11,23,38,0.55);
+  z-index: 2;
+}
+.meat-pct {
+  font-size: 14pt;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-feature-settings: "tnum";
+  line-height: 1;
+}
+.meat-pct .small {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--ink-light);
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+
+/* Nutrient line */
+.nutri {
+  display: flex; flex-wrap: wrap;
+  gap: 0;
+  margin: 1mm 0 1.5mm;
+  font-size: 8pt;
+  color: var(--ink-soft);
+}
+.nutri .n {
+  padding: 0 8px 0 0;
+  margin-right: 8px;
+  border-right: 1px solid var(--border);
+  font-feature-settings: "tnum";
+}
+.nutri .n:last-child { border-right: none; margin-right: 0; }
+.nutri .n strong {
+  display: inline-block;
+  color: var(--ink);
+  font-weight: 700;
+  margin-left: 2px;
+}
+.nutri .n .lbl { color: var(--ink-light); }
+
+.ingredients {
+  font-size: 7.5pt;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  font-style: italic;
+  margin-bottom: 1.5mm;
+  padding-left: 7px;
+  border-left: 2px solid var(--border);
+}
+.ingredients strong { font-style: normal; font-weight: 700; color: var(--ink); }
+.ingredients .pct { font-weight: 700; color: var(--primary); font-style: normal; }
+
+/* Proscons — table wrapper for 2-column grid */
+.proscons { margin-bottom: 1.5mm; }
+.proscons-t { width: 100%; border-collapse: collapse; }
+.proscons-t td { vertical-align: top; padding: 0.25mm 2mm 0.25mm 0; }
+.pc {
+  display: flex; align-items: flex-start; gap: 5px;
+  font-size: 7.5pt;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.pc .ic {
+  flex: 0 0 auto;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.pc.pro .ic { background: var(--green-soft); color: var(--green); }
+.pc.con .ic { background: var(--accent-soft); color: var(--accent-deep); }
+
+.ai-block {
+  background: var(--primary-softer);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  padding: 2mm 3mm;
+  font-size: 8pt;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-bottom: 2mm;
+}
+.ai-block .ai-h {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.ai-block .ai-h .ai-ico {
+  width: 11px; height: 11px;
+  border-radius: 3px;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+.buy-row {
+  display: flex; gap: 5px;
+  flex-wrap: wrap;
+}
+.buy-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: #fff;
+}
+.buy-btn.primary { background: var(--primary); color: #fff; }
+.buy-btn .arr { font-size: 10pt; line-height: 1; margin-left: 1px; transform: translateY(-1px); }
+
+/* Final recommendation */
+.hero-rec {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 14px;
+  padding: 6mm 7mm;
+  position: relative;
+  margin-bottom: 5mm;
+  overflow: hidden;
+}
+.hero-rec::before {
+  content: "";
+  position: absolute;
+  right: -30mm; top: -30mm;
+  width: 100mm; height: 100mm;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.35), transparent 60%);
+}
+.hero-rec .tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: var(--ink);
+  margin-bottom: 4mm;
+}
+.hero-rec h3 {
+  color: #fff;
+  font-size: 20pt;
+  line-height: 1.1;
+  margin-bottom: 3mm;
+}
+.hero-rec p {
+  font-size: 10pt;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.92);
+  max-width: 140mm;
+}
+.hero-rec p strong { color: #fff; font-weight: 700; }
+
+.compare-wrap {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.compare {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 4mm;
+  font-size: 10pt;
+}
+.compare th, .compare td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.compare thead th {
+  font-size: 9pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+.compare thead th:first-child { border-top-left-radius: 10px; }
+.compare thead th:last-child { border-top-right-radius: 10px; }
+.compare tbody td.k {
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 9.5pt;
+  background: var(--bg-soft);
+}
+.compare tbody tr:last-child td { border-bottom: none; }
+.compare tbody td {
+  font-feature-settings: "tnum";
+  color: var(--ink);
+}
+.compare tbody td strong { font-weight: 700; }
+.compare .winner {
+  background: var(--primary-softer);
+  position: relative;
+}
+.compare .winner.head {
+  background: var(--primary);
+  color: #fff !important;
+  border-color: var(--primary) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+.compare th.col {
+  font-feature-settings: "tnum";
+  letter-spacing: -0.005em;
+  text-transform: none;
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--ink);
+}
+.compare th.col .sub {
+  display: block;
+  font-size: 8pt;
+  font-weight: 600;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+.compare th.col.winner .sub { color: #fff; opacity: 0.85; }
+.compare .winner-tag {
+  display: inline-block;
+  font-size: 7pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+/* Transition */
+.transition-strip {
+  margin-bottom: 6mm;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 6mm 7mm;
+}
+.transition-track {
+  margin-bottom: 5mm;
+}
+.transition-track-t { width: 100%; border-collapse: separate; border-spacing: 2mm 0; margin-bottom: 5mm; }
+.transition-track-t td { width: 25%; vertical-align: top; }
+.tr-step-bar {
+  display: flex; flex-direction: column;
+  align-items: stretch;
+  gap: 2mm;
+}
+.tr-step-bar .days {
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex; align-items: baseline; gap: 6px;
+}
+.tr-step-bar .days .num {
+  font-size: 20pt;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-feature-settings: "tnum";
+}
+.tr-step-bar .days .lbl {
+  font-size: 8.5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+}
+.tr-mix {
+  width: 100%;
+  height: 12mm;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  table-layout: fixed;
+}
+.tr-mix td {
+  text-align: center;
+  vertical-align: middle;
+  color: #fff;
+  font-size: 9pt;
+  font-weight: 700;
+  padding: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.tr-mix .old {
+  background: #b8c4d4;
+  text-shadow: 0 1px 0 rgba(11,23,38,0.2);
+}
+.tr-mix .new {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+.tr-legend {
+  display: flex; justify-content: center;
+  gap: 5mm;
+  font-size: 8.5pt;
+  color: var(--ink-soft);
+  margin-top: 4mm;
+  padding-top: 4mm;
+  border-top: 1px solid var(--border-soft);
+}
+.tr-legend .sw {
+  display: inline-block;
+  width: 14px; height: 10px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.tr-legend .sw.old { background: #b8c4d4; }
+.tr-legend .sw.new { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+/* Tips — table wrapper for WeasyPrint */
+.tips-grid-t { width: 100%; border-collapse: separate; border-spacing: 3mm; }
+.tips-grid-t td { vertical-align: top; }
+.tip {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 5mm 6mm;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.tip .ic {
+  flex: 0 0 auto;
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.tip.warn .ic { background: var(--accent-soft); color: var(--accent-deep); }
+.tip h4 { font-size: 11pt; margin-bottom: 2mm; }
+.tip p { font-size: 9.5pt; color: var(--ink-soft); line-height: 1.5; }
+.tip p strong { color: var(--ink); font-weight: 700; }
+
+/* Last page */
+.last-page { background: var(--bg-soft); }
+.disclaimer-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 8mm;
+  margin-bottom: 6mm;
+  position: relative;
+}
+.disclaimer-card .quote {
+  position: absolute;
+  top: -8px; left: 6mm;
+  font-size: 36pt;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+.disclaimer-card p {
+  font-size: 10.5pt;
+  line-height: 1.6;
+  color: var(--ink);
+  font-style: italic;
+  padding-left: 14mm;
+}
+
+/* Contact grid — table wrapper for WeasyPrint */
+.contact-grid-t { width: 100%; border-collapse: separate; border-spacing: 3mm 0; }
+.contact-grid-t td { vertical-align: top; }
+.contact-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 6mm;
+  display: flex; flex-direction: column; gap: 4mm;
+  align-items: flex-start;
+}
+.contact-card .ico {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.contact-card .label { font-size: 8.5pt; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+.contact-card .val { font-size: 13pt; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+
+/* Support strip — table wrapper for WeasyPrint */
+.support-strip {
+  margin-top: 6mm;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: 16px;
+  padding: 8mm 10mm;
+}
+.support-strip h3 { color: #fff; font-size: 18pt; margin-bottom: 3mm; }
+.support-strip p { font-size: 11pt; line-height: 1.5; color: rgba(255,255,255,0.85); }
+
+.bye {
+  text-align: center;
+  margin-top: 8mm;
+  padding-top: 6mm;
+  border-top: 1px solid var(--border-soft);
+  font-size: 9pt;
+  color: var(--ink-light);
+}
+.bye .heart { color: var(--accent); }
+
+@media (max-width: 820px) {
+  body { background: #eef0f4; }
+  .page {
+    margin: 10px auto;
+    box-shadow: 0 6px 18px -8px rgba(11,23,38,0.25);
+  }
+  .toolbar {
+    top: auto; right: 12px; bottom: 12px;
+    padding: 6px;
+    border-radius: 10px;
+  }
+  .toolbar .hint { display: none; }
+  .toolbar button { padding: 9px 13px; font-size: 12px; }
+}
+@page { size: A4 portrait; margin: 8mm; }
+@media print {
+  html, body { background: #fff; }
+  .toolbar { display: none !important; }
+  .page {
+    margin: 0;
+    box-shadow: none;
+    width: auto;
+    min-height: auto;
+    max-height: none;
+    zoom: 1 !important;
+    padding: 8mm 10mm 10mm;
+    page-break-after: always;
+    break-after: page;
+  }
+  .page:last-of-type { page-break-after: auto; break-after: auto; }
+  .food { page-break-inside: avoid; break-inside: avoid; margin-bottom: 6mm; }
+  .cat-header { page-break-inside: avoid; break-inside: avoid; }
+  .cover-photo { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .cat-banner, .hero-rec, .ai-quote, .support-strip, .transition-strip { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .meat-fill { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .tr-mix .old, .tr-mix .new { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="hint">A4 · 13 страниц</span>
+  <button onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    Печать / Сохранить PDF
+  </button>
+</div>
+
+<script>
+  (function () {
+    var PAGE_W_PX = 794;
+    function fit() {
+      var vw = document.documentElement.clientWidth;
+      var sidePad = 20;
+      if (vw < PAGE_W_PX + sidePad * 2) {
+        var scale = Math.max(0.3, Math.min(1, (vw - sidePad) / PAGE_W_PX));
+        document.documentElement.style.setProperty('--page-zoom', scale.toFixed(4));
+      } else {
+        document.documentElement.style.setProperty('--page-zoom', 1);
+      }
+    }
+    fit();
+    window.addEventListener('resize', fit);
+    window.addEventListener('orientationchange', fit);
+  })();
+</script>
+
+
+<!-- PAGE 1 — COVER -->
+<section class="page cover">
+  <div class="top-bar"></div>
+  <div class="cover-inner">
+    <div class="cover-head">
+      <div class="logo">
+        <span class="mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+        <span class="name">Кусь</span>
+      </div>
+      <div class="doc-id">
+        <div class="label">Подбор Граф</div>
+        <div>составлен 09.06.2026</div>
+      </div>
+    </div>
+    <div class="cover-title-block">
+      <div class="kicker"><span class="dot"></span> Подбор сухого корма</div>
+      <div class="dog-name">Граф</div>
+      <div class="breed">Немецкий дог</div>
+      <div class="cover-stats">
+        <div class="stat"><strong>2 года</strong><div style="font-size:9pt;color:var(--ink-light);">возраст</div></div>
+        <div class="divider"></div>
+        <div class="stat"><strong>60 кг</strong><div style="font-size:9pt;color:var(--ink-light);">текущий вес</div></div>
+        <div class="divider"></div>
+        <div class="stat"><strong>средняя</strong><div style="font-size:9pt;color:var(--ink-light);">активность</div></div>
+        <div class="divider"></div>
+        <div class="stat"><strong>нет</strong><div style="font-size:9pt;color:var(--ink-light);">стоп-продукт</div></div>
+      </div>
+      <div style="margin-top: 6mm;">
+        <span class="cover-badge"><span class="dot"></span>9 лучших кормов · 3 ценовые категории</span>
+      </div>
+    </div>
+    <div class="cover-photo">
+      
+    </div>
+    <div class="float-card">
+      <div class="ico">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      </div>
+      <div style="display:inline-block;vertical-align:middle;">
+        <div class="label">Отобрано из</div>
+        <div class="val">109 кормов</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <div>kus.dogfine.ru · @doggifood_bot</div>
+    <div>Кусь · Подбор сухого корма</div>
+    <div>стр. 1 / 13</div>
+  </div>
+</section>
+
+<!-- PAGE 2 — PROFILE -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Граф</strong> · Немецкий дог, 2 года, 60 кг · Подбор Граф</div>
+  </div>
+
+  <div class="eyebrow">Профиль и метод подбора</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Почему именно эти корма для Графа</h2>
+  <p class="section-sub">Мы не продаём корма — анализируем составы по открытым данным производителей и подбираем под параметры конкретной собаки. По реальным ингредиентам видно, за что вы платите.</p>
+
+  <div class="profile-card profile-card-wide">
+    <div class="hd">
+      <div class="av"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></div>
+      <div>
+        <div class="nm">Граф</div>
+        <div class="sub">Профиль собаки</div>
+      </div>
+    </div>
+    <table class="profile-cols"><tr>
+      <td>
+        <div class="profile-row"><span class="k">Порода</span><span class="v" style="float:right;">Немецкий дог</span></div>
+        <div class="profile-row"><span class="k">Возраст</span><span class="v" style="float:right;">2 года</span></div>
+        <div class="profile-row"><span class="k">Вес</span><span class="v" style="float:right;">60 кг</span></div>
+      </td>
+      <td>
+        <div class="profile-row"><span class="k">Кондиция</span><span class="v" style="float:right;">норма </span></div>
+        <div class="profile-row"><span class="k">Активность</span><span class="v" style="float:right;">средняя</span></div>
+        <div class="profile-row"><span class="k">Стоп-продукты</span><span class="v" style="float:right;">нет </span></div>
+      </td>
+    </tr></table>
+  </div>
+
+  <h3 style="font-size: 12pt; margin: 6mm 0 4mm;">Как мы подбирали</h3>
+  <table class="steps-grid-t">
+    <tr><td><div class="step">
+      <div class="num">01</div>
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg></div>
+      <div class="ttl">Фильтр по параметрам</div>
+      <div class="txt">Отсеяли корма по возрасту, весу, размеру породы и стоп-продуктам Графа.</div>
+    </div></td>
+    <td><div class="step">
+      <div class="num">02</div>
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+      <div class="ttl">Разбор состава</div>
+      <div class="txt">Считаем <strong>% реального мяса</strong>, оцениваем источники.</div>
+    </div></td>
+    <td><div class="step">
+      <div class="num">03</div>
+      <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 8l-4.2 4 1 5.8L12 15l-4.8 2.8 1-5.8L4 8l5.6-0.4z"/></svg></div>
+      <div class="ttl">Лучшие в каждой категории</div>
+      <div class="txt">По <strong>цене за кг</strong> разделили на бюджет, среднее и премиум.</div>
+    </div></td>
+    </tr>
+  </table>
+
+  <table class="cat-strip-t">
+    <tr>
+    <td><div class="cat-pill budget"><span class="swatch"></span> Честный бюджет · <span class="cnt">до 400 ₽/кг</span></div></td>
+    <td><div class="cat-pill middle"><span class="swatch"></span> Золотая середина · <span class="cnt">400–800 ₽/кг</span></div></td>
+    <td><div class="cat-pill premium"><span class="swatch"></span> Лучшее из лучшего · <span class="cnt">от 800 ₽/кг</span></div></td>
+    </tr>
+  </table>
+
+  <div class="page-foot">стр. <strong>2</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 3 — BUDGET -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 1 / 3</strong> · бюджет · часть 1/2</div>
+  </div>
+
+  <div class="cat-banner budget">
+    <div class="left">
+      <div class="eyebrow-line">Категория 1 · честный бюджет</div>
+      <div class="ttl">Корма до 400 руб/кг</div>
+      <div class="sub">Хороший базовый рацион без переплаты за бренд.</div>
+    </div>
+    <div class="price">
+      <div class="big">≤ 400 ₽</div>
+      <div class="sml">за килограмм</div>
+    </div>
+  </div>
+
+  <div class="foods">
+    <div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>1</div>
+        <div class="rank-meta">бюджет<br/>лучший</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Blitz Holistic</div>
+            <div class="formula">Adult Dog Chicken & Fish Grain-Free</div>
+            <div class="origin">
+              <span>Россия/Италия</span><span class="sep"></span><span>~380 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge green">Беззерновой</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 38%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">38<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>28%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>16%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7.5%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>3%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> дегидрированное мясо курицы 28%, картофель, жир куриный, дегидрированная рыба 5%, горох</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>38% мяса — приемлемо для ценовой категории</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: курица, рыба</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Беззерновой</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Беззерновой за бюджетную цену — редкость</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>28% курицы — хорошо для бюджета</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Курица — частый аллерген</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Картофель и горох — бобовые</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=blitz+holistic+chicken">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=blitz+holistic+chicken">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div><div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>2</div>
+        <div class="rank-meta">бюджет</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Karmy</div>
+            <div class="formula">Maxi Adult Телятина</div>
+            <div class="origin">
+              <span>Россия</span><span class="sep"></span><span>~320 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 30%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">30<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>25%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>12%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>3%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> дегидрированная телятина 22%, рис 18%, кукуруза, жир куриный, дегидрированная рыба 4%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>30% мяса — приемлемо для ценовой категории</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: телятина, рыба</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Глюкозамин и хондроитин для суставов</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Российское производство — стабильные поставки и цена</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>22% телятины — хорошо для бюджетного сегмента</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Содержит кукурузу</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Кукуруза в составе</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>30% мяса — среднее значение</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=karmy+maxi+adult">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=karmy+maxi+adult">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>3</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 1 / 3</strong> · бюджет · часть 2/2</div>
+  </div>
+
+  
+
+  <div class="foods">
+    <div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>3</div>
+        <div class="rank-meta">бюджет</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Savita</div>
+            <div class="formula">Adult Lamb & Rice</div>
+            <div class="origin">
+              <span>Россия</span><span class="sep"></span><span>~370 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge blue">Гипоаллергенный</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 30%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">30<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>25%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>14%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>2.5%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> дегидрированное мясо ягнёнка 24%, рис 20%, жир куриный, пульпа сахарной свёклы, дегидрированная рыба 3%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>30% мяса — приемлемо для ценовой категории</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок, рыба</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Один злак (рис) — мягкий для ЖКТ</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>24% ягнёнка — хорошо для бюджета</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Один злак (рис)</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>30% мяса — средний показатель</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=savita+lamb+rice">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=savita+lamb+rice">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>4</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 4 — MID -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 2 / 3</strong> · среднее · часть 1/2</div>
+  </div>
+
+  <div class="cat-banner middle">
+    <div class="left">
+      <div class="eyebrow-line">Категория 2 · золотая середина</div>
+      <div class="ttl">Корма 400-800 руб/кг</div>
+      <div class="sub">Лучший баланс цена / состав. Рекомендуем как основу.</div>
+    </div>
+    <div class="price">
+      <div class="big">400–800 ₽</div>
+      <div class="sml">за килограмм</div>
+    </div>
+  </div>
+
+  <div class="foods">
+    <div class="food" style="border: 1.5px solid var(--primary);">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>1</div>
+        <div class="rank-meta">среднее<br/>лучший</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Grandorf</div>
+            <div class="formula">Adult Large Breed Lamb & Rice</div>
+            <div class="origin">
+              <span>Бельгия</span><span class="sep"></span><span>~600 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge blue">Гипоаллергенный</span><span class="badge amber">★ Лучший</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 52%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">52<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>25%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>13%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>3.5%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> дегидрированное мясо ягнёнка 24%, дегидрированное мясо индейки 15%, цельный рис, жир индейки, свежее мясо ягнёнка 3%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>52% мяса — хороший показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок, индейка</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Один злак (рис) — мягкий для ЖКТ</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Глюкозамин и хондроитин для суставов</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>52% мяса</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=grandorf+adult+large+breed+lamb+&+rice">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=grandorf+adult+large+breed+lamb+&+rice">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div><div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>2</div>
+        <div class="rank-meta">среднее</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Gina Elite</div>
+            <div class="formula">Adult Dog Duck & Potato Grain-Free</div>
+            <div class="origin">
+              <span>Канада/Россия</span><span class="sep"></span><span>~680 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge green">Беззерновой</span><span class="badge blue">Гипоаллергенный</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 48%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">48<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>28%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>17%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>3%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> свежее мясо утки 20%, дегидрированное мясо утки 18%, картофель, горох, жир куриный</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>48% мяса — хороший показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: утка</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Беззерновой</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Утка — редкий белок, хорошо при аллергиях</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир — может быть триггером</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Горох в составе</div></td><td></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=gina+elite+duck+potato">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=gina+elite+duck">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>5</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 2 / 3</strong> · среднее · часть 2/2</div>
+  </div>
+
+  
+
+  <div class="foods">
+    <div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>3</div>
+        <div class="rank-meta">среднее</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5Ojf/2wBDAQoKCg0MDRoPDxo3JR8lNzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzf/wAARCADwALIDASIAAhEBAxEB/8QAHAABAAEFAQEAAAAAAAAAAAAAAAYCAwQFBwEI/8QARhAAAQMCAwMJAwYMBgMAAAAAAQACAwQRBRIhBhMxBxQiMkFRYXGBkaHBIyQzQrHRFRYlNlJTYoKissLhNGSDkpPwY3J0/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAMEBQIBBv/EACsRAAICAgAEBAYDAQAAAAAAAAABAhEDBBIhMUEiMjPwBRMUYXGxI1GRgf/aAAwDAQACEQMRAD8A7iiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiolcWsJHFAVooHyiV9XSxUApaqaEuc8uMchbewHcoaMbxlgv8AhKuA7zM5UM+/HDkcGuhp6/wyefEsiklZ25FGNjayqqtn4JqmokllL3gve65NnaLd72T9Iq5jmpwUl3KGXG8c3B9nRmIsPfSfpe5e79/ePYuyMy0WLzh/h7F7zh3cEBkorDai5GYCyvoAiIgCIiAIiIAiIgCIiAIiIArVR9EfNXVi1tQIpKeL60zy0ejS74ICFbfwvklw4tjc4DOCR9W5br7LqNmikMkl6aVsdjkNhx7b/wDSpPyi1FRA3DzTlwzF4NhfuUVhnx2obkhp6qS4t0YnfcsTacfnyTT7fo+j0lP6aLTSXP8AZOtiWOZs9C1zC0iSTQ9nSW9sVqtjoq6HBgzEonxTb1xDXixy6W+K3i1dfliivsYe07zzf3Zj69yarI9AvLeAUxAYs0rIIXyzHLGxpc42JsB5KPR47O+Wqq2OD6GKwjyjSTN1QDxupXbyUcxrCg4TtfSsmpJukWM6BY8cH6aeFu1RZIuVU+hxLi6o2GH4gytjD2sLeiDY+wj0K3beqPJR3ZyinpcPjjqQ3MxgaCDo7tJt5qRM6o8l3C+FcXU6Vtcz1ERdHoREQBERAEREAREQBERAFGNpq3m+0+zFPfSeecH/AIiB73KTrmXKLXc32+2VF7CKQPP70gb8FJijxSr8/oiyy4Y3+P2dDA4KrXvKWtp3IoyUBWZpxEbObppre3/Qr6iW0GKYvDtLT4Zh1RTxMqIg5u/jBaD0r68exeO+x6iSc7ZkD8rsp7dFkKN7OY9NVSV9Li4p2S0RGeeM2jIvbyGq2OLYlJBS58NNLPMHsL45JmttG48ePsQ8Nmiw2YnSPxCahErd9E1rnAuA617Ad5+8LMC9AcNCr0ZuwK1a6uQ9RAVoiIAiIgCIiAIiIAiIgCIiALh3K3WFu3MTgf8ACxQ+huXfFdxXzxykSc723xTpdV4YD3ZWAK1qK5v8FTcdQX5PoBpD2hw4HUeqFYmBS84wWgmBvvKaN1/NoWYQqzVMtJ2rPFBNvoYPw3hU1ZHI+lLC2bIDfKHa8PNTsrlG1G3+M02PVdJhzooYKeUxBpiDy4g2JN/FSYcMsrqJFmzwwq5F2MxPqcRpcBbUnDJaN5mZM02DmtJB18QLeZWxOD0btgpcRYwurJKUOfK5xN7PGluGmWy0rtrdt4JIYZqP5Sovu2OotX2FzYDwXh232tjmdRyYdDvWgZoTROvYmw0vwJI9qm+iydmv9IfrsfdP/Dewfgql2jiq8UZCyCqooqiGSQab3S5B71Pr3171yGXbvaPmwmnwqjNPG/IJH0bsjXDS172BU22A2gqtosMqaiuEQmiqMgETcoDcoI+K4ya2THHifQ7x7WPJLhXUlQVUXFwVDVUzSTzCrlkuoiIAiIgCIiAIiIAiIgCIiAL5r2hm5ztTis3EOq5T6ZiPgvpN7g1pceAF18vl5mqZ5rE7yQm48SSrumvMyjuvyo79yfz842Nwp5OrYch/dJb8FICFDOSSo32yLWa/I1EjLHzDvipoquRVNotYncEy04Lh+0r24XyiVFRNGXRxVzJy23Wbdrl1fHxUxSh9PUSsDm3s1xFlDce2ebilQ2asqjLJ1BLwNhfQqbWzRxSfF0aIdrDLLFcPVMjEmH0kmPmepximlo6meRzZI6mzzcOLQ+4uy5s0k8LrayV9NTQwNgqqaGduE1VMRDVGTdODs7G5ydTrpbt4KwdjYNLVDrm5te/eO7jorTtj4Q+ZpqHXia1xINwQQTpp4K29jDKrb/wqLXzRuorn9z11eZsEgfQsw94GHGlqd/UlkjDc36BeA6+jgQDr4recjU148VgvwdFJ/MFo49jYpGRvFS4CRoLfX0W3wSgq8BhqDhlUGF4zSEtBLsoOmo81Hmz4njcY9zvDgyrLGcux1BqqGj2rQ7IVtTX4dJNVzmV+9LRcAZRYdy3p7Cs80i+iIgCIiAIiIAiIgCIiAIiIDCxqXcYPXTXtu6eR3saV80UwvH4lfRG3E242Qxd97fNXt9ot8V8/UkYcxrbDt4hX9ReBsz9x+NI6pyMTXoMSpri7JmPt5tt/Sujrk3JA9sGL10LWhokpw7Ttyu/uusqtsKsjLOs7xosz0sVR9K0ns4rW1Gz2HzXzxyekhC3C8cFCTkcdslhZN/nAPhKVR+KGGdjqkf6v9lIXAhUoDQDZDDBoH1X/AC/2Xv4o4Z2uqT/q/wBlmUuO0VVik2HRGQzxE3OQ5TbjY+HBbJAYWE4TS4UJG0m8tIQXB782oWwd1VSFWeqgLrdQF6qY+oFUgCIiAIiIAiIgCIiAIiICLcp8u62HxP8Aaaxnte1cUwuLeSRgEgEa21XXuV+TJsbI39ZURN99/guWYG07+EEaeY10Wlqr+O/uZm2/5a+xIeTZ5h2sjbm6MkUjOA7r/BdjvoFxDY6odHtfhx3b2B05ZrbtBHxXbR1B5KDcXjX4J9J3ja+5VmVOcrwqzUPfHA98TN49ou1neVULhXUPcInOZK2LLqXPbcAdqiVTDjeLRSvoK6pZHcgXduw4eHct4+rqntex1CS03BYb3Lfs4diQS1EcNoKQNJfq03FtDfj5DXxQGo2FwiowtleaqwkfKGWBv1b3PvUpWup5aoPcRSNjfIQXnKddQL8bcPsV+Gepe6PPTlrHAZjYjKUBlhV9ioCrCAri6irVuHqnzVxAEREAREQBERAEREAREQEA5aXEbLU7ex1ay/8AteuP0ddUU72PY/qjS40XX+Wr82KX/wC1v8j1xljScoaLk6ALW01eIxt1tZTdbN1s8e0GHSZ2OAqoy42/bA+K+hR1bd1184YcHU1ZE6Rpa9krDY+D2r6PHA/+xUG8ucWWfh78MkUlee5elavFcViw+dsdTkEL6aaS7jYuczL0R33BKopNukX5SUVbIjS7SVNRJi457IW1lNUy0QsRzd0ebKGm1tWgO07kra6rpKKRlBitVUtkwjncuebeOp3gsIIdxGYFwt4LKGNvdHQ0xwimcIIn5qfdOAjkaHDKy/VuLWFtcxCy8GrYY66loqJlAKefNvn09KI2PcA2zRc62Dj3nTgNVddLnwlFc+XEY+0GKP53iEtJXE08VNRyZopeiwmfpcDYXbx8FnUMVNJtjNJT1c00JpG1EYbVufHmMjmusL2t4cAtXS4hWNbzeHDaSOndVZZWsogGZb65gO63HjqFfgxDFGQN3MLY383mOWKkAs9rtG2De7W3b4rlxaVL37o6Uk3b9+7JmqwtfhEtRNSF1VmJ3jxG98e7c9gPRcW9hPp5LYNVRqnRcTtWVw/W81cVuLrOVxeHoREQBERAEREAREQBERAc95avzcox/nB/I5cfg+ki4dYcfNdd5az+Q6BvfVf0Fcihdkex5Fw1wPsK2NL0jF3fWNlWWbPM+4s1rCMvDi1fQ0BzRA99j7l85Vk4qGzytBaHNbofAhfRGHOz0ULu+Nh/hCr7q5R9/wBFnQfOXv8AsvFUOa1xGZoNuFxeyrKsSma/yTWEftEhZ5olFfI+KklkjkjjeBcOkIA49/ldaWmx1zCJaqVjt/YtgbI20LS6wue+xFx4E6aLaSzS6tfHEcpFwWudr2W0VAlkaAGRMBJv0ac2QGBNtG58Dt1TSxufH8lI9wtmIBbp6g6963NFO+opmSyMLHOv0Sb6A2B9ePqrG+qS3RrrkdkX3lVsNS6Szi4NPbuwPigMxVNVmJr2g7yQv/dAsr7EBWzrHyVxWmfSHyV1AEREAREQBERAEREAREQHNuW0/krDR31Dj/AuUMie0dON4HeAup8tx+Y4UO+WQ/whQOPPuxoDp2GxWxqOsKMXcV5n/wANU5zGQyAOJLm2sW2tqCvovBXZsKpXd9PEf4AuDSP6PShedOxoK7tgDs+DUTrWvTRG37oUO87USf4eqcjMKpK0O2+IVmHYVHNQPLJXSlpIIGm7ee0HgQD6LVYlPi5dirIauezX0racMflPyrgTrbS2ov3FUo4nJJ2XZ5lFtUTK699qg1ZLjDazFKbe1cs3NGxDdZg0OcIWhzewG5lN/O/BX+cV0lJUGSGuMroqGUNbG8nouG8A8eNxxK6+Tyuzz56uqJjr3Lxz2tBL3NaBxJNlCMaw2vrIsVFNRzullxBkrCYyM0YjPAk62PZpY96vTYXXvqKy+Gl7DiMVRvLML5mB7j9Y2NmkcQLap8qNeY8+dK/KTESx3Dd4y5NrZhx7vcfYrkMsc0YfDIyRh4OY4EH1CiFHs/iEeIVUr8pilrmzsu8dBt5b/wA7T6lSHAaealwqmp6iCKGSJgYWxuzA2Fs17DU2uuJwjHo7O4TlLqqNnH9J6K6rLPpB5K8oyUIiIAiIgCIiAIiIAiIgOYcuB+bYQP8AyS/Y1QimHyZuCLDW4U15cD8jg4/amPuaojQuDaa9gPFa2v6K99zH2eed++xjyOjsRnHDgSNV27Zk5sBoDe96WPX91cQlaHk5mNPmAbLteyX5u4cALWpY9PRRbvlRNo+dmyeAesAfMLHrallHSTVMgJZEwvIHE2HD4LIcsbEKYVtDPSucWiWMszD6pPA+hWeqvmaLuuRoJHTzSOFU2aoqGva1zRWGCJjjboRhp1IvbMeJB8l43G58Poap0zZpgyJ0kAkOd4s/IWuI4gGxzcbHXhdUVO/zkzxPhqi9ri00b52BwN88RbcXJLjY2462I12mH4dnhcZonxMMO4ijeQXhl7uLuzM46kdlgpsnkIcXqJvp3OeQ41imJYiAJfnL+D2uLQPfoApNh20tTPUU8bXbyMANe4jVx4XWXSbK0NJJM6KnqXGRuR2aUDonsFuCy8P2doKSZkkVGW2N+lKXW8bKnGMkzUy7GOUkq5Ub5uoCrCoaqwpSkVx/SDyV5WY/pPRXkAREQBERAEREAREQBERAcs5cT0cGHjN/QoTTAto+i9w9fvU15ceGDHxm/oUHjMrKYNyB4vxaePoVra3ox99zG2vWl77FAL7aSe1gXcdkb/i5h1+PNY+At2Lhm9aD0g9vm0hdz2R/NzDrcOax/Yo97yol0PO/wbNyoKuPVsrNNQ8QFaXC8RranHMTpZ4S2CAx7u7bZbtude251WXjrqxmD1b8Nz88bGTCGNDiXeR0K7cGpJHCmnFyRsDqgWp2ZfXyYPFJignFS5zid+wNflzHLcDQG1lg7Q02MV2IU8NFWNo6Fmsz96Guf36cToih4uFs8c/CpJEmCqCsxlojaIzdgAym97jzVwFcEhei+k9FeVmHr+ivIAiIgCIiAIiIAiIgCIiA5Xy5HTBh4zf0KDwvBjABB8jdTHlwMrqvCmNieWMikcXhvRuS3S/ouZx3aNNPJbGqrxIxdt1lZIDcDj6rtey+mA0A/wArH9i+fG1M7W2ErvIm679s1ITs9QEEZzRxkE8L5VDvRqKJtB3Jm3cseo3hheIbbwizbm1irTX1Ykj3joiw3z24jjw9yuOkWaahr2U+IiznVDS697OkJHHhYALMnp457bx0gt2MkLfsXudLuPAFAeQU8MBJjaQTxJcSfehpqYvc8wRFzjcksFyvbPPYV7kkPYgPc7IwGgtaBwGgXgqof1rNP2k5uX6ua0+Yuq205b2gIDKp3Au0PELIWJA0NIyuufastAEREAREQBERAEREAREQHjmte0tcAQeII0K0GIbF7O4hJvKjCoA+9y6K8d/PKRdSBF1GUo9GcyjGXVWQOt5K8DnJdSzVlMewNeHtH+4X963ez2EVeE0MeG1Lm1MMAywVDeiSzsDm9hHC4uCLcFIUXUss5qpOziOGEHcVRi83H6sLwQHsiaPMrLRRkpi7mTsbGPU/cqhC/wDSYPIH71kIgLG4dbWT2NQU/fI8+wK+iAtbiPtBPm4qoRRjgxvsVaIDwADgLL1EQBERAEREAREQH//Z" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Brit Care</div>
+            <div class="formula">Adult Large Breed Lamb & Rice</div>
+            <div class="origin">
+              <span>Чехия</span><span class="sep"></span><span>~520 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 40%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">40<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>26%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>14%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>3%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> дегидрированное мясо ягнёнка 23%, рис 20%, куриный жир (консервированный токоферолами), сушёные яблоки, дегидрированное мясо лосося 5%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>40% мяса — хороший показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок, лосось</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Один злак (рис) — мягкий для ЖКТ</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Глюкозамин и хондроитин для суставов</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Хорошее соотношение цена/качество</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир — может быть триггером при аллергии на курицу</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>40% мяса — средний показатель</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=brit+care+lamb+rice+large">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=brit+care+lamb+large">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>6</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 5 — PREMIUM -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 3 / 3</strong> · премиум · часть 1/2</div>
+  </div>
+
+  <div class="cat-banner premium">
+    <div class="left">
+      <div class="eyebrow-line">Категория 3 · лучшее из лучшего</div>
+      <div class="ttl">Корма от 800 руб/кг</div>
+      <div class="sub">Холистики и супер-премиум: максимум мяса, минимум углеводов.</div>
+    </div>
+    <div class="price">
+      <div class="big">≥ 800 ₽</div>
+      <div class="sml">за килограмм</div>
+    </div>
+  </div>
+
+  <div class="foods">
+    <div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>1</div>
+        <div class="rank-meta">премиум<br/>лучший</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Alleva Holistic</div>
+            <div class="formula">Adult Lamb & Venison Medium/Maxi</div>
+            <div class="origin">
+              <span>Италия</span><span class="sep"></span><span>~880 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge green">Беззерновой</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 58%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">58<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>30%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>18%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7.5%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>2.5%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> свежее мясо ягнёнка 25%, дегидрированное мясо ягнёнка 15%, картофель, жир куриный, свежее мясо оленины 5%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>58% мяса — отличный показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок, оленина</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Беззерновой</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Ягнёнок + оленина — необычное сочетание</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Aloe vera и юкка для пищеварения</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Цена чуть выше среднего</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=alleva+holistic+lamb+venison">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=alleva+holistic+lamb">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div><div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>2</div>
+        <div class="rank-meta">премиум</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Primordial</div>
+            <div class="formula">Adult Lamb & Tuna Grain-Free</div>
+            <div class="origin">
+              <span>Италия</span><span class="sep"></span><span>~900 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"><span class="badge green">Беззерновой</span></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 55%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">55<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>32%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>18%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7.5%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>2.5%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> свежий ягнёнок 15%, дегидрированная индейка 15%, горох, дегидрированный тунец 10%, куриный жир</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>55% мяса — отличный показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок, индейка, тунец</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Беззерновой</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>55% мяса и рыбы</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>3 источника белка</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Горох в составе</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=primordial+lamb+tuna">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=primordial+lamb+tuna">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>7</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Категория 3 / 3</strong> · премиум · часть 2/2</div>
+  </div>
+
+  
+
+  <div class="foods">
+    <div class="food">
+      <table class="food-layout"><tr>
+      <td>
+        <div class="rank"><span class="hash">#</span>3</div>
+        <div class="rank-meta">премиум</div>
+      </td>
+      <td>
+        <div class="bag-photo">
+          <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+        </div>
+      </td>
+      <td><div class="body">
+        <div class="top">
+          <div>
+            <div class="brand">Farmina N&D</div>
+            <div class="formula">Ancestral Grain Lamb & Blueberry Adult Medium/Maxi</div>
+            <div class="origin">
+              <span>Италия/Сербия</span><span class="sep"></span><span>~950 ₽/кг</span>
+            </div>
+          </div>
+          <div class="badges"></div>
+        </div>
+
+        <table class="meat-scale-t"><tr>
+        <td><div class="meat-bar">
+            <div class="meat-fill" style="width: 60%;"></div>
+            <div class="meat-label">% мяса</div>
+        </div></td>
+        <td class="meat-pct-cell"><div class="meat-pct">60<span class="small">%</span></div></td>
+        </tr></table>
+
+        <div class="nutri">
+          <div class="n"><span class="lbl">Белок</span> <strong>28%</strong></div>
+          <div class="n"><span class="lbl">Жир</span> <strong>18%</strong></div>
+          <div class="n"><span class="lbl">Зола</span> <strong>7.5%</strong></div>
+          <div class="n"><span class="lbl">Клетчатка</span> <strong>2.5%</strong></div>
+        </div>
+        <div class="ingredients"><strong>Первые 5:</strong> свежее мясо ягнёнка 20%, дегидрированное мясо ягнёнка 20%, спельта 10%, овёс 10%, жир куриный 8%</div>
+        <div class="proscons"><table class="proscons-t"><tbody><tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>60% мяса — отличный показатель</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Основной белок: ягнёнок</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Стабильные поставки в РФ</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>60% мяса ягнёнка</div></td></tr>
+<tr><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Древние злаки (спельта, овёс) — лучше кукурузы</div></td><td><div class="pc pro"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>Свежее + дегидрированное мясо</div></td></tr>
+<tr><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Куриный жир — может не подойти при аллергии на курицу</div></td><td><div class="pc con"><span class="ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span>Высокая цена</div></td></tr>
+</tbody></table></div>
+        <div class="ai-block">
+          <div class="ai-h"><span class="ai-ico"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg></span>Чем подходит</div>
+          Сбалансированный состав с понятными источниками белка и умеренной жирностью — хороший выбор под этот профиль. Реальное мясо стоит первым в списке, наполнители без дешёвых злаков, поэтому пищеварение остаётся стабильным даже при чувствительном ЖКТ.
+        </div>
+        <div class="buy-row"><a class="buy-btn primary" href="https://ozon.ru/search/?text=farmina+nd+lamb+blueberry">Купить на Ozon <span class="arr">→</span></a><a class="buy-btn" href="https://wildberries.ru/catalog/0/search.aspx?search=farmina+nd+lamb">Wildberries <span class="arr">→</span></a></div>
+      </div></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-foot">стр. <strong>8</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 6 — RECOMMENDATION -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Итоговая рекомендация</strong></div>
+  </div>
+
+  <div class="eyebrow">Если бы мы сами выбирали Графу</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Лучший выбор и альтернатива</h2>
+
+  <div class="hero-rec">
+    <span class="tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/></svg> Наш выбор</span>
+    <h3>Grandorf<br/>Adult Large Breed Lamb & Rice</h3>
+    <p>Золотая середина · ~600 ₽/кг. <strong>~52% мяса</strong>, жирность <strong>13%</strong>. Если бюджет ограничен — <strong>Blitz Holistic</strong> (380 ₽/кг) достойная альтернатива.</p>
+  </div>
+
+  <h3 style="font-size: 12pt; margin-bottom: 3mm;">Лучшее из каждой категории — рядом</h3><div class="compare-wrap">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col">Бюджет<span class="sub">≤ 400 ₽/кг</span></th>
+          <th class="col winner head">Среднее<span class="sub">400–800 ₽/кг</span><span class="winner-tag">★ выбор</span></th>
+          <th class="col">Премиум<span class="sub">≥ 800 ₽/кг</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">Корм</td><td>Blitz Holistic</td><td class="winner"><strong>Grandorf</strong></td><td>Alleva Holistic</td></tr>
+        <tr><td class="k">Мясо</td><td>~38%</td><td class="winner"><strong>~52%</strong></td><td>~58%</td></tr>
+        <tr><td class="k">Белок / жир</td><td>28% / 16%</td><td class="winner"><strong>25% / 13%</strong></td><td>30% / 18%</td></tr>
+        <tr><td class="k">Цена за кг</td><td>380 ₽</td><td class="winner"><strong>600 ₽</strong></td><td>880 ₽</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-foot">стр. <strong>9</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 7 — HOW TO CHOOSE -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Как выбирать сухой корм</strong> · памятка</div>
+  </div>
+
+  <div class="eyebrow">На будущее</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Как читать состав и не вестись на упаковку</h2>
+  <p class="section-sub">Этой памятки хватит, чтобы оценить любой корм в магазине самостоятельно — без нас.</p>
+
+  <table class="tips-grid-t">
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+      <div><h4>Читайте состав по порядку</h4><p>Ингредиенты идут по убыванию массы. На первых 2–3 местах должно стоять <strong>мясо с указанием вида и %</strong> («дегидрированная индейка 26%»), а не зерно.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></div>
+      <div><h4>Конкретика, а не «мука»</h4><p>«Дегидрированное мясо ягнёнка» — хорошо. «Мясо и продукты животного происхождения» без вида — плохо: непонятно, что внутри.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div><h4>Цифры, на которые смотреть</h4><p>Зола <strong>≤ 8%</strong>, понятные консерванты (токоферолы — витамин E), без сахара и ароматизаторов. % мяса важнее громкого бренда.</p></div>
+    </div></td>
+    <td><div class="tip warn">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+      <div><h4>Красные флаги</h4><p>Кукуруза/пшеница на первых местах, сахар, целлюлоза, и «сплиттинг» — когда зерно дробят на 3–4 строчки, чтобы спрятать его реальную долю.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></div>
+      <div><h4>Гарантированный анализ</h4><p>На обороте ищите цифры: <strong>белок 26–32%</strong>, жир 12–18%, клетчатка ≤ 5%. Слишком мало белка — корм «разбавлен» зерном.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg></div>
+      <div><h4>«Беззерновой» — не синоним «лучше»</h4><p>Grain-free часто просто меняет зерно на горох/картофель. Смотрите на <strong>долю мяса</strong>, а не на громкую надпись на лицевой стороне.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <div><h4>Калорийность = размер порции</h4><p>Смотрите <strong>ккал/100 г</strong>. Чем калорийнее корм, тем меньше порция — и наоборот. По этой цифре считается суточная норма, а не «на глаз».</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Срок и условия хранения</h4><p>Берите упаковку со <strong>свежей датой</strong> и закрывайте герметично. Прогорклый жир — частая причина отказа от еды и расстройства ЖКТ.</p></div>
+    </div></td></tr>
+  </table>
+
+  <div class="page-foot">стр. <strong>10</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 8 — HOW TO FEED -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Как кормить сухим кормом</strong> · правила</div>
+  </div>
+
+  <div class="eyebrow">Правила кормления</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Чтобы корм работал, а не просто стоял в миске</h2>
+  <p class="section-sub">Даже идеальный корм можно испортить неправильным кормлением. Несколько простых правил.</p>
+
+  <table class="tips-grid-t">
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-2 16H7z"/><path d="M9 4V2h6v2"/></svg></div>
+      <div><h4>Норма — по упаковке, по весу</h4><p>Берите норму для целевого веса и делите на <strong>2 кормления</strong>. Дальше корректируйте по кондиции: рёбра прощупываются, талия видна сверху.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s7 8 7 13a7 7 0 01-14 0c0-5 7-13 7-13z"/></svg></div>
+      <div><h4>Вода — всегда и много</h4><p>Сухой корм почти без влаги, поэтому воды нужно в <strong>2–3 раза больше</strong> объёма корма. Свежая миска, меняйте 2 раза в день.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 5.6L20 8l-4.2 4 1 5.8L12 15l-4.8 2.8 1-5.8L4 8l5.6-0.4z"/></svg></div>
+      <div><h4>Лакомства — максимум 10%</h4><p>Угощения и добавки — не больше <strong>10% дневных калорий</strong>, иначе рацион разбалансируется. На этот объём уменьшайте порцию корма.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7l1 13h14l1-13M9 7V4h6v3"/></svg></div>
+      <div><h4>Не мешайте с натуралкой в одной миске</h4><p>Сухой корм и сырое/варёное перевариваются с разной скоростью. Хотите сочетать — давайте в <strong>разные кормления</strong>. Храните корм герметично, в сухом тёмном месте.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Режим — по часам</h4><p>Кормите в <strong>одно и то же время</strong>, 2 раза в день. Миску не оставляйте больше чем на 15–20 минут: так проще следить за аппетитом и не перекармливать.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/><path d="M18 4l2 2-2 2"/></svg></div>
+      <div><h4>Не кормите со стола</h4><p>Человеческая еда сбивает рацион и приучает попрошайничать. Солёное, копчёное, сладкое и кости варёные — <strong>под запретом</strong>, даже «по чуть-чуть».</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+      <div><h4>Покой до и после еды</h4><p>Не нагружайте собаку <strong>час до и после</strong> кормления. Активные игры на полный желудок у крупных пород повышают риск заворота желудка.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg></div>
+      <div><h4>Взвешивайте раз в 2 недели</h4><p>Корректируйте порцию по факту: рёбра прощупываются, талия видна сверху. <strong>±10%</strong> к норме с упаковки — это нормально, собаки разные.</p></div>
+    </div></td></tr>
+  </table>
+
+  <div class="page-foot">стр. <strong>11</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 9 — TRANSITION -->
+<section class="page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Переход на новый корм</strong> · 7+ дней</div>
+  </div>
+
+  <div class="eyebrow">Не меняйте корм за один день</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Как мягко перевести Графа на новый корм</h2>
+  <p class="section-sub">Резкая смена → диарея и зуд на ровном месте. Идите по схеме — это всего одна неделя.</p>
+
+  <div class="transition-strip">
+    <table class="transition-track-t">
+      <tr><td><div class="tr-step-bar">
+        <div class="days"><span class="num">1–2</span><span class="lbl">дни</span></div>
+        <table class="tr-mix"><tr><td class="old" style="width:75%;">75%</td><td class="new" style="width:25%;">25%</td></tr></table>
+        <div style="font-size:8.5pt;color:var(--ink-soft);">Привыкание. Стул может стать мягче.</div>
+      </div></td>
+      <td><div class="tr-step-bar">
+        <div class="days"><span class="num">3–4</span><span class="lbl">дни</span></div>
+        <table class="tr-mix"><tr><td class="old" style="width:50%;">50%</td><td class="new" style="width:50%;">50%</td></tr></table>
+        <div style="font-size:8.5pt;color:var(--ink-soft);">Половина на половину. Следите за стулом.</div>
+      </div></td>
+      <td><div class="tr-step-bar">
+        <div class="days"><span class="num">5–6</span><span class="lbl">дни</span></div>
+        <table class="tr-mix"><tr><td class="old" style="width:25%;">25%</td><td class="new" style="width:75%;">75%</td></tr></table>
+        <div style="font-size:8.5pt;color:var(--ink-soft);">Новый корм — основа.</div>
+      </div></td>
+      <td><div class="tr-step-bar">
+        <div class="days"><span class="num">7+</span><span class="lbl">дни</span></div>
+        <table class="tr-mix"><tr><td class="new" style="width:100%;">100%</td></tr></table>
+        <div style="font-size:8.5pt;color:var(--ink-soft);">Полный переход.</div>
+      </div></td>
+      </tr>
+    </table>
+    <div class="tr-legend">
+      <span><span class="sw old"></span> Старый корм</span>
+      <span><span class="sw new"></span> Новый корм</span>
+    </div>
+  </div>
+
+  <table class="tips-grid-t">
+    <tr><td><div class="tip warn">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+      <div><h4>Если диарея — вернитесь на шаг назад</h4><p>Уменьшите долю нового корма и задержитесь на 2–3 дня. Если стул не нормализовался <strong>за 48 часов</strong> — пишите в Telegram-бот.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Как понять, что порция правильная</h4><p>Рёбра <strong>прощупываются, но не торчат</strong>. Талия видна сверху. Взвешивайте Графа раз в 2 недели.</p></div>
+    </div></td></tr>
+    <tr><td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <div><h4>Кормите по графику</h4><p>Два раза в день в одно и то же время. Между кормлениями — только вода.</p></div>
+    </div></td>
+    <td><div class="tip">
+      <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-2 16H7z"/><path d="M9 4V2h6v2"/></svg></div>
+      <div><h4>Свежая вода — всегда</h4><p>На каждые 100 г корма — <strong>200–300 мл воды</strong>. Меняйте воду 2 раза в день.</p></div>
+    </div></td></tr>
+  </table>
+
+  <div class="page-foot">стр. <strong>12</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+<!-- PAGE 10 — DISCLAIMER -->
+<section class="page last-page">
+  <div class="page-head">
+    <div class="logo">
+      <span class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="6" r="1.6"/><circle cx="14" cy="6" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M8.5 14c0-2 1.6-3.5 3.5-3.5s3.5 1.5 3.5 3.5c0 1.6 1 2.2 1 3.5 0 1.4-1.2 2-2.6 2-1 0-1.4-.5-1.9-.5s-.9.5-1.9.5C8.7 19.5 7.5 18.9 7.5 17.5c0-1.3 1-1.9 1-3.5z"/></svg></span>
+      <span class="name">Кусь</span>
+    </div>
+    <div class="meta"><strong>Дисклеймер и контакты</strong></div>
+  </div>
+
+  <div class="eyebrow">Важно знать</div>
+  <h2 class="section-title" style="margin-top: 4mm;">Несколько слов перед тем,<br/>как закроете PDF</h2>
+
+  <div class="disclaimer-card">
+    <div class="quote">«</div>
+    <p>Подбор основан на анализе составов по открытым данным производителей. <strong>Мы не связаны ни с одним брендом</strong> и не получаем вознаграждения за рекомендации. При наличии хронических заболеваний обязательно согласуйте выбор корма с лечащим ветеринаром.</p>
+  </div>
+
+  <h3 style="font-size: 12pt; margin-bottom: 4mm;">Связь с нами</h3>
+  <table class="contact-grid-t">
+    <tr>
+    <td><div class="contact-card">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg></div>
+      <div>
+        <div class="label">Telegram-бот</div>
+        <div class="val">@doggifood_bot</div>
+      </div>
+    </div></td>
+    <td><div class="contact-card">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
+      <div>
+        <div class="label">Сайт</div>
+        <div class="val">kus.dogfine.ru</div>
+      </div>
+    </div></td>
+    </tr>
+  </table>
+
+  <div class="support-strip">
+    <div>
+      <h3>7 дней бесплатной поддержки</h3>
+      <p>Корм не подошёл? Граф отказался? Напишите в Telegram-бот — ответим за 15 минут в рабочее время.</p>
+    </div>
+  </div>
+
+  <div class="bye">
+    Спасибо, что доверили нам выбор корма для Графа <span class="heart">♥</span><br/>
+    © 2026 Кусь · Doggi · kus.dogfine.ru
+  </div>
+
+  <div class="page-foot">стр. <strong>13</strong> / 13 · Кусь · Подбор Граф</div>
+</section>
+
+</body>
+</html>
