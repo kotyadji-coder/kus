@@ -143,8 +143,28 @@ class DietCalculator:
             for p in group_products:
                 self._all_products[p["id"]] = p
 
+    @staticmethod
+    def _size_from_weight(w: float) -> str:
+        if w < 5: return "mini"
+        if w < 10: return "small"
+        if w < 25: return "medium"
+        if w < 45: return "large"
+        return "giant"
+
+    def _synthetic_breed_info(self, w: float) -> dict:
+        """Для породы не из breeds.json: размер по весу, чтобы size-зависимая логика
+        (суставы/заворот у гигантов, частота кормлений) не отваливалась. Помечен
+        _synthetic — идеальный вес считаем по текущему, породный стандарт не выдумываем."""
+        return {"size": self._size_from_weight(w), "weight_min": w, "weight_max": w, "_synthetic": True}
+
+    def _get_breed_info(self, dog: DogProfile) -> dict:
+        """Породный профиль из breeds.json, либо синтетический (размер по весу) для
+        неизвестной породы — чтобы size-зависимая логика работала ВЕЗДЕ одинаково."""
+        bi = self._breed_map.get(dog.breed)
+        return bi if bi is not None else self._synthetic_breed_info(dog.weight_kg)
+
     def calculate(self, dog: DogProfile) -> DietResult:
-        breed_info = self._breed_map.get(dog.breed)
+        breed_info = self._get_breed_info(dog)
         ideal_weight = self._calc_ideal_weight(dog, breed_info)
         rer = self._calc_rer(ideal_weight)
         mer_coeff = self._calc_mer_coefficient(dog, breed_info)
@@ -216,7 +236,9 @@ class DietCalculator:
         # середину широкого бакета за «идеал» (это давало фантомный недовес).
         # Ориентир только на текущий вес с поправкой на кондицию тела.
         is_mixed = "метис" in (dog.breed or "").lower()
-        if is_mixed or not breed_info:
+        # Метис/беспородная/неизвестная (синтетический breed_info) — без породного
+        # эталона веса, ориентир только на текущий вес с поправкой на кондицию.
+        if is_mixed or not breed_info or breed_info.get("_synthetic"):
             return dog.weight_kg * adj
 
         breed_avg = (breed_info["weight_min"] + breed_info["weight_max"]) / 2
@@ -659,7 +681,7 @@ class DietCalculator:
             })
 
         # --- Определяем breed_info для дальнейших проверок ---
-        breed_info = self._breed_map.get(dog.breed)
+        breed_info = self._get_breed_info(dog)
         size = breed_info.get("size", "medium") if breed_info else "medium"
         is_large = size in ("large", "giant")
         senior_age = (breed_info.get("senior_years", 8) if breed_info else 8) * 12
@@ -815,7 +837,7 @@ class DietCalculator:
 
         # Суточные нормы по группам (из distribution)
         dist = self._calc_distribution(dog, self._calc_daily_grams(dog,
-            self._calc_ideal_weight(dog, self._breed_map.get(dog.breed))))
+            self._calc_ideal_weight(dog, self._get_breed_info(dog))))
 
         meat_daily = self._round_g(dist.get("muscle_meat", 0))
         bones_daily = self._round_g(dist.get("raw_meaty_bones", 0))

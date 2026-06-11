@@ -142,9 +142,29 @@ def test_fallback_tracking():
     check("reset обнуляет после инкремента", ai_adapter.fallback_count() == 0)
 
 
+# --- #6: неизвестная порода (size по весу, расчёт не деградирует) ---
+def test_unknown_breed():
+    print("test_unknown_breed:")
+    from calculator import DietCalculator, DogProfile
+    calc = DietCalculator()
+    d = DogProfile(name="Т", breed="Бурбонский бракк", age_months=36, sex="male", neutered=False,
+                   weight_kg=90, current_food="dry", condition="athletic", activity="moderate",
+                   diagnoses=[], stool="good", diet_type="barf", budget="market", stop_products=[])
+    r = calc.calculate(d)
+    sn = " ".join(s.get("name", "") for s in r.supplements).lower()
+    check("неизв. гигант 90кг → суставная добавка", "глюкозамин" in sn or "хондро" in sn, sn)
+    check("неизв. порода: расчёт не падает, объём>0", r.daily_grams > 0)
+    d2 = DogProfile(name="Х", breed="Японский хин", age_months=24, sex="male", neutered=False,
+                    weight_kg=4, current_food="dry", condition="athletic", activity="moderate",
+                    diagnoses=[], stool="good", diet_type="barf", budget="market", stop_products=[])
+    r2 = calc.calculate(d2)
+    check("неизв. порода норма: идеал=текущий (не выдуман стандарт)", abs(r2.ideal_weight_kg - 4) < 0.01, str(r2.ideal_weight_kg))
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
-              test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking):
+              test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking,
+              test_unknown_breed):
         try:
             t()
         except Exception as e:
