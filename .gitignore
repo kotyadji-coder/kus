@@ -8,3 +8,6 @@ data/cover_cache/
 output/
 kus.db
 tools/report_qa/scores/
+venv/
+output/
+data/cover_cache/
