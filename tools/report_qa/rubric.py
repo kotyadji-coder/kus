@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone, timedelta
 
@@ -201,6 +202,16 @@ def score_dry(p):
 
 # ===================== общее =====================
 
+def _git_commit() -> str:
+    """Короткий хэш текущего коммита — версия кода, давшая эти баллы (для W8:
+    падение балла атрибутируется конкретной правке)."""
+    try:
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
+                                       cwd=ROOT, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return "?"
+
+
 def _finalize(name, diet, scores):
     graded = [s["value"] for s in scores.values() if s["value"] is not None]
     overall = round(sum(graded) / len(graded), 2) if graded else None
@@ -232,10 +243,13 @@ def main() -> int:
             results.append(score_dry(p))
     for res in results:
         _print(res)
-    stamp = datetime.now(MSK).strftime("%Y-%m-%d")
+    now = datetime.now(MSK)
+    stamp = now.strftime("%Y-%m-%d")
+    commit = _git_commit()
     with open(os.path.join(SCORES_DIR, f"{stamp}.json"), "w", encoding="utf-8") as f:
-        json.dump({"date": stamp, "results": results}, f, ensure_ascii=False, indent=2)
-    print(f"\nИстория: scores/{stamp}.json  ({len(results)} профилей)")
+        json.dump({"date": stamp, "ts": now.strftime("%Y-%m-%d %H:%M"), "git_commit": commit,
+                   "results": results}, f, ensure_ascii=False, indent=2)
+    print(f"\nИстория: scores/{stamp}.json  ({len(results)} профилей, код {commit})")
     return 0
 
 

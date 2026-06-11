@@ -161,10 +161,18 @@ def test_unknown_breed():
     check("неизв. порода норма: идеал=текущий (не выдуман стандарт)", abs(r2.ideal_weight_kg - 4) < 0.01, str(r2.ideal_weight_kg))
 
 
+# --- #8: версионирование (git-коммит в записи баллов) ---
+def test_versioning():
+    print("test_versioning:")
+    import rubric
+    c = rubric._git_commit()
+    check("git_commit непустой и не '?'", bool(c) and c != "?", repr(c))
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
               test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking,
-              test_unknown_breed):
+              test_unknown_breed, test_versioning):
         try:
             t()
         except Exception as e:

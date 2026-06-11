@@ -50,12 +50,12 @@ def render_dashboard_html() -> str:
             by_diet.setdefault(r["diet_type"], []).append(r["overall_deterministic"])
     diet_avg = {d: round(sum(v) / len(v), 2) for d, v in by_diet.items()}
 
-    # тренд: средний общий балл по датам
+    # тренд: средний общий балл по датам + коммит кода (W8 — атрибуция падения правке)
     trend = []
     for run in hist:
         vals = [r["overall_deterministic"] for r in run.get("results", []) if r.get("overall_deterministic") is not None]
         if vals:
-            trend.append((run.get("date", "?"), round(sum(vals) / len(vals), 2)))
+            trend.append((run.get("date", "?"), round(sum(vals) / len(vals), 2), run.get("git_commit", "?")))
 
     # рекомендации: все критерии < 5 в последнем прогоне
     recs = []
@@ -85,7 +85,7 @@ def render_dashboard_html() -> str:
         f"<div style='font-size:28px;font-weight:800;color:{_color(a)}'>{a}</div></div>"
         for d, a in sorted(diet_avg.items()))
 
-    trend_txt = " · ".join(f"{esc(d)}: <b style='color:{_color(a)}'>{a}</b>" for d, a in trend[-10:])
+    trend_txt = " · ".join(f"{esc(d)} <span style='color:#aaa'>({esc(c)})</span>: <b style='color:{_color(a)}'>{a}</b>" for d, a, c in trend[-10:])
 
     rec_items = "".join(
         f"<li><b>{esc(nm)}</b> <span style='color:#888'>({esc(dt)})</span> — "
