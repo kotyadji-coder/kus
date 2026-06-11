@@ -4,7 +4,10 @@
       "Bash(pkill -f \"git add\")",
       "Bash(pkill -f \"git commit\")",
       "Bash(rm -f /mnt/5.42-opt/kus/.git/index.lock)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(kill 509391 509361)",
+      "Bash(rm -f .git/index.lock)",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@5.42.101.215 'echo ssh-OK; cd /opt/kus && git log -1 --format=\"%h %s\"')"
     ]
   }
 }
