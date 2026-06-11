@@ -175,6 +175,8 @@ class DietCalculator:
             warnings.append("Беременность: порции увеличены на 25%. В последние 2 недели перед родами аппетит может снизиться — кормите чаще и меньшими порциями.")
         if dog.lactating:
             warnings.append("Лактация: потребность в калориях удвоена. Обеспечьте постоянный доступ к воде. При большом помёте может потребоваться ещё больше еды.")
+        if dog.condition in ("chubby", "obese") and dog.weight_kg > 0 and ideal_weight >= dog.weight_kg - 0.01:
+            warnings.append("Вес уже на уровне породной нормы или ниже, хотя кондиция отмечена как избыточная — перепроверьте оценку (прощупайте рёбра, оцените талию сверху). Цель оставлена на текущем весе, без снижения.")
 
         return DietResult(
             dog=dog,
@@ -227,7 +229,11 @@ class DietCalculator:
             # Для полных ориентируемся на стандарт породы
             target = breed_avg * 1.0 if dog.condition == "chubby" else breed_avg * 0.95
             # Но не меньше чем текущий * коэффициент
-            return min(dog.weight_kg * adj, target) if target < dog.weight_kg else target
+            ideal = min(dog.weight_kg * adj, target) if target < dog.weight_kg else target
+            # Перевес → цель НИКОГДА не выше текущего: обжоре не назначаем набор веса.
+            # Бывает при конфликте: мелкая собака на нижней границе породы (вес=мин),
+            # но помеченная chubby/obese — тогда цель = текущий (поддержание).
+            return min(ideal, dog.weight_kg)
 
     # --- RER ---
 
