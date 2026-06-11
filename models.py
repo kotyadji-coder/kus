@@ -150,6 +150,14 @@ async def init_db():
                 error_message TEXT
             )
         """)
+        # Миграции (безопасны для существующей таблицы; SQLite не умеет ADD COLUMN
+        # IF NOT EXISTS, поэтому через try). QA-аудит заказа + флаг фолбэка Gemini.
+        for col, decl in (("qa_score", "REAL"), ("qa_checked_at", "TIMESTAMP"),
+                          ("qa_notes", "TEXT"), ("ai_fallback", "INTEGER DEFAULT 0")):
+            try:
+                await db.execute(f"ALTER TABLE orders ADD COLUMN {col} {decl}")
+            except Exception:
+                pass
         await db.commit()
 
 
@@ -191,6 +199,15 @@ async def update_order(order_id: int, **kwargs):
     vals = list(kwargs.values()) + [order_id]
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(f"UPDATE orders SET {sets} WHERE id = ?", vals)
+        await db.commit()
+
+
+async def set_order_qa(order_id: int, score: float | None, notes: str = ""):
+    """Записывает результат QA-аудита заказа (балл рубрики + заметки судьи)."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE orders SET qa_score = ?, qa_notes = ?, qa_checked_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (score, notes, order_id))
         await db.commit()
 
 
