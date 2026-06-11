@@ -126,6 +126,21 @@ def _food_has_common_allergen(food: dict) -> bool:
     return False
 
 
+def _allergen_in_food(food: dict, allergen: str) -> tuple[list[str], list[str]]:
+    """Где аллерген найден в ПОЛНОМ составе: (мясо/мука, жир).
+
+    Различаем МЯСО/МУКУ (содержит белок — настоящий аллерген, исключаем) и ЖИР
+    (рафинированный, без белка — обычно безопасен при чувствительности). Жир
+    нельзя исключать (пул кормов рушится), но клиенту со стоп-листом — раскрыть.
+    """
+    roots = COMMON_ALLERGENS.get(allergen, [])
+    ings = [i.lower() for i in (food.get("ingredients_top5", [])
+            + food.get("main_protein_sources", []) + food.get("grain_sources", []))]
+    meat = [i for i in ings if any(r in i for r in roots) and "жир" not in i]
+    fat = [i for i in ings if any(r in i for r in roots) and "жир" in i]
+    return meat, fat
+
+
 class DryFoodSelector:
 
     def __init__(self):
@@ -280,21 +295,18 @@ class DryFoodSelector:
                 if not (age_cat == "senior" and "adult" in food.get("age_suitable", [])):
                     continue
 
-            # Стоп-продукты (аллергены)
+            # Стоп-продукты. Исключаем корм, если стоп-белок встречается в ПОЛНОМ
+            # составе как МЯСО/МУКА (не только в main_protein_sources — раньше так
+            # просачивалось вторичное мясо). ЖИР не исключаем (без белка, безопасен;
+            # клиенту раскрываем в reasons). allergens_absent = гарантия без белка.
             food_allergens_absent = set(food.get("allergens_absent", []))
             has_allergen = False
             for allergen in stop_allergens:
-                if allergen not in food_allergens_absent:
-                    # Корм НЕ гарантирует отсутствие этого аллергена
-                    # Проверяем main_protein_sources
-                    main_proteins_lower = [p.lower() for p in food.get("main_protein_sources", [])]
-                    stop_lower = [s.lower() for s in dog.stop_products]
-                    for stop in stop_lower:
-                        root = stop[:3]
-                        if any(root in mp for mp in main_proteins_lower):
-                            has_allergen = True
-                            break
-                if has_allergen:
+                if allergen in food_allergens_absent:
+                    continue
+                meat, _fat = _allergen_in_food(food, allergen)
+                if meat:
+                    has_allergen = True
                     break
             if has_allergen:
                 continue
@@ -408,6 +420,11 @@ class DryFoodSelector:
                      "wheat": "пшеницы", "soy": "сои", "lamb": "ягнёнка", "fish": "рыбы"}
             if allergen in absent:
                 pros.append(f"Без {names.get(allergen, allergen)}")
+            # Раскрываем стоп-жир (без белка): не протечка, но клиент должен знать.
+            _meat, fat = _allergen_in_food(food, allergen)
+            if fat:
+                cons.append(f"Содержит жир {names.get(allergen, allergen)} "
+                            f"(рафинированный, без белка — обычно безопасен при чувствительности)")
 
         # Злаки
         grains = food.get("grain_sources", [])
