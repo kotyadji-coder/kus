@@ -12,6 +12,14 @@ Claude-агент стоит на VPS (Амстердам, рядом с ави�
   текста; exclusion-aware стоп-страж. Стражи: `check_ai_text.py`, `check_natural.py`,
   раннер `run_one.py <idx>`. Источник правды расчёта — `calculator.py`.
 
+## ЗАКРЫТО 2026-06-12 (всё под тестами, 23/23 в tests/test_qa.py)
+- **W7 orders:** таблица была (kus.db), добавлены поля `qa_score/qa_notes/qa_checked_at/ai_fallback` (миграция в init_db) + `set_order_qa()`. Применено на живой kus.db.
+- **W6 фолбэк Gemini:** `ai_adapter` счётчик `_FALLBACK_COUNT`, worker ставит `ai_fallback=1` + алерт админу — пустой ИИ не отгружается молча.
+- **W4 неизвестная порода:** `_get_breed_info()` → синтетический size по весу (суставы/заворот у гигантов работают), идеал по текущему весу. Форма уже принимает свободный ввод (input+datalist).
+- **W8 версионирование:** git-коммит в каждой записи scores/, панель показывает коммит в тренде.
+- **W2-добор:** `check_dry_text.py` — числа ИИ-текста сухого сверяются с карточкой (Gemini честен).
+- **Репо вычищено:** venv вырезан из истории (git-filter-repo), .git 188→62М, на GitHub.
+
 ## СТАТУС РАЗВЁРТЫВАНИЯ (2026-06-11)
 - **Панель ЖИВАЯ:** https://kus.dogfine.ru/admin/qa (verify_admin, ADMIN_USER/ADMIN_PASS из .env). kus.service перезапущен.
 - **Ночной агент ОТКЛЮЧЁН — реальных заказов пока нет, аудировать нечего.** Крон на AMS
