@@ -130,9 +130,21 @@ def test_dry_stop_filter():
     check("пул наполнен (≥6)", len(recs) >= 6, str(len(recs)))
 
 
+# --- #5: трекинг фолбэка Gemini ---
+def test_fallback_tracking():
+    print("test_fallback_tracking:")
+    import ai_adapter
+    ai_adapter.reset_fallback()
+    check("после reset счётчик 0", ai_adapter.fallback_count() == 0)
+    ai_adapter._FALLBACK_COUNT = 2  # имитируем 2 неудачных _ask
+    check("счётчик читается", ai_adapter.fallback_count() == 2)
+    ai_adapter.reset_fallback()
+    check("reset обнуляет после инкремента", ai_adapter.fallback_count() == 0)
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
-              test_overweight_never_gains, test_dry_stop_filter):
+              test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking):
         try:
             t()
         except Exception as e:

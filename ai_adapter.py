@@ -26,6 +26,20 @@ FALLBACK_MODELS = ["gemini-3.5-flash", "gemini-2.5-flash"]
 
 _client = None
 
+# Счётчик фолбэков Gemini за текущий заказ: сколько раз _ask() не дал ответа и
+# отчёт ушёл на шаблонный текст. worker сбрасывает перед генерацией и читает после,
+# чтобы не отгружать «пустой ИИ» молча (флаг ai_fallback + алерт админу).
+_FALLBACK_COUNT = 0
+
+
+def reset_fallback():
+    global _FALLBACK_COUNT
+    _FALLBACK_COUNT = 0
+
+
+def fallback_count() -> int:
+    return _FALLBACK_COUNT
+
 
 def _get_client():
     global _client
@@ -104,6 +118,8 @@ def _ask(prompt: str, max_tokens: int = 1000) -> str | None:
             continue
         continue
     print("Gemini: все попытки исчерпаны")
+    global _FALLBACK_COUNT
+    _FALLBACK_COUNT += 1
     return None
 
 

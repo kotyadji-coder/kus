@@ -36,9 +36,10 @@ async def process_order(order: dict):
         log.info(f"Order #{order_id}: processing started ({diet_type})")
 
         # 1. Парсим свободные поля через AI
-        from ai_adapter import parse_diagnoses, parse_stop_products
+        from ai_adapter import parse_diagnoses, parse_stop_products, reset_fallback, fallback_count
         diagnoses = parse_diagnoses(order.get("diagnoses") or "")
         stop_products = parse_stop_products(order.get("stop_products") or "")
+        reset_fallback()  # считаем фолбэки Gemini именно за этот заказ
 
         # 2. Генерируем HTML
         if diet_type in ("barf_and_dry", "cooked_and_dry"):
@@ -57,9 +58,19 @@ async def process_order(order: dict):
             pdf_path = await _generate_dry_food_html(order, diagnoses, stop_products)
             await _deliver(order, pdf_path)
 
-        # 4. Обновляем статус
-        await update_order(order_id, status="done", pdf_path=pdf_path)
-        log.info(f"Order #{order_id}: done! HTML: {pdf_path}")
+        # 4. Обновляем статус + флаг фолбэка Gemini (отчёт ушёл на шаблонном тексте)
+        fb = fallback_count()
+        await update_order(order_id, status="done", pdf_path=pdf_path, ai_fallback=1 if fb else 0)
+        log.info(f"Order #{order_id}: done! HTML: {pdf_path}" + (f" ⚠ Gemini-фолбэков: {fb}" if fb else ""))
+        if fb:
+            # Не отгружаем «пустой ИИ» молча — алертим админа.
+            log.warning(f"Order #{order_id}: ⚠ Gemini не сработал {fb} раз — отчёт на шаблонном тексте")
+            try:
+                from bot import bot, ADMIN_ID
+                await bot.send_message(ADMIN_ID, f"⚠ Заказ #{order_id} ({order.get('dog_name','?')}): "
+                                       f"Gemini не сработал {fb} раз — отчёт ушёл на шаблонном тексте, проверьте.")
+            except Exception as e:
+                log.error(f"Order #{order_id}: не смог алертить админа о фолбэке: {e}")
 
         # 5. Уведомляем админа (нефатально)
         try:
