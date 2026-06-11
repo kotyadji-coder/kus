@@ -59,9 +59,12 @@ $SRV 'cd /opt/kus && venv/bin/python tools/report_qa/run_one.py <idx>'   # ге�
 1. ...
 2. ...
 ```
-Отправка (notify.sh и токен бота — на 5.42):
+Отправка — ТОЛЬКО с AMS (5.42 в РФ не достаёт api.telegram.org!). Токен тянем с
+5.42 по ssh, curl делаем локально на AMS:
 ```bash
-$SRV 'cd /opt/kus && bash tools/report_qa/notify.sh "<текст>"'
+TOKEN=$($SRV 'grep -E "^BOT_TOKEN=" /opt/kus/.env | head -1 | cut -d= -f2-' | tr -d ' "\r')
+curl -s -m 20 -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+  -d chat_id=856877325 -d parse_mode=HTML --data-urlencode text="<текст дайджеста>"
 ```
 
 ## Правила

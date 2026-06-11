@@ -1,13 +1,14 @@
 #!/bin/bash
-# Telegram-уведомление от QA-агента «Кусь». Usage: ./notify.sh "сообщение"
-# HTML: <b>bold</b>, <code>code</code>. Токен из .env (BOT_TOKEN), чат — ADMIN.
-# Образец: /opt/avito-agents/notify.sh.
-set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-BOT_TOKEN="$(grep -E '^BOT_TOKEN=' "$ROOT/.env" 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"' ')"
-CHAT_ID="${ADMIN_TELEGRAM_ID:-856877325}"
+# Telegram-уведомление QA-агента «Кусь». Usage: ./notify.sh "сообщение" (HTML).
+# ЗАПУСКАТЬ НА AMS: сервер 5.42 (РФ) не достаёт api.telegram.org. Токен kus-бота
+# тянем с 5.42 по ssh, curl делаем локально на AMS. Чат — ADMIN (Анастасия).
+set -uo pipefail
 MSG="${1:-}"
 [ -z "$MSG" ] && { echo "Usage: $0 \"message\""; exit 1; }
-[ -z "$BOT_TOKEN" ] && { echo "нет BOT_TOKEN в $ROOT/.env"; exit 1; }
-curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-  -d chat_id="$CHAT_ID" -d parse_mode="HTML" --data-urlencode text="$MSG" >/dev/null
+SRV="ssh -o StrictHostKeyChecking=no root@5.42.101.215"
+TOKEN="$($SRV 'grep -E "^BOT_TOKEN=" /opt/kus/.env | head -1 | cut -d= -f2-' | tr -d ' "'"'"'\r')"
+CHAT_ID="${ADMIN_TELEGRAM_ID:-856877325}"
+[ -z "$TOKEN" ] && { echo "не получил BOT_TOKEN с 5.42"; exit 1; }
+curl -s -m 20 -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+  -d chat_id="$CHAT_ID" -d parse_mode="HTML" --data-urlencode text="$MSG" >/dev/null \
+  && echo "отправлено" || { echo "ошибка отправки (telegram недоступен?)"; exit 1; }
