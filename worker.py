@@ -131,6 +131,7 @@ async def _generate_natural_html(order: dict, diagnoses: list, stop_products: li
         "ca_total_mg": result.ca_total_mg,
         "p_total_mg": result.p_total_mg,
         "ca_p_ratio": result.ca_p_ratio,
+        "ca_p_ratio_effective": result.ca_p_ratio_effective,  # после добавки кальция (реальный баланс)
         "meals_per_day": result.meals_per_day,
         "diet_type": dog.diet_type,
         "distribution": {k: round(v) for k, v in result.distribution.items() if v > 0},

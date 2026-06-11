@@ -124,6 +124,7 @@ class DietResult:
     cooking_tips: list[str] = field(default_factory=list)  # советы по готовке (для cooked)
     meal_prep: dict = field(default_factory=dict)  # подсказка по заморозке/контейнерам
     puppy_next_recalc: str = ""     # когда пересчитать (для щенков)
+    ca_p_ratio_effective: float = 0.0  # Ca:P ПОСЛЕ добавки кальция (реальный в миске)
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +158,10 @@ class DietCalculator:
         distribution, product_plan, ca_total, p_total, ca_p_ratio = self._balance_ca_p(
             dog, distribution, product_plan, ca_total, p_total, ca_p_ratio, daily_grams
         )
-        supplements = self._calc_supplements(dog, ideal_weight, ca_p_ratio)
+        supplements = self._calc_supplements(dog, ideal_weight, ca_p_ratio, ca_total, p_total)
+        # Эффективный Ca:P — то, что реально в миске ПОСЛЕ добавки кальция (еда + цитрат).
+        ca_added = sum(s.get("ca_elem_mg", 0) for s in supplements)
+        ca_p_ratio_effective = (ca_total + ca_added) / p_total if p_total > 0 else ca_p_ratio
         transition = self._calc_transition(dog)
         warnings = self._generate_warnings(dog, breed_info, ca_p_ratio)
         weekly_menu = self._generate_weekly_menu(dog, product_plan, meals_per_day)
@@ -183,6 +187,7 @@ class DietCalculator:
             ca_total_mg=round(ca_total, 0),
             p_total_mg=round(p_total, 0),
             ca_p_ratio=round(ca_p_ratio, 2),
+            ca_p_ratio_effective=round(ca_p_ratio_effective, 2),
             weekly_menu=weekly_menu,
             supplements=supplements,
             transition_plan=transition,
@@ -333,7 +338,7 @@ class DietCalculator:
         elif dog.age_months < 12:
             return 2
         else:
-            if "gastritis" in dog.diagnoses:
+            if "gastritis" in self._normalize_diagnoses(dog.diagnoses):
                 return 3
             return 2
 
@@ -363,14 +368,17 @@ class DietCalculator:
                 "oils_supplements": 0.04,  # масла + костная мука
             }  # = 1.00
 
-        # Корректировка при диагнозах
-        if "pancreatitis" in dog.diagnoses:
+        # Корректировка при диагнозах. ВАЖНО: диагнозы хранятся по-русски
+        # («панкреатит»), поэтому сверяемся с нормализованными англ-ключами,
+        # а не с сырым dog.diagnoses (иначе условие молча не срабатывает).
+        diag = self._normalize_diagnoses(dog.diagnoses)
+        if "pancreatitis" in diag:
             # Меньше жиров, больше нежирного мяса
             dist["muscle_meat"] = 0.50
             dist["organs"] = 0.08
             dist["dairy"] = 0.05
 
-        if "gastritis" in dog.diagnoses:
+        if "gastritis" in diag:
             # Без костей, мягкая пища
             dist["raw_meaty_bones"] = 0.0
             dist["muscle_meat"] = 0.50
@@ -527,7 +535,8 @@ class DietCalculator:
             return str(whole)
         return f"{value:g}"
 
-    def _calc_supplements(self, dog: DogProfile, ideal_weight: float, ca_p_ratio: float) -> list[dict]:
+    def _calc_supplements(self, dog: DogProfile, ideal_weight: float, ca_p_ratio: float,
+                          ca_total: float = 0.0, p_total: float = 0.0) -> list[dict]:
         supps = []
 
         # Рыбий жир — всегда
@@ -560,30 +569,40 @@ class DietCalculator:
             "notes": f"С едой. Лососёвое масло или капсулы ({measure_hint}).",
         })
 
-        # Кальций — при варке или плохом Ca:P
+        # Кальций — при варке или плохом Ca:P.
         if dog.diet_type == "cooked" or ca_p_ratio < 1.1:
-            # ~50 мг кальция (элемент) на 1 кг массы тела в день (NRC)
-            ca_mg_day = round(ideal_weight * 50 / 50) * 50
-            if ca_mg_day < 200:
-                ca_mg_day = 200
-            # Считаем в таблетках по 200 мг кальция (элемент) — типичный цитрат.
-            # Округляем до половины таблетки, минимум полтаблетки.
-            TAB_CA_MG = 200
-            tabs = max(0.5, round(ca_mg_day / TAB_CA_MG * 2) / 2)
-            citrate_dose = f"{self._fmt_num(tabs)} табл. в день (по {TAB_CA_MG} мг кальция в таблетке)"
-            supps.append({
-                "name": "Кальция цитрат",
-                "dosage": f"{ca_mg_day} мг кальция в день",
-                "frequency": "Ежедневно, разделить на кормления",
-                "notes": (
-                    f"Обязателен при варёном рационе — без костей кальция критически мало. "
-                    f"Аптека: кальция цитрат — {citrate_dose}, усваивается на 40-50%, "
-                    f"можно с едой и без. Точнее всего дозируется молотая яичная скорлупа "
-                    f"(½ ч.л. ≈ 1000 мг кальция — берите долю под норму). "
-                    f"Ветеринарные добавки: Canina Calcium Citrate, 8in1 Excel Calcium, "
-                    f"Wolmar Pro Bio Calcium — содержат кальций + витамин D3 для усвоения."
-                ),
-            })
+            # Дозируем кальций РОВНО под дефицит до целевого Ca:P, а не плоско по
+            # весу: плоская доза (50 мг/кг, пол 200) при малом объёме еды у мелких
+            # перебивала баланс — Ca:P улетал до 2.2-2.8 (выше потолка 2.0). Под
+            # дефицит каждая собака приходит к ~1.4 независимо от размера.
+            TARGET_CA_P = 1.4
+            ca_deficit_mg = TARGET_CA_P * p_total - ca_total
+            ca_mg_day = max(0, int(round(ca_deficit_mg / 25.0)) * 25)  # шаг 25 мг
+            if ca_mg_day > 0:
+                # Хинт в таблетках по 200 мг кальция (элемент) — типичный цитрат.
+                TAB_CA_MG = 200
+                tabs = max(0.25, round(ca_mg_day / TAB_CA_MG * 4) / 4)  # до ¼ табл.
+                citrate_dose = f"{self._fmt_num(tabs)} табл. в день (по {TAB_CA_MG} мг кальция в таблетке)"
+                if dog.diet_type == "cooked":
+                    why = ("Домашний варёный рацион беден кальцием — костей в нём нет, "
+                           "поэтому добавка обязательна. Сырые кости в варёный рацион не вводят. ")
+                else:
+                    why = ("Костей в рационе недостаточно для баланса Ca:P — добавьте "
+                           "кальций по этой дозе ИЛИ увеличьте долю сырых мясных костей. ")
+                supps.append({
+                    "name": "Кальция цитрат",
+                    "dosage": f"{ca_mg_day} мг кальция в день",
+                    "ca_elem_mg": ca_mg_day,  # элементарный кальций — для эффективного Ca:P
+                    "frequency": "Ежедневно, разделить на кормления",
+                    "notes": (
+                        f"{why}"
+                        f"Аптека: кальция цитрат — {citrate_dose}, усваивается на 40-50%, "
+                        f"можно с едой и без. Точнее всего дозируется молотая яичная скорлупа "
+                        f"(½ ч.л. ≈ 1000 мг кальция — берите долю под норму). "
+                        f"Ветеринарные добавки: Canina Calcium Citrate, 8in1 Excel Calcium, "
+                        f"Wolmar Pro Bio Calcium — содержат кальций + витамин D3 для усвоения."
+                    ),
+                })
 
         # Ламинария
         # Дозировка: ~0.25 ч.л. на 10 кг, через день
@@ -738,7 +757,12 @@ class DietCalculator:
         warnings = []
 
         if ca_p_ratio < 1.1:
-            warnings.append("Соотношение Ca:P ниже нормы. Обязательно добавляйте костную муку или больше сырых мясных костей.")
+            if dog.diet_type == "cooked":
+                warnings.append("Ca:P ниже нормы — это ожидаемо для варёного рациона (костей в нём нет). "
+                                "Добавляйте кальций по дозировке из таблицы добавок. Сырые кости в варёный рацион не вводят.")
+            else:
+                warnings.append("Ca:P в самой еде ниже нормы — это типично для сырого рациона. "
+                                "Добавка кальция из таблицы (или увеличенная доля сырых мясных костей) выравнивает баланс.")
         if ca_p_ratio > 1.8:
             warnings.append("Соотношение Ca:P выше нормы. Уменьшите количество костей в рационе.")
 
@@ -751,7 +775,7 @@ class DietCalculator:
         if breed_info and breed_info.get("obesity_prone") and dog.condition in ("chubby", "obese"):
             warnings.append(f"Порода {dog.breed} склонна к ожирению. Строго следите за порциями и не давайте лакомства сверх нормы.")
 
-        if "gastritis" in dog.diagnoses and dog.diet_type == "barf":
+        if "gastritis" in self._normalize_diagnoses(dog.diagnoses) and dog.diet_type == "barf":
             warnings.append("При гастрите сырые кости могут раздражать ЖКТ. Рекомендуем перейти на варёный рацион и кальций из костной муки.")
 
         return warnings
