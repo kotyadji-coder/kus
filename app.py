@@ -355,6 +355,17 @@ async def admin_page(request: Request, user: str = Depends(verify_admin)):
     })
 
 
+@app.get("/admin/qa", response_class=HTMLResponse)
+async def admin_qa(request: Request, user: str = Depends(verify_admin)):
+    """QA-панель: оценки/статистика/рекомендации из tools/report_qa/scores/."""
+    import sys as _sys
+    qa_dir = os.path.join(os.path.dirname(__file__), "tools", "report_qa")
+    if qa_dir not in _sys.path:
+        _sys.path.insert(0, qa_dir)
+    from dashboard import render_dashboard_html
+    return render_dashboard_html()
+
+
 @app.get("/admin/support", response_class=HTMLResponse)
 async def admin_support(request: Request, user: str = Depends(verify_admin),
                         filter: str = "all"):
