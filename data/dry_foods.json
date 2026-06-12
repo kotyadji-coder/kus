@@ -6645,6 +6645,398 @@
         "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+vet+life+ultrahypo",
         "4paws": "4lapy.ru/search/?q=farmina+vet+life+ultrahypo"
       }
+    },
+    {
+      "id": "gemon_hp_adult_chicken_rice",
+      "brand": "Gemon",
+      "name": "High Premium Adult All Breeds Chicken & Rice",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 360,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки",
+        "мясо и продукты животного происхождения 30% (свежая курица 15%)",
+        "масла и жиры",
+        "свекловичный жом",
+        "пивные дрожжи"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Свежая курица 15% указана",
+        "Доступная цена",
+        "Стабильные поставки в РФ"
+      ],
+      "cons": [
+        "Злаки на первом месте",
+        "Обобщённые «мясо и продукты животного происхождения»"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gemon+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gemon+adult",
+        "4paws": "4lapy.ru/search/?q=gemon+adult"
+      }
+    },
+    {
+      "id": "meglium_adult_gold_beef",
+      "brand": "Meglium",
+      "name": "Adult Gold Beef",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 290,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо (говядина 16%, курица 15%)",
+        "кукуруза",
+        "пшеница",
+        "кукурузная мука",
+        "куриный жир"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 31,
+      "main_protein_sources": [
+        "говядина",
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Два мяса с процентами (говядина 16%, курица 15%)",
+        "Доступная цена"
+      ],
+      "cons": [
+        "Кукуруза + пшеница + кукурузная мука (splitting)",
+        "Высокая зольность"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=meglium+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=meglium+adult",
+        "4paws": "4lapy.ru/search/?q=meglium+adult"
+      }
+    },
+    {
+      "id": "rodnye_korma_adult",
+      "brand": "Родные корма",
+      "name": "Взрослые собаки всех пород",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 300,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясные ингредиенты 27% (курица 19%, говядина 8%)",
+        "маис",
+        "пшеница",
+        "животный жир",
+        "гидролизат мясных белков"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 27,
+      "main_protein_sources": [
+        "курица",
+        "говядина"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Курица 19% + говядина 8% указаны",
+        "Российское производство, доступная цена"
+      ],
+      "cons": [
+        "Маис + пшеница",
+        "Гидролизат мясных белков как усилитель"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=родные+корма+собак",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=родные+корма+собак",
+        "4paws": "4lapy.ru/search/?q=родные+корма+собак"
+      }
+    },
+    {
+      "id": "award_adult_medium_turkey_chicken",
+      "brand": "Award",
+      "name": "Adult Medium Turkey & Chicken",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 480,
+      "size_suitable": [
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 18%",
+        "дегидрированное мясо индейки 11%",
+        "рис",
+        "овёс",
+        "зелёная чечевица"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 29,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Два мяса с процентами, мясо на первом месте",
+        "Рис и овёс — мягкие злаки",
+        "Российский суперпремиум"
+      ],
+      "cons": [
+        "Содержит курицу (частый аллерген)"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=award+собак+индейка",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=award+собак+индейка",
+        "4paws": "4lapy.ru/search/?q=award+собак+индейка"
+      }
+    },
+    {
+      "id": "miratorg_promeat_lamb_potato",
+      "brand": "Мираторг",
+      "name": "Pro Meat Adult Lamb & Potato",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 360,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 27%",
+        "свежая ягнятина 13%",
+        "картофель",
+        "горох",
+        "животный жир"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 40,
+      "main_protein_sources": [
+        "ягнёнок",
+        "курица"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Мясо 40% (курица 27% + ягнятина 13%)",
+        "Беззерновой (картофель/горох)",
+        "Доступная цена, РФ"
+      ],
+      "cons": [
+        "Содержит курицу (частый аллерген)"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=мираторг+pro+meat",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=мираторг+pro+meat",
+        "4paws": "4lapy.ru/search/?q=мираторг+pro+meat"
+      }
+    },
+    {
+      "id": "jarvi_adult_medium_large",
+      "brand": "Jarvi",
+      "name": "Adult Medium & Large Breeds",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 540,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 15%",
+        "дегидрированное мясо индейки 12%",
+        "дегидрированное мясо говядины 8%",
+        "рис",
+        "животный жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "курица",
+        "индейка",
+        "говядина"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Три мяса с процентами",
+        "Рыбий жир (Омега-3)",
+        "Холистик, РФ"
+      ],
+      "cons": [
+        "Содержит курицу/говядину (частые аллергены)"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=jarvi+собак",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=jarvi+собак",
+        "4paws": "4lapy.ru/search/?q=jarvi+собак"
+      }
+    },
+    {
+      "id": "zooring_original_veal_rice",
+      "brand": "ZooRing",
+      "name": "Original Formula Veal & Rice",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 400,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "обезвоженное мясо и мясные ингредиенты 33% (телятина, птица)",
+        "рис",
+        "кукуруза",
+        "пшеничные отруби",
+        "животный жир"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 33,
+      "main_protein_sources": [
+        "телятина",
+        "птица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Мясо 33% (телятина — основа)",
+        "Российское производство"
+      ],
+      "cons": [
+        "Рис + кукуруза + пшеничные отруби",
+        "Обобщённые «мясные ингредиенты»"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=zooring+собак",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=zooring+собак",
+        "4paws": "4lapy.ru/search/?q=zooring+собак"
+      }
     }
   ]
 }
