@@ -200,6 +200,8 @@ async def _generate_dry_food_html(order: dict, diagnoses: list, stop_products: l
         diagnoses=diagnoses,
         stool=order["stool"],
         stop_products=stop_products,
+        pregnant=bool(order.get("pregnant")),
+        lactating=bool(order.get("lactating")),
     )
 
     selector = DryFoodSelector()

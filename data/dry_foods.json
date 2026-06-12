@@ -7037,6 +7037,1123 @@
         "wb": "wildberries.ru/catalog/0/search.aspx?search=zooring+собак",
         "4paws": "4lapy.ru/search/?q=zooring+собак"
       }
+    },
+    {
+      "id": "award_adult_all_beef_chicken",
+      "brand": "Award",
+      "name": "Adult All Breeds Beef & Chicken",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 470,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 25%",
+        "дегидрированное мясо говядины 8%",
+        "рис",
+        "овёс",
+        "зелёная чечевица"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 14,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 33,
+      "main_protein_sources": [
+        "курица",
+        "говядина"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Курица 25% + говядина 8% указаны",
+        "Глюкозамин/хондроитин для суставов",
+        "Рис и овёс — мягкие злаки"
+      ],
+      "cons": [
+        "Содержит курицу/говядину (частые аллергены)"
+      ],
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=award+говядина+курица",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=award+говядина+курица",
+        "4paws": "4lapy.ru/search/?q=award+говядина+курица"
+      }
+    },
+    {
+      "id": "award_adult_small_lamb_turkey",
+      "brand": "Award",
+      "name": "Adult Small Breeds Lamb & Turkey",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 500,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка",
+        "дегидрированное мясо индейки",
+        "рис",
+        "овёс",
+        "зелёная чечевица"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "ягнёнок",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Ягнёнок + индейка — без курицы/говядины",
+        "Для мелких пород",
+        "Рис и овёс"
+      ],
+      "cons": [
+        "Калорийный (жир 17%) — следить за весом малоактивных"
+      ],
+      "special_traits": [
+        "hypoallergenic"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=award+мелких+ягнёнок+индейка",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=award+мелких+ягнёнок+индейка",
+        "4paws": "4lapy.ru/search/?q=award+мелких+ягнёнок+индейка"
+      }
+    },
+    {
+      "id": "award_hypo_pork",
+      "brand": "Award",
+      "name": "HYPO Adult All Breeds Pork",
+      "country": "Россия",
+      "price_category": "premium",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рис",
+        "дегидрированное мясо свинины 28%",
+        "овёс",
+        "жир животный (свиной)",
+        "зелёная чечевица"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 13,
+      "fiber_pct": 2,
+      "ash_pct": 6,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "свинина"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Свинина — новый (необычный) белок, моно-протеин",
+        "Гипоаллергенный, без курицы/говядины/ягнёнка/рыбы",
+        "Брусника/груша/розмарин"
+      ],
+      "cons": [
+        "Лечебно-профилактический — при аллергии на свинину не подходит"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "single_protein"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef",
+        "lamb",
+        "fish"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=award+hypo+свинина",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=award+hypo+свинина",
+        "4paws": "4lapy.ru/search/?q=award+hypo+свинина"
+      }
+    },
+    {
+      "id": "award_puppy_turkey_chicken",
+      "brand": "Award",
+      "name": "Puppy / Pregnant & Lactating Turkey & Chicken",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 520,
+      "size_suitable": [
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо индейки 25%",
+        "дегидрированное мясо курицы 10%",
+        "рис",
+        "жир животный (свиной, куриный)",
+        "овёс"
+      ],
+      "protein_pct": 29,
+      "fat_pct": 19,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "индейка",
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Для щенков, беременных и кормящих сук",
+        "Индейка 25% + курица 10%, мясо 35%",
+        "Высокая калорийность для роста/лактации"
+      ],
+      "cons": [
+        "Содержит курицу (частый аллерген)"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=award+щенки+индейка+курица",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=award+щенки+индейка+курица",
+        "4paws": "4lapy.ru/search/?q=award+щенки+индейка+курица"
+      }
+    },
+    {
+      "id": "gemon_mini_adult_chicken",
+      "brand": "Gemon",
+      "name": "High Premium Mini Adult Chicken & Rice",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки",
+        "мясо и продукты животного происхождения (свежая курица)",
+        "масла и жиры",
+        "свекловичный жом",
+        "пивные дрожжи"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Для мелких пород",
+        "Свежая курица",
+        "Доступная цена"
+      ],
+      "cons": [
+        "Злаки на первом месте"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gemon+mini+adult",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gemon+mini+adult",
+        "4paws": "4lapy.ru/search/?q=gemon+mini+adult"
+      }
+    },
+    {
+      "id": "gemon_mini_puppy_junior",
+      "brand": "Gemon",
+      "name": "High Premium Mini Puppy & Junior Chicken & Turkey",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 400,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки",
+        "мясо и продукты животного происхождения (курица, индейка)",
+        "масла и жиры",
+        "свекловичный жом",
+        "рыбий жир"
+      ],
+      "protein_pct": 29,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "курица",
+        "индейка"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Для щенков и юниоров мелких пород",
+        "Повышенная калорийность для роста"
+      ],
+      "cons": [
+        "Злаки на первом месте"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gemon+mini+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gemon+mini+puppy",
+        "4paws": "4lapy.ru/search/?q=gemon+mini+puppy"
+      }
+    },
+    {
+      "id": "gemon_medium_lamb_rice",
+      "brand": "Gemon",
+      "name": "High Premium Medium Adult Lamb & Rice",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 360,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки",
+        "мясо и продукты животного происхождения (свежий ягнёнок)",
+        "масла и жиры",
+        "свекловичный жом",
+        "пивные дрожжи"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Ягнёнок — без курицы как основного белка",
+        "Один злак (рис)"
+      ],
+      "cons": [
+        "Злаки на первом месте"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gemon+medium+lamb",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gemon+medium+lamb",
+        "4paws": "4lapy.ru/search/?q=gemon+medium+lamb"
+      }
+    },
+    {
+      "id": "gemon_performance",
+      "brand": "Gemon",
+      "name": "High Premium Performance All Breeds Adult",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 380,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "злаки",
+        "мясо и продукты животного происхождения 30% (свежая курица 15%)",
+        "масла и жиры",
+        "свекловичный жом",
+        "пивные дрожжи"
+      ],
+      "protein_pct": 27,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Performance — для активных и рабочих собак (повышенная энергия)",
+        "Свежая курица 15%"
+      ],
+      "cons": [
+        "Злаки на первом месте"
+      ],
+      "special_traits": [
+        "performance"
+      ],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=gemon+performance",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=gemon+performance",
+        "4paws": "4lapy.ru/search/?q=gemon+performance"
+      }
+    },
+    {
+      "id": "jarvi_small_chicken_turkey_beef",
+      "brand": "Jarvi",
+      "name": "Adult Small Breeds Chicken/Turkey/Beef",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 15%",
+        "дегидрированное мясо индейки 10%",
+        "дегидрированное мясо говядины 10%",
+        "рис",
+        "ячмень"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 17,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "курица",
+        "индейка",
+        "говядина"
+      ],
+      "grain_sources": [
+        "рис",
+        "ячмень"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Три мяса с процентами",
+        "Для мелких пород",
+        "Рыбий жир (Омега-3)"
+      ],
+      "cons": [
+        "Содержит курицу/говядину"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=jarvi+мелких+говядина",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=jarvi+мелких+говядина",
+        "4paws": "4lapy.ru/search/?q=jarvi+мелких+говядина"
+      }
+    },
+    {
+      "id": "jarvi_puppy_small_lamb",
+      "brand": "Jarvi",
+      "name": "Puppy Small Breeds Lamb",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 580,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 15%",
+        "дегидрированное мясо индейки 12%",
+        "дегидрированное мясо говядины 8%",
+        "гидролизат белка ягнёнка 4%",
+        "рис"
+      ],
+      "protein_pct": 29,
+      "fat_pct": 18,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 35,
+      "main_protein_sources": [
+        "курица",
+        "индейка",
+        "говядина",
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Для щенков мелких пород",
+        "Глюкозамин/хондроитин",
+        "Омега-3 для развития"
+      ],
+      "cons": [
+        "Содержит курицу/говядину"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=jarvi+щенков+ягнёнок",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=jarvi+щенков+ягнёнок",
+        "4paws": "4lapy.ru/search/?q=jarvi+щенков+ягнёнок"
+      }
+    },
+    {
+      "id": "jarvi_sensitive_lamb",
+      "brand": "Jarvi",
+      "name": "Adult Small Sensitive Lamb (Monoprotein)",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 600,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо ягнёнка",
+        "рис",
+        "ячмень",
+        "жир (источник омега)",
+        "рыбий жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 15,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "рис",
+        "ячмень"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Моно-белок ягнёнок — для чувствительного пищеварения",
+        "Без курицы/говядины"
+      ],
+      "cons": [
+        "Один белок — при аллергии на ягнёнка не подходит"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "single_protein"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=jarvi+сенситив+ягнёнок",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=jarvi+сенситив+ягнёнок",
+        "4paws": "4lapy.ru/search/?q=jarvi+сенситив+ягнёнок"
+      }
+    },
+    {
+      "id": "rodnye_korma_beef",
+      "brand": "Родные корма",
+      "name": "Взрослые собаки, говядина с овощами",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 300,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясные ингредиенты (говядина 14%, курица 8%)",
+        "маис",
+        "пшеница",
+        "животный жир",
+        "гидролизат мясных белков"
+      ],
+      "protein_pct": 22,
+      "fat_pct": 10,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "говядина",
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Говядина 14% + курица 8%",
+        "Доступная цена, РФ"
+      ],
+      "cons": [
+        "Маис + пшеница",
+        "Невысокий белок (22%)"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=родные+корма+говядина",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=родные+корма+говядина",
+        "4paws": "4lapy.ru/search/?q=родные+корма+говядина"
+      }
+    },
+    {
+      "id": "miratorg_promeat_beef",
+      "brand": "Мираторг",
+      "name": "Pro Meat Adult Beef",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 360,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": true,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы",
+        "свежая говядина",
+        "картофель",
+        "горох",
+        "животный жир"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 40,
+      "main_protein_sources": [
+        "говядина",
+        "курица"
+      ],
+      "grain_sources": [],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Беззерновой (картофель/горох)",
+        "Высокое содержание мяса",
+        "Доступная цена, РФ"
+      ],
+      "cons": [
+        "Содержит курицу (частый аллерген)"
+      ],
+      "special_traits": [
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=мираторг+pro+meat+говядина",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=мираторг+pro+meat+говядина",
+        "4paws": "4lapy.ru/search/?q=мираторг+pro+meat+говядина"
+      }
+    },
+    {
+      "id": "miratorg_meat_beef",
+      "brand": "Мираторг",
+      "name": "Meat Adult Medium/Maxi Beef",
+      "country": "Россия",
+      "price_category": "budget",
+      "price_per_kg": 250,
+      "size_suitable": [
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мясо и мясные ингредиенты 28% (дегидр. курица 24%, свежая говядина 4%)",
+        "рис",
+        "кукуруза",
+        "животный жир",
+        "гороховый протеин"
+      ],
+      "protein_pct": 22,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "курица",
+        "говядина"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Самая доступная цена",
+        "Российское производство"
+      ],
+      "cons": [
+        "Невысокий белок (22%)",
+        "Курица как основной белок"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=мираторг+meat+говядина",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=мираторг+meat+говядина",
+        "4paws": "4lapy.ru/search/?q=мираторг+meat+говядина"
+      }
+    },
+    {
+      "id": "meglium_puppy",
+      "brand": "Meglium",
+      "name": "Puppy",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 320,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо",
+        "кукуруза",
+        "пшеница",
+        "куриный жир",
+        "свекловичный жом"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 18,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 28,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Для щенков",
+        "Повышенная калорийность для роста"
+      ],
+      "cons": [
+        "Кукуруза + пшеница",
+        "Обобщённое «дегидрированное мясо»"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=meglium+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=meglium+puppy",
+        "4paws": "4lapy.ru/search/?q=meglium+puppy"
+      }
+    },
+    {
+      "id": "meglium_sensible_fish_rice",
+      "brand": "Meglium",
+      "name": "Sensible Fish & Rice",
+      "country": "Италия",
+      "price_category": "budget",
+      "price_per_kg": 320,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукуруза",
+        "дегидрированное мясо",
+        "пшеница",
+        "рыбная мука 12%",
+        "рис 10%"
+      ],
+      "protein_pct": 24,
+      "fat_pct": 9,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "рыба"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "пшеница",
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": true,
+      "pros": [
+        "Рыба для чувствительного пищеварения",
+        "Низкий жир (9%) — для склонных к полноте"
+      ],
+      "cons": [
+        "Кукуруза + пшеница",
+        "Невысокое содержание мяса"
+      ],
+      "special_traits": [
+        "weight_control"
+      ],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=meglium+sensible+рыба",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=meglium+sensible+рыба",
+        "4paws": "4lapy.ru/search/?q=meglium+sensible+рыба"
+      }
+    },
+    {
+      "id": "zooring_mini_puppy_junior",
+      "brand": "ZooRing",
+      "name": "Mini Puppy & Junior Turkey/Chicken/Lamb",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 420,
+      "size_suitable": [
+        "mini",
+        "small"
+      ],
+      "age_suitable": [
+        "puppy"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо (индейка 17%, курица 15%, ягнёнок 4%)",
+        "кукуруза",
+        "рис",
+        "животный жир",
+        "свекловичный жом"
+      ],
+      "protein_pct": 28,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 36,
+      "main_protein_sources": [
+        "индейка",
+        "курица",
+        "ягнёнок"
+      ],
+      "grain_sources": [
+        "кукуруза",
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Для щенков, юниоров, беременных и кормящих мини-пород",
+        "Три мяса",
+        "Глюкозамин/хондроитин"
+      ],
+      "cons": [
+        "Содержит кукурузу и курицу"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=zooring+mini+puppy",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=zooring+mini+puppy",
+        "4paws": "4lapy.ru/search/?q=zooring+mini+puppy"
+      }
+    },
+    {
+      "id": "zooring_mini_active_duck",
+      "brand": "ZooRing",
+      "name": "Mini Active Dog Duck & Rice",
+      "country": "Россия",
+      "price_category": "mid",
+      "price_per_kg": 420,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо утки",
+        "рис",
+        "кукуруза",
+        "животный жир",
+        "свекловичный жом"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 16,
+      "fiber_pct": 3,
+      "ash_pct": 8,
+      "meat_estimate_pct": 30,
+      "main_protein_sources": [
+        "утка"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Active — для активных мелких собак",
+        "Утка как основной белок (без курицы-основы)"
+      ],
+      "cons": [
+        "Содержит кукурузу"
+      ],
+      "special_traits": [
+        "performance"
+      ],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=zooring+active+утка",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=zooring+active+утка",
+        "4paws": "4lapy.ru/search/?q=zooring+active+утка"
+      }
+    },
+    {
+      "id": "brit_premium_senior_l",
+      "brand": "Brit Premium",
+      "name": "Senior L (Large Breeds)",
+      "country": "Чехия",
+      "price_category": "mid",
+      "price_per_kg": 450,
+      "size_suitable": [
+        "large",
+        "giant"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "мука из мяса курицы и куриных субпродуктов 40%",
+        "рис",
+        "кукуруза",
+        "пшеница",
+        "куриный жир"
+      ],
+      "protein_pct": 26,
+      "fat_pct": 13,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 38,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "кукуруза",
+        "пшеница"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Для пожилых крупных пород",
+        "Умеренный жир (13%)",
+        "Масло лосося (Омега-3)"
+      ],
+      "cons": [
+        "Кукуруза + пшеница",
+        "Курица как основной белок"
+      ],
+      "special_traits": [
+        "joint_support"
+      ],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=brit+premium+senior",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=brit+premium+senior",
+        "4paws": "4lapy.ru/search/?q=brit+premium+senior"
+      }
+    },
+    {
+      "id": "monge_medium_senior_chicken",
+      "brand": "Monge",
+      "name": "Daily Line Medium Senior Chicken",
+      "country": "Италия",
+      "price_category": "mid",
+      "price_per_kg": 560,
+      "size_suitable": [
+        "medium"
+      ],
+      "age_suitable": [
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "дегидрированное мясо курицы 30%",
+        "рис",
+        "свежее мясо курицы 10%",
+        "овёс",
+        "куриный жир"
+      ],
+      "protein_pct": 25,
+      "fat_pct": 12,
+      "fiber_pct": 3,
+      "ash_pct": 7,
+      "meat_estimate_pct": 40,
+      "main_protein_sources": [
+        "курица"
+      ],
+      "grain_sources": [
+        "рис",
+        "овёс"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Для пожилых средних пород",
+        "Курица 40% (мясо)",
+        "Рис и овёс — мягкие злаки",
+        "Умеренный жир"
+      ],
+      "cons": [
+        "Курица как основной белок"
+      ],
+      "special_traits": [],
+      "allergens_absent": [],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=monge+medium+senior",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=monge+medium+senior",
+        "4paws": "4lapy.ru/search/?q=monge+medium+senior"
+      }
     }
   ]
 }

@@ -54,6 +54,8 @@ class DogProfileDry:
     stool: str = "good"
     stop_products: list[str] = field(default_factory=list)  # ["курица", "говядина"]
     size: str = ""          # mini / small / medium / large / giant (из породы)
+    pregnant: bool = False
+    lactating: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -256,6 +258,10 @@ class DryFoodSelector:
     # --- Возрастная категория ---
 
     def _age_category(self, dog: DogProfileDry) -> str:
+        # Беременным и кормящим нужен корм повышенной энергии — стандартно это
+        # формулы для щенков (рост/лактация), поэтому подбираем по puppy-категории.
+        if dog.pregnant or dog.lactating:
+            return "puppy"
         breed_info = self._breed_map.get(dog.breed)
         adult_months = 12
         senior_years = 8
@@ -373,6 +379,10 @@ class DryFoodSelector:
                 score += 8
             if "weight_control" in food.get("special_traits", []):
                 score += 5
+
+        # 7b. Активным/рабочим собакам — бонус performance-формулам (высокая энергия).
+        if dog.activity == "high" and "performance" in food.get("special_traits", []):
+            score += 8
 
         # 8. Суставы (бонус для крупных)
         if dog.size in ("large", "giant"):

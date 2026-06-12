@@ -210,10 +210,39 @@ def test_hydrolyzed_for_allergic():
     check("один стоп → гидролизата НЕТ (новобелковые лучше)", len(recs(["курица"], [])) == 0)
 
 
+# --- беременным/кормящим в сухом — щенячьи формулы ---
+def test_dry_pregnant_lactating():
+    print("test_dry_pregnant_lactating:")
+    from dry_food_selector import DryFoodSelector, DogProfileDry
+    sel = DryFoodSelector()
+    d = DogProfileDry(name="Т", breed="Лабрадор-ретривер", age_months=36, sex="female", neutered=False,
+                      weight_kg=28, condition="athletic", activity="moderate", pregnant=True)
+    check("беременная → age_category=puppy", sel._age_category(d) == "puppy")
+    recs = [x for c in ("budget", "mid", "premium") for x in getattr(sel.select(d), c)]
+    puppy = [x for x in recs if "puppy" in x.food.get("age_suitable", [])]
+    check("беременной подобраны щенячьи формулы", len(puppy) >= 1, f"{len(puppy)}/{len(recs)}")
+
+
+# --- performance-корма активным собакам скорятся выше ---
+def test_dry_performance_active():
+    print("test_dry_performance_active:")
+    from dry_food_selector import DryFoodSelector, DogProfileDry
+    sel = DryFoodSelector()
+    perf = next((f for f in sel.foods if "performance" in f.get("special_traits", [])), None)
+    check("performance-корм есть в базе", perf is not None)
+    if perf:
+        def sc(act):
+            d = DogProfileDry(name="Т", breed="Немецкая овчарка", age_months=36, sex="male", neutered=True,
+                              weight_kg=30, condition="athletic", activity=act)
+            return sel._score(perf, d)
+        check("performance активной (high) > умеренной", sc("high") > sc("moderate"))
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
               test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking,
-              test_unknown_breed, test_versioning, test_measure_legend, test_hydrolyzed_for_allergic):
+              test_unknown_breed, test_versioning, test_measure_legend, test_hydrolyzed_for_allergic,
+              test_dry_pregnant_lactating, test_dry_performance_active):
         try:
             t()
         except Exception as e:
