@@ -6379,6 +6379,272 @@
         "ozon": "ozon.ru/search/?text=sirius+puppy+с+ягнёнком+и+рисом",
         "wb": "wildberries.ru/catalog/0/search.aspx?search=sirius+puppy+с+ягнёнком+и+рисом"
       }
+    },
+    {
+      "id": "royal_canin_anallergenic",
+      "brand": "Royal Canin",
+      "name": "Veterinary Anallergenic",
+      "country": "Франция",
+      "price_category": "premium",
+      "price_per_kg": 1450,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукурузный крахмал",
+        "гидролизат пера (низкомолекулярный)",
+        "кокосовое масло",
+        "соевое масло",
+        "свекловичный жом"
+      ],
+      "protein_pct": 18,
+      "fat_pct": 16,
+      "fiber_pct": 2,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "гидролизат пера"
+      ],
+      "grain_sources": [
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Гидролизат пера — белок расщеплён до олигопептидов, не распознаётся иммунитетом",
+        "Для собак с аллергией сразу на несколько белков",
+        "Назначается при тяжёлой пищевой аллергии/атопии"
+      ],
+      "cons": [
+        "Лечебная диета — давать по назначению ветврача",
+        "Высокая цена",
+        "Содержит кукурузный крахмал"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "hydrolyzed"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef",
+        "lamb",
+        "fish",
+        "wheat"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=royal+canin+anallergenic",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=royal+canin+anallergenic",
+        "4paws": "4lapy.ru/search/?q=royal+canin+anallergenic"
+      }
+    },
+    {
+      "id": "proplan_vet_ha_hydrolyzed",
+      "brand": "Pro Plan Veterinary",
+      "name": "HA Hydrolyzed Canine",
+      "country": "США/Италия",
+      "price_category": "premium",
+      "price_per_kg": 1150,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "puppy",
+        "adult",
+        "senior"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукурузный крахмал",
+        "гидролизат изолята соевого белка",
+        "кокосовое масло",
+        "рапсовое масло",
+        "целлюлоза"
+      ],
+      "protein_pct": 18,
+      "fat_pct": 9,
+      "fiber_pct": 4,
+      "ash_pct": 7,
+      "meat_estimate_pct": 12,
+      "main_protein_sources": [
+        "гидролизат сои"
+      ],
+      "grain_sources": [
+        "кукуруза"
+      ],
+      "preservatives": "TBHQ",
+      "splitting_detected": false,
+      "pros": [
+        "Гидролизованный соевый белок — гипоаллергенный",
+        "Все стадии жизни",
+        "МСТ (кокосовое масло)"
+      ],
+      "cons": [
+        "Лечебная диета — по назначению ветврача",
+        "Растительный белок (соя)",
+        "Содержит кукурузный крахмал"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "hydrolyzed"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef",
+        "lamb",
+        "fish",
+        "wheat"
+      ],
+      "availability_ru": "unstable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=pro+plan+ha+hydrolyzed",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=pro+plan+ha+hydrolyzed",
+        "4paws": "4lapy.ru/search/?q=pro+plan+ha+hydrolyzed"
+      }
+    },
+    {
+      "id": "hills_zd_hydrolyzed",
+      "brand": "Hills",
+      "name": "Prescription Diet z/d Food Sensitivities",
+      "country": "США/Нидерланды",
+      "price_category": "premium",
+      "price_per_kg": 1150,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "кукурузный крахмал",
+        "гидролизат куриной печени",
+        "гидролизат курицы",
+        "молотая скорлупа пекана",
+        "целлюлоза"
+      ],
+      "protein_pct": 15,
+      "fat_pct": 11,
+      "fiber_pct": 8,
+      "ash_pct": 7,
+      "meat_estimate_pct": 20,
+      "main_protein_sources": [
+        "гидролизат курицы"
+      ],
+      "grain_sources": [
+        "кукуруза"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Сильно гидролизованный белок — не распознаётся иммунитетом",
+        "Омега-3/6 для кожи",
+        "Для пищевой аллергии и непереносимости"
+      ],
+      "cons": [
+        "Лечебная диета — по назначению ветврача",
+        "Высокая клетчатка",
+        "Содержит кукурузный крахмал"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "hydrolyzed",
+        "skin_coat"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef",
+        "lamb",
+        "fish",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "unstable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=hills+z%2Fd",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=hills+z%2Fd",
+        "4paws": "4lapy.ru/search/?q=hills+z%2Fd"
+      }
+    },
+    {
+      "id": "farmina_vetlife_ultrahypo",
+      "brand": "Farmina Vet Life",
+      "name": "UltraHypo Canine",
+      "country": "Италия",
+      "price_category": "premium",
+      "price_per_kg": 1050,
+      "size_suitable": [
+        "mini",
+        "small",
+        "medium",
+        "large"
+      ],
+      "age_suitable": [
+        "adult"
+      ],
+      "grain_free": false,
+      "ingredients_top5": [
+        "рисовый крахмал",
+        "гидролизат рыбного белка",
+        "рыбий жир",
+        "хлорид калия",
+        "карбонат кальция"
+      ],
+      "protein_pct": 18,
+      "fat_pct": 15,
+      "fiber_pct": 1,
+      "ash_pct": 5,
+      "meat_estimate_pct": 22,
+      "main_protein_sources": [
+        "гидролизат рыбы"
+      ],
+      "grain_sources": [
+        "рис"
+      ],
+      "preservatives": "натуральные (токоферолы)",
+      "splitting_detected": false,
+      "pros": [
+        "Гидролизат рыбы + рисовый крахмал — без кукурузы/пшеницы/сои",
+        "Моно-белок, элиминационная диета",
+        "Высокие Омега-3 (рыбий жир)"
+      ],
+      "cons": [
+        "Лечебная диета — по назначению ветврача",
+        "Высокая цена"
+      ],
+      "special_traits": [
+        "hypoallergenic",
+        "hydrolyzed",
+        "grain_free"
+      ],
+      "allergens_absent": [
+        "chicken",
+        "beef",
+        "lamb",
+        "fish",
+        "corn",
+        "wheat",
+        "soy"
+      ],
+      "availability_ru": "stable",
+      "buy_links": {
+        "ozon": "ozon.ru/search/?text=farmina+vet+life+ultrahypo",
+        "wb": "wildberries.ru/catalog/0/search.aspx?search=farmina+vet+life+ultrahypo",
+        "4paws": "4lapy.ru/search/?q=farmina+vet+life+ultrahypo"
+      }
     }
   ]
 }

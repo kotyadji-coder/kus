@@ -192,10 +192,28 @@ def test_measure_legend():
     check("средняя Рекс 34кг → блок ложек СКРЫТ", not has_legend("Рекс"))
 
 
+# --- гидролизат всплывает мульти-аллергику, не обычной собаке ---
+def test_hydrolyzed_for_allergic():
+    print("test_hydrolyzed_for_allergic:")
+    from dry_food_selector import DryFoodSelector, DogProfileDry
+
+    def recs(stop, diag):
+        d = DogProfileDry(name="Т", breed="Лабрадор-ретривер", age_months=36, sex="male", neutered=True,
+                          weight_kg=30, condition="athletic", activity="moderate", diagnoses=diag, stop_products=stop)
+        r = DryFoodSelector().select(d)
+        rs = [x for c in ("budget", "mid", "premium") for x in getattr(r, c)]
+        return [x for x in rs if "hydrolyzed" in x.food.get("special_traits", [])]
+
+    check("аллергик → есть гидролизат", len(recs([], ["аллергия"])) >= 1)
+    check("стоп на 2+ белка → есть гидролизат", len(recs(["курица", "говядина"], [])) >= 1)
+    check("обычная собака → гидролизата НЕТ", len(recs([], [])) == 0)
+    check("один стоп → гидролизата НЕТ (новобелковые лучше)", len(recs(["курица"], [])) == 0)
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
               test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking,
-              test_unknown_breed, test_versioning, test_measure_legend):
+              test_unknown_breed, test_versioning, test_measure_legend, test_hydrolyzed_for_allergic):
         try:
             t()
         except Exception as e:

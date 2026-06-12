@@ -352,12 +352,20 @@ class DryFoodSelector:
         elif avail == "unstable":
             score += 3
 
-        # 6. Гипоаллергенность (бонус если у собаки аллергия)
-        if any("аллерг" in d.lower() for d in dog.diagnoses):
-            if "hypoallergenic" in food.get("special_traits", []):
+        # 6. Гипоаллергенность. «Тяжёлая аллергия» = диагноз аллергии ИЛИ стоп на
+        # ≥2 белка (мульти-аллергик). Для таких собак гидролизат — самый безопасный
+        # вариант (белок расщеплён), но он низкомясный и иначе проигрывает по %мяса,
+        # поэтому сильно поднимаем, чтобы он гарантированно был в опциях.
+        high_allergy = (any("аллерг" in d.lower() for d in dog.diagnoses)
+                        or len(dog.stop_products) >= 2)
+        traits = food.get("special_traits", [])
+        if high_allergy:
+            if "hypoallergenic" in traits:
                 score += 10
-            if "single_protein" in food.get("special_traits", []):
+            if "single_protein" in traits:
                 score += 5
+            if "hydrolyzed" in traits:
+                score += 25  # гарантируем гидролизат в подборке тяжёлым аллергикам
 
         # 7. Контроль веса (бонус для толстых собак)
         if dog.condition in ("chubby", "obese"):
@@ -398,8 +406,11 @@ class DryFoodSelector:
         cons = []
         meat = food.get("meat_estimate_pct", 0)
 
-        # Мясо
-        if meat >= 55:
+        # Мясо. Для гидролизатных лечебных диет %мяса не применим (белок расщеплён,
+        # это не мускульное мясо) — не считаем «мало мяса» минусом.
+        if "hydrolyzed" in food.get("special_traits", []):
+            pros.append("Лечебный гидролизат — белок расщеплён, гипоаллергенный")
+        elif meat >= 55:
             pros.append(f"{meat}% мяса — отличный показатель")
         elif meat >= 40:
             pros.append(f"{meat}% мяса — хороший показатель")
