@@ -169,10 +169,33 @@ def test_versioning():
     check("git_commit непустой и не '?'", bool(c) and c != "?", repr(c))
 
 
+# --- блок «как отмерить ложками» — только мелким (макс. порция < 90 г) ---
+def test_measure_legend():
+    print("test_measure_legend:")
+    from calculator import DietCalculator, DogProfile
+    from pdf_generator import generate_html
+    from evals import PROFILES
+    calc = DietCalculator()
+
+    def has_legend(name):
+        p = next(x for x in PROFILES if x["name"] == name)
+        d = DogProfile(name=p["name"], breed=p["breed"], age_months=p["age_months"], sex=p["sex"],
+                       neutered=p["neutered"], weight_kg=p["weight_kg"], current_food="dry",
+                       condition=p["condition"], activity=p["activity"], diagnoses=p.get("diagnoses", []),
+                       stool=p.get("stool", "good"), diet_type=p["diet_type"], budget=p["budget"],
+                       stop_products=p.get("stop_products", []))
+        return "Как отмерить без весов" in generate_html(calc.calculate(d))
+
+    check("мелкая Тоша 1.5кг → блок ложек ЕСТЬ", has_legend("Тоша"))
+    check("мелкая Зоя 2кг → блок ложек ЕСТЬ", has_legend("Зоя"))
+    check("крупная Граф 60кг → блок ложек СКРЫТ", not has_legend("Граф"))
+    check("средняя Рекс 34кг → блок ложек СКРЫТ", not has_legend("Рекс"))
+
+
 def main():
     for t in (test_orders_qa_columns, test_rubric, test_ca_p_effective,
               test_overweight_never_gains, test_dry_stop_filter, test_fallback_tracking,
-              test_unknown_breed, test_versioning):
+              test_unknown_breed, test_versioning, test_measure_legend):
         try:
             t()
         except Exception as e:
