@@ -7,7 +7,22 @@
       "Bash(git reset *)",
       "Bash(kill 509391 509361)",
       "Bash(rm -f .git/index.lock)",
-      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@5.42.101.215 'echo ssh-OK; cd /opt/kus && git log -1 --format=\"%h %s\"')"
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@5.42.101.215 'echo ssh-OK; cd /opt/kus && git log -1 --format=\"%h %s\"')",
+      "WebSearch",
+      "WebFetch(domain:www.chewy.com)",
+      "WebFetch(domain:www.zooplus.com)",
+      "WebFetch(domain:www.zooplus.co.uk)",
+      "WebFetch(domain:mongebestforbreeders.com)",
+      "WebFetch(domain:food4dogs.ru)",
+      "WebFetch(domain:zoomag.ru)",
+      "WebFetch(domain:petobzor.com)",
+      "WebFetch(domain:miratorg.ru)",
+      "WebFetch(domain:xn--c1ahdudao.xn--p1ai)",
+      "WebFetch(domain:jarvi-elaman.ru)",
+      "WebFetch(domain:www.zoogastronom.ru)",
+      "WebFetch(domain:holistic-shop.ru)",
+      "WebFetch(domain:www.korma55.ru)",
+      "WebFetch(domain:valta.ru)"
     ]
   }
 }
