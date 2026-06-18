@@ -101,6 +101,7 @@ class DayMenu:
     day_name: str
     morning: list[MealPortion]
     evening: list[MealPortion]
+    midday: list[MealPortion] = field(default_factory=list)  # 3-е кормление (гиганты/гастрит)
 
 
 @dataclass
@@ -170,7 +171,7 @@ class DietCalculator:
         mer_coeff = self._calc_mer_coefficient(dog, breed_info)
         mer = rer * mer_coeff
         daily_grams = self._calc_daily_grams(dog, ideal_weight)
-        meals_per_day = self._calc_meals_per_day(dog)
+        meals_per_day = self._calc_meals_per_day(dog, breed_info)
         distribution = self._calc_distribution(dog, daily_grams)
         product_plan = self._select_products(dog, distribution)
         ca_total, p_total = self._calc_ca_p(product_plan)
@@ -358,7 +359,7 @@ class DietCalculator:
 
     # --- Количество кормлений ---
 
-    def _calc_meals_per_day(self, dog: DogProfile) -> int:
+    def _calc_meals_per_day(self, dog: DogProfile, breed_info: Optional[dict] = None) -> int:
         if dog.age_months < 4:
             return 4
         elif dog.age_months < 6:
@@ -367,6 +368,10 @@ class DietCalculator:
             return 2
         else:
             if "gastritis" in self._normalize_diagnoses(dog.diagnoses):
+                return 3
+            # Крупные/гигантские породы — глубокая грудь, повышенный риск заворота
+            # желудка (GDV). Дробим на 3 приёма меньшего объёма вместо 2 больших.
+            if breed_info and breed_info.get("size") in ("large", "giant"):
                 return 3
             return 2
 
@@ -800,6 +805,10 @@ class DietCalculator:
         if dog.age_months < 6 and breed_info and breed_info.get("size") in ("large", "giant"):
             warnings.append("Щенок крупной породы — избегайте избытка кальция. Кости осторожно, лучше костная мука в строгой дозировке.")
 
+        if dog.age_months >= 12 and breed_info and breed_info.get("size") in ("large", "giant"):
+            warnings.append("Крупная порода — повышенный риск заворота желудка. Кормите 2-3 раза в день небольшими порциями, "
+                            "не давайте пить залпом и не нагружайте собаку 1-1.5 часа до и после еды. Удобна миска на подставке.")
+
         if breed_info and breed_info.get("obesity_prone") and dog.condition in ("chubby", "obese"):
             warnings.append(f"Порода {dog.breed} склонна к ожирению. Строго следите за порциями и не давайте лакомства сверх нормы.")
 
@@ -844,6 +853,20 @@ class DietCalculator:
         organs_daily = self._round_g(dist.get("organs", 0))
         veg_daily = self._round_g(dist.get("vegetables", 0))
         dairy_daily = self._round_g(dist.get("dairy", 0))
+
+        # Яйца — раскладываем НЕДЕЛЬНЫЙ бюджет (из distribution) по дням, а не
+        # хардкодим 15/30 г: иначе крохе 2 кг достаётся ~4× нормы яйца за неделю
+        # (целое яйцо ≈ дневная калорийность), а гиганту, наоборот, мало. Дни
+        # яйца и размер порции выводим из бюджета — так меню сходится со сводкой.
+        EGG_PIECE_G = 60.0  # вес куриного яйца (ср. pdf_generator.EGG_PIECE_GRAMS)
+        egg_weekly = dist.get("eggs", 0) * 7
+        if egg_weekly > 0:
+            # минимум четверть яйца за подачу, максимум 4 дня (пн/ср/пт/вс)
+            n_egg_days = min(4, max(1, int(egg_weekly / (EGG_PIECE_G * 0.25))))
+            egg_days = set([0, 2, 4, 6][:n_egg_days])
+            egg_serving = round(egg_weekly / n_egg_days)
+        else:
+            egg_days, egg_serving = set(), 0
 
         menu = []
         for i, day_name in enumerate(days):
@@ -916,11 +939,11 @@ class DietCalculator:
                 evening.append(MealPortion(v["product_id"], v["product_name"],
                     self._round_g(veg_daily / 2), "vegetables"))
 
-            # Яйца — вечером, 4 раза в неделю (пн, ср, пт, вс)
-            if eggs and i in (0, 2, 4, 6):
+            # Яйца — вечером, по недельному бюджету (egg_days / egg_serving выше)
+            if eggs and i in egg_days and egg_serving > 0:
                 e = eggs[0]
                 evening.append(MealPortion(e["product_id"], e["product_name"],
-                    self._round_g(15 if dog.weight_kg < 15 else 30), "eggs"))
+                    egg_serving, "eggs"))
 
             # Кисломолочка — вечером, когда не было утром (вт, чт, сб) + воскресенье
             if dairy and len(dairy) > 1 and (i % 2 == 1 or i == 6):
@@ -928,7 +951,17 @@ class DietCalculator:
                 evening.append(MealPortion(d["product_id"], d["product_name"],
                     self._round_g(dairy_daily), "dairy"))
 
-            menu.append(DayMenu(day_name=day_name, morning=morning, evening=evening))
+            # 3 кормления (крупные/гигантские породы — риск заворота; гастрит):
+            # дробим вечерний приём на «День» + «Вечер» меньшего объёма (утро не
+            # трогаем). Так в миске за раз меньше еды. Для 2-разовых midday пуст.
+            midday = []
+            if meals_per_day >= 3 and evening:
+                midday = [MealPortion(p.product_id, p.product_name,
+                                      self._round_g(p.grams / 2), p.group) for p in evening]
+                evening = [MealPortion(p.product_id, p.product_name,
+                                       max(1, round(p.grams - self._round_g(p.grams / 2))), p.group)
+                           for p in evening]
+            menu.append(DayMenu(day_name=day_name, morning=morning, evening=evening, midday=midday))
 
         return menu
 

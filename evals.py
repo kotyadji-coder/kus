@@ -100,7 +100,7 @@ def run_evals() -> list[dict]:
 
         violated = []
         for day in result.weekly_menu:
-            for p in day.morning + day.evening:
+            for p in day.morning + getattr(day, 'midday', []) + day.evening:
                 if is_stopped(p.product_name, roots):
                     violated.append(f"{day.day_name}: {p.product_name}")
 
@@ -114,7 +114,7 @@ def run_evals() -> list[dict]:
         total += 1
         day_totals = []
         for day in result.weekly_menu:
-            total_g = sum(p.grams for p in day.morning) + sum(p.grams for p in day.evening)
+            total_g = sum(p.grams for p in day.morning) + sum(p.grams for p in getattr(day, 'midday', [])) + sum(p.grams for p in day.evening)
             day_totals.append(total_g)
         avg = sum(day_totals) / len(day_totals) if day_totals else 0
         max_dev = max(abs(t - avg) / avg * 100 for t in day_totals) if avg > 0 else 0
@@ -155,7 +155,7 @@ def run_evals() -> list[dict]:
 
         # 7. Есть продукты в меню (не пустое)
         total += 1
-        total_products = sum(len(d.morning) + len(d.evening) for d in result.weekly_menu)
+        total_products = sum(len(d.morning) + len(getattr(d, 'midday', [])) + len(d.evening) for d in result.weekly_menu)
         if total_products >= 14:  # минимум 2 продукта на день
             checks.append(("Наполненность меню", "ok", f"{total_products} позиций за неделю"))
             passed += 1

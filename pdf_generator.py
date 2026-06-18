@@ -106,12 +106,23 @@ def _egg_piece_weight(product_id: str = "", product_name: str = "") -> int:
     return 60  # куриное по умолчанию
 
 
+def _fmt_egg_count(count: float) -> str:
+    """Штуки яиц с точностью до четверти (минимум ¼): ¼ / ½ / 1¼ и т.д.
+    Целое яйцо для собаки на 50 г/день — это перебор, поэтому крошечные порции
+    показываем дробью, а не округляем вверх до целого (раньше было max(1, round))."""
+    q = max(1, round(count * 4))  # в четвертях, минимум четверть
+    whole, frac = divmod(q, 4)
+    frac_str = {0: "", 1: "¼", 2: "½", 3: "¾"}[frac]
+    if whole == 0:
+        return frac_str
+    return f"{whole}{frac_str}"
+
+
 def _fmt_egg_or_grams(grams: float, product_id: str = "", product_name: str = "") -> str:
     """Форматирует количество: яйца в штуках, остальное в граммах."""
     if _is_egg(product_id, product_name):
         piece = _egg_piece_weight(product_id, product_name)
-        count = max(1, round(grams / piece))
-        return f"{count} шт."
+        return f"{_fmt_egg_count(grams / piece)} шт."
     return _fmt_grams(grams)
 
 
@@ -302,10 +313,9 @@ def generate_html(result: DietResult) -> str:
         pct = (grams / total_grams * 100) if total_grams > 0 else 0
         if group == "eggs":
             # Яйца дают 2-3 раза в неделю, не каждый день
-            # Считаем сколько штук в неделю (daily * 7 / вес_яйца)
+            # Считаем сколько штук в неделю (daily * 7 / вес_яйца), с точностью до ¼
             weekly_grams = grams * 7
-            egg_count = max(1, round(weekly_grams / 60))
-            g_display = f"{egg_count} шт./нед."
+            g_display = f"{_fmt_egg_count(weekly_grams / 60)} шт./нед."
         else:
             g_display = f"{int(grams)} г"
         distribution_rows += f'<div class="group-row"><span class="sw" style="background:{color};display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:6px;"></span><span class="nm">{label}</span> <span class="g" style="float:right;">{g_display}</span></div>\n'
@@ -345,25 +355,34 @@ def generate_html(result: DietResult) -> str:
     def _menu_card(day_menu) -> str:
         is_fish = day_menu.day_name in FISH_DAYS
         cls = ' special' if is_fish else ''
+        midday_portions = getattr(day_menu, 'midday', [])
         morning_total = sum(p.grams for p in day_menu.morning)
+        midday_total = sum(p.grams for p in midday_portions)
         evening_total = sum(p.grams for p in day_menu.evening)
-        day_total = int(morning_total + evening_total)
+        day_total = int(morning_total + midday_total + evening_total)
 
         tag = f'<div class="day-tag">{day_total} г</div>'
         if is_fish:
             tag = f'<div class="day-tag fish">Рыбный&nbsp;день</div>'
 
-        morning_items = ""
-        for p in day_menu.morning:
-            if p.grams > 0:
-                g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
-                morning_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
+        def _items_html(portions):
+            html = ""
+            for p in portions:
+                if p.grams > 0:
+                    g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
+                    html += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
+            return html
 
-        evening_items = ""
-        for p in day_menu.evening:
-            if p.grams > 0:
-                g_str = _fmt_egg_or_grams(p.grams, p.product_id, p.product_name)
-                evening_items += f'<div class="item"><span class="nm">{p.product_name}</span><span class="leader"></span><span class="g">{g_str}</span></div>\n'
+        morning_items = _items_html(day_menu.morning)
+        midday_items = _items_html(midday_portions)
+        evening_items = _items_html(day_menu.evening)
+
+        midday_block = ""
+        if midday_items:
+            midday_block = f'''<div class="meal-block">
+        <div class="meal-time midday"><span class="dot"></span> День</div>
+        {midday_items}
+      </div>'''
 
         return f'''<div class="day{cls}">
       <div class="day-head"><div class="day-name">{day_menu.day_name}</div>{tag}</div>
@@ -371,6 +390,7 @@ def generate_html(result: DietResult) -> str:
         <div class="meal-time"><span class="dot"></span> Утро</div>
         {morning_items}
       </div>
+      {midday_block}
       <div class="meal-block">
         <div class="meal-time evening"><span class="dot"></span> Вечер</div>
         {evening_items}
@@ -411,7 +431,7 @@ def generate_html(result: DietResult) -> str:
     _SWAPPABLE = {"duck": "Утку", "rabbit": "Кролика", "lamb": "Баранину"}
     _used_swap = []
     for _d in result.weekly_menu:
-        for _p in _d.morning + _d.evening:
+        for _p in _d.morning + getattr(_d, 'midday', []) + _d.evening:
             if _p.product_id in _SWAPPABLE and _SWAPPABLE[_p.product_id] not in _used_swap:
                 _used_swap.append(_SWAPPABLE[_p.product_id])
     swap_note = ""
@@ -429,7 +449,7 @@ def generate_html(result: DietResult) -> str:
 
     # Week summary card
     total_week_grams = sum(
-        sum(p.grams for p in d.morning) + sum(p.grams for p in d.evening)
+        sum(p.grams for p in d.morning) + sum(p.grams for p in getattr(d, 'midday', [])) + sum(p.grams for p in d.evening)
         for d in menu_days
     )
     week_summary = f'''<div class="day" style="background: var(--bg-soft); border-style: dashed;">
@@ -443,7 +463,7 @@ def generate_html(result: DietResult) -> str:
     # --- Shopping list ---
     shopping = {}
     for day_menu in result.weekly_menu:
-        for portion in day_menu.morning + day_menu.evening:
+        for portion in day_menu.morning + getattr(day_menu, 'midday', []) + day_menu.evening:
             if portion.product_name not in shopping:
                 shopping[portion.product_name] = {"grams": 0, "group": portion.group, "product_id": portion.product_id}
             shopping[portion.product_name]["grams"] += portion.grams
@@ -997,6 +1017,7 @@ p {{ margin: 0; }}
   display: flex; align-items: center; gap: 6px;
 }}
 .meal-time .dot {{ width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }}
+.meal-time.midday .dot {{ background: #f59e0b; }}
 .meal-time.evening .dot {{ background: var(--primary); }}
 
 .item {{
@@ -1481,7 +1502,7 @@ p {{ margin: 0; }}
     <td class="metric">
       <div class="lbl">Кормлений</div>
       <div class="val">{result.meals_per_day}<span class="unit">раза</span></div>
-      <div class="sub">утро · вечер</div>
+      <div class="sub">{'утро · день · вечер' if result.meals_per_day >= 3 else 'утро · вечер'}</div>
     </td>
     <td class="metric">
       <div class="lbl">Целевой вес</div>
