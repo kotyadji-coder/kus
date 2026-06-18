@@ -23,7 +23,7 @@ canary_out="$($PY tools/canary.py 2>&1)";        canary_rc=$?
 snap_out="$($PY tools/snapshot.py 2>&1)";         snap_rc=$?
 gate_out="$($PY tools/gate_reconcile.py 2>&1)";   gate_rc=$?
 fuzz_out="$($PY tools/fuzz.py "$FUZZ_N" "$(date +%j)" 2>&1)"; fuzz_rc=$?
-fuzz_head="$(echo "$fuzz_out" | head -1)"
+fuzz_head="$(echo "$fuzz_out" | head -1 | sed 's/^Фаззинг: //')"
 
 emoji() { [ "$1" -eq 0 ] && echo "✅" || echo "🔴"; }
 overall=$(( canary_rc | snap_rc | gate_rc | fuzz_rc ))
@@ -47,14 +47,17 @@ if [ $overall -ne 0 ]; then
 $details"
 fi
 
-echo "$msg"
+# Дайджест — в stdout (его забирает оркестратор на Амстердаме и шлёт в Telegram,
+# т.к. у 5.42 заблокирован egress на api.telegram.org). Попытку прямой отправки
+# оставляем для случая запуска на хосте С доступом — статус идёт в stderr, чтобы
+# не засорять «чистый» дайджест в stdout.
+printf '%s\n' "$msg"
 if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
-  curl -s --max-time 20 "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
-    --data-urlencode "chat_id=${TG_CHAT}" \
-    --data-urlencode "text=${msg}" >/dev/null \
-    && echo "[nightly] дайджест отправлен в Telegram" \
-    || echo "[nightly] не смог отправить в Telegram"
-else
-  echo "[nightly] BOT_TOKEN/ADMIN_TELEGRAM_ID не заданы — дайджест только в лог"
+  if curl -s --max-time 20 "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+       --data-urlencode "chat_id=${TG_CHAT}" --data-urlencode "text=${msg}" >/dev/null 2>&1; then
+    echo "[nightly] дайджест отправлен в Telegram напрямую" >&2
+  else
+    echo "[nightly] прямая отправка не удалась (ожидаемо на 5.42) — пусть шлёт оркестратор" >&2
+  fi
 fi
 exit $overall
