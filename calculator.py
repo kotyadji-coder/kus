@@ -174,6 +174,10 @@ class DietCalculator:
         meals_per_day = self._calc_meals_per_day(dog, breed_info)
         distribution = self._calc_distribution(dog, daily_grams)
         product_plan = self._select_products(dog, distribution)
+        # Согласование: если стоп-лист/аллергия выкосили ВСЮ группу (напр. субпродукты
+        # — в базе только говяжьи/куриные), её граммы нельзя терять. Переносим в мясо
+        # и обнуляем в распределении, чтобы сводка-диаграмма и меню сходились.
+        distribution, wiped_groups = self._reconcile_wiped_groups(distribution, product_plan)
         ca_total, p_total = self._calc_ca_p(product_plan)
         ca_p_ratio = ca_total / p_total if p_total > 0 else 0
         distribution, product_plan, ca_total, p_total, ca_p_ratio = self._balance_ca_p(
@@ -185,11 +189,39 @@ class DietCalculator:
         ca_p_ratio_effective = (ca_total + ca_added) / p_total if p_total > 0 else ca_p_ratio
         transition = self._calc_transition(dog)
         warnings = self._generate_warnings(dog, breed_info, ca_p_ratio)
-        weekly_menu = self._generate_weekly_menu(dog, product_plan, meals_per_day)
+        weekly_menu = self._generate_weekly_menu(dog, product_plan, meals_per_day, distribution)
         cost_day = self._calc_cost(product_plan)
         cooking_tips = self._calc_cooking_tips(dog, product_plan) if dog.diet_type == "cooked" else []
         meal_prep = self._calc_meal_prep(dog, daily_grams, meals_per_day)
         puppy_note = self._calc_puppy_recalc(dog, breed_info)
+
+        # Восполнение питательного пробела от выпавших стоп-листом групп.
+        # Субпродукты (печень/сердце) — ключевой источник вит. A, B12, меди, таурина;
+        # если их вырезал стоп-лист, предупреждаем и рекомендуем замену/добавку.
+        if "organs" in wiped_groups:
+            warnings.append(
+                "Субпродукты (печень, сердце) исключены: в базе они только говяжьи и "
+                "куриные, а оба попали в стоп-лист. Их доля перенесена в мясо, но печень — "
+                "главный источник витамина A, B12, меди и таурина. Добавьте субпродукты "
+                "ДРУГОГО животного (индейка, кролик, баранина — не из стоп-листа) 1–2 раза "
+                "в неделю ИЛИ витаминный комплекс с A и B12."
+            )
+            supplements.append({
+                "name": "Замена субпродуктов (вит. A + B12)",
+                "dosage": "субпродукты др. животного 1–2 раза/нед или комплекс по инструкции",
+                "frequency": "1–2 раза в неделю",
+                "notes": "Печень/сердце убраны стоп-листом. Источник витамина A, B12, меди и "
+                         "таурина: печень индейки/кролика/баранины (не из стоп-листа) либо "
+                         "аптечный витаминный комплекс с A и группой B.",
+            })
+        elif wiped_groups:
+            labels = {"vegetables": "овощи", "dairy": "кисломолочка", "muscle_meat": "мясо",
+                      "raw_meaty_bones": "кости", "eggs": "яйца"}
+            names = ", ".join(labels.get(g, g) for g in wiped_groups)
+            warnings.append(
+                f"Группа «{names}» исключена стоп-листом целиком — её доля перенесена в мясо. "
+                f"Подберите альтернативный источник вне стоп-листа, чтобы рацион оставался разнообразным."
+            )
 
         # Беременность/лактация — дополнительные предупреждения
         if dog.pregnant:
@@ -819,7 +851,32 @@ class DietCalculator:
 
     # --- Недельное меню ---
 
-    def _generate_weekly_menu(self, dog: DogProfile, product_plan: dict, meals_per_day: int) -> list[DayMenu]:
+    def _reconcile_wiped_groups(self, distribution: dict, product_plan: dict) -> tuple[dict, list]:
+        """Группы, у которых в распределении есть граммы, но стоп-лист/фильтры не
+        оставили ни одного продукта (product_plan пуст), нельзя молча терять: иначе
+        круговая диаграмма показывает группу, а в меню и списке покупок её нет
+        (тихий недокорм + врущая диаграмма). Переносим их граммы в мясо (основу
+        рациона) и обнуляем группу — так сводка и меню снова сходятся.
+
+        Возвращает (согласованное_распределение, список_выпавших_групп)."""
+        wiped = [g for g, grams in distribution.items()
+                 if grams > 0 and not product_plan.get(g)]
+        if not wiped:
+            return distribution, []
+
+        moved = sum(distribution[g] for g in wiped)
+        dist = dict(distribution)
+        for g in wiped:
+            dist[g] = 0
+        # Переносим в мясо; если мяса нет — в первую непустую группу.
+        sink = "muscle_meat" if product_plan.get("muscle_meat") else \
+            next((g for g in dist if product_plan.get(g)), None)
+        if sink:
+            dist[sink] = self._round_g(dist[sink] + moved)
+        return dist, wiped
+
+    def _generate_weekly_menu(self, dog: DogProfile, product_plan: dict, meals_per_day: int,
+                              distribution: dict) -> list[DayMenu]:
         """Генерирует 7-дневное меню.
 
         Принципы:
@@ -844,9 +901,12 @@ class DietCalculator:
         oils = product_plan.get("oils_supplements", [])
         fish_db = self.products_db.get("fish", [])
 
-        # Суточные нормы по группам (из distribution)
-        dist = self._calc_distribution(dog, self._calc_daily_grams(dog,
-            self._calc_ideal_weight(dog, self._get_breed_info(dog))))
+        # Суточные нормы по группам — берём УЖЕ согласованное распределение
+        # (то же, что в круговой диаграмме и Ca:P), а не пересчитываем заново:
+        # независимый пересчёт давал дрейф (сезон/беременность) и расхождение
+        # сводки с меню. Сюда оно приходит после _reconcile_wiped_groups, поэтому
+        # выпавшие стоп-листом группы (organs) уже перенесены в мясо.
+        dist = distribution
 
         meat_daily = self._round_g(dist.get("muscle_meat", 0))
         bones_daily = self._round_g(dist.get("raw_meaty_bones", 0))

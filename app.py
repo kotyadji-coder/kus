@@ -491,9 +491,10 @@ async def eval_preview(idx: int, user: str = Depends(verify_admin)):
             name=p["name"], breed=p["breed"], age_months=p["age_months"],
             sex=p["sex"], neutered=p["neutered"], weight_kg=p["weight_kg"],
             current_food="dry", condition=p["condition"], activity=p["activity"],
-            diagnoses=p.get("diagnoses", []), stool="good",
+            diagnoses=p.get("diagnoses", []), stool=p.get("stool", "good"),
             diet_type=p["diet_type"], budget=p["budget"],
             stop_products=p.get("stop_products", []),
+            pregnant=p.get("pregnant", False), lactating=p.get("lactating", False),
         )
         result = calc.calculate(dog)
         html = pdf_generator.generate_html(result)
@@ -517,6 +518,7 @@ async def admin_evals(request: Request, user: str = Depends(verify_admin)):
     from evals import run_evals
     results = run_evals()
     avg_score = round(sum(r["score"] for r in results) / len(results)) if results else 0
+    n_checks = len(results[0]["checks"]) if results else 0
     status_colors = {"ok": "#16a34a", "warn": "#f59e0b", "fail": "#dc2626"}
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -549,7 +551,7 @@ async def admin_evals(request: Request, user: str = Depends(verify_admin)):
     <a href="/admin" class="back">&larr; Заказы</a>
     <div class="nav"><a href="/admin">Заказы</a><a href="/admin/support">Поддержка</a><a href="/admin/evals">Эвалы</a></div>
     <h1>Эвалы расчёта рационов</h1>
-    <p class="subtitle">10 тестовых профилей, 7 проверок на каждом. Прогон: автоматический.</p>
+    <p class="subtitle">{len(results)} тестовых профилей, {n_checks} проверок на каждом (включая согласование сводка↔меню↔покупки). Прогон: автоматический.</p>
     <div class="avg">Средний балл: {avg_score}%</div>"""
 
     for idx, r in enumerate(results):

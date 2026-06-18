@@ -305,6 +305,17 @@ def generate_html(result: DietResult) -> str:
     dist_items = [(g, grams) for g, grams in result.distribution.items() if grams > 0]
     total_grams = sum(g for _, g in dist_items)
 
+    # Вес яйца для пересчёта «г → шт.» в сводке берём из РЕАЛЬНОГО продукта в меню:
+    # при стоп-курице/аллергии меню переключается на перепелиное (10 г), и хардкод
+    # «/60» давал сводку 3 шт., тогда как меню и список покупок — 17½ шт. (баг согласования).
+    _egg_piece = 60
+    for _d in result.weekly_menu:
+        _egg_p = next((p for p in _d.morning + getattr(_d, 'midday', []) + _d.evening
+                       if _is_egg(p.product_id, p.product_name)), None)
+        if _egg_p:
+            _egg_piece = _egg_piece_weight(_egg_p.product_id, _egg_p.product_name)
+            break
+
     distribution_rows = ""
     stack_spans = ""
     for group, grams in dist_items:
@@ -315,7 +326,7 @@ def generate_html(result: DietResult) -> str:
             # Яйца дают 2-3 раза в неделю, не каждый день
             # Считаем сколько штук в неделю (daily * 7 / вес_яйца), с точностью до ¼
             weekly_grams = grams * 7
-            g_display = f"{_fmt_egg_count(weekly_grams / 60)} шт./нед."
+            g_display = f"{_fmt_egg_count(weekly_grams / _egg_piece)} шт./нед."
         else:
             g_display = f"{int(grams)} г"
         distribution_rows += f'<div class="group-row"><span class="sw" style="background:{color};display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:6px;"></span><span class="nm">{label}</span> <span class="g" style="float:right;">{g_display}</span></div>\n'
