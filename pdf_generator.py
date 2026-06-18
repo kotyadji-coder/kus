@@ -310,7 +310,8 @@ def generate_html(result: DietResult) -> str:
     # «/60» давал сводку 3 шт., тогда как меню и список покупок — 17½ шт. (баг согласования).
     _egg_piece = 60
     for _d in result.weekly_menu:
-        _egg_p = next((p for p in _d.morning + getattr(_d, 'midday', []) + _d.evening
+        _egg_p = next((p for p in _d.morning + getattr(_d, 'midday', [])
+                       + getattr(_d, 'afternoon', []) + _d.evening
                        if _is_egg(p.product_id, p.product_name)), None)
         if _egg_p:
             _egg_piece = _egg_piece_weight(_egg_p.product_id, _egg_p.product_name)
@@ -367,10 +368,12 @@ def generate_html(result: DietResult) -> str:
         is_fish = day_menu.day_name in FISH_DAYS
         cls = ' special' if is_fish else ''
         midday_portions = getattr(day_menu, 'midday', [])
+        afternoon_portions = getattr(day_menu, 'afternoon', [])
         morning_total = sum(p.grams for p in day_menu.morning)
         midday_total = sum(p.grams for p in midday_portions)
+        afternoon_total = sum(p.grams for p in afternoon_portions)
         evening_total = sum(p.grams for p in day_menu.evening)
-        day_total = int(morning_total + midday_total + evening_total)
+        day_total = int(morning_total + midday_total + afternoon_total + evening_total)
 
         tag = f'<div class="day-tag">{day_total} г</div>'
         if is_fish:
@@ -386,26 +389,32 @@ def generate_html(result: DietResult) -> str:
 
         morning_items = _items_html(day_menu.morning)
         midday_items = _items_html(midday_portions)
+        afternoon_items = _items_html(afternoon_portions)
         evening_items = _items_html(day_menu.evening)
 
-        midday_block = ""
-        if midday_items:
-            midday_block = f'''<div class="meal-block">
-        <div class="meal-time midday"><span class="dot"></span> День</div>
-        {midday_items}
-      </div>'''
+        # Блоки приёмов собираем списком и склеиваем только непустые — чтобы у
+        # 2-3-разовых собак не оставалось пустых строк-отступов (иначе html-хеш
+        # «дрейфит» от невидимого пробельного мусора).
+        def _block(cls_name, label, items):
+            if not items:
+                return ""
+            time_cls = f"meal-time {cls_name}" if cls_name else "meal-time"
+            return (f'<div class="meal-block">\n'
+                    f'        <div class="{time_cls}"><span class="dot"></span> {label}</div>\n'
+                    f'        {items}\n'
+                    f'      </div>')
+
+        blocks = [
+            _block("", "Утро", morning_items),
+            _block("midday", "День", midday_items),
+            _block("afternoon", "Полдник", afternoon_items),
+            _block("evening", "Вечер", evening_items),
+        ]
+        inner = "\n      ".join(b for b in blocks if b)
 
         return f'''<div class="day{cls}">
       <div class="day-head"><div class="day-name">{day_menu.day_name}</div>{tag}</div>
-      <div class="meal-block">
-        <div class="meal-time"><span class="dot"></span> Утро</div>
-        {morning_items}
-      </div>
-      {midday_block}
-      <div class="meal-block">
-        <div class="meal-time evening"><span class="dot"></span> Вечер</div>
-        {evening_items}
-      </div>
+      {inner}
     </div>'''
 
     def _menu_table(days_list):
@@ -442,7 +451,7 @@ def generate_html(result: DietResult) -> str:
     _SWAPPABLE = {"duck": "Утку", "rabbit": "Кролика", "lamb": "Баранину"}
     _used_swap = []
     for _d in result.weekly_menu:
-        for _p in _d.morning + getattr(_d, 'midday', []) + _d.evening:
+        for _p in _d.morning + getattr(_d, 'midday', []) + getattr(_d, 'afternoon', []) + _d.evening:
             if _p.product_id in _SWAPPABLE and _SWAPPABLE[_p.product_id] not in _used_swap:
                 _used_swap.append(_SWAPPABLE[_p.product_id])
     swap_note = ""
@@ -460,7 +469,8 @@ def generate_html(result: DietResult) -> str:
 
     # Week summary card
     total_week_grams = sum(
-        sum(p.grams for p in d.morning) + sum(p.grams for p in getattr(d, 'midday', [])) + sum(p.grams for p in d.evening)
+        sum(p.grams for p in d.morning) + sum(p.grams for p in getattr(d, 'midday', []))
+        + sum(p.grams for p in getattr(d, 'afternoon', [])) + sum(p.grams for p in d.evening)
         for d in menu_days
     )
     week_summary = f'''<div class="day" style="background: var(--bg-soft); border-style: dashed;">
@@ -474,7 +484,8 @@ def generate_html(result: DietResult) -> str:
     # --- Shopping list ---
     shopping = {}
     for day_menu in result.weekly_menu:
-        for portion in day_menu.morning + getattr(day_menu, 'midday', []) + day_menu.evening:
+        for portion in (day_menu.morning + getattr(day_menu, 'midday', [])
+                        + getattr(day_menu, 'afternoon', []) + day_menu.evening):
             if portion.product_name not in shopping:
                 shopping[portion.product_name] = {"grams": 0, "group": portion.group, "product_id": portion.product_id}
             shopping[portion.product_name]["grams"] += portion.grams
@@ -1029,6 +1040,7 @@ p {{ margin: 0; }}
 }}
 .meal-time .dot {{ width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }}
 .meal-time.midday .dot {{ background: #f59e0b; }}
+.meal-time.afternoon .dot {{ background: #fbbf24; }}
 .meal-time.evening .dot {{ background: var(--primary); }}
 
 .item {{
@@ -1513,7 +1525,7 @@ p {{ margin: 0; }}
     <td class="metric">
       <div class="lbl">Кормлений</div>
       <div class="val">{result.meals_per_day}<span class="unit">раза</span></div>
-      <div class="sub">{'утро · день · вечер' if result.meals_per_day >= 3 else 'утро · вечер'}</div>
+      <div class="sub">{'утро · день · полдник · вечер' if result.meals_per_day >= 4 else 'утро · день · вечер' if result.meals_per_day == 3 else 'утро · вечер'}</div>
     </td>
     <td class="metric">
       <div class="lbl">Целевой вес</div>

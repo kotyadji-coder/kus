@@ -102,6 +102,7 @@ class DayMenu:
     morning: list[MealPortion]
     evening: list[MealPortion]
     midday: list[MealPortion] = field(default_factory=list)  # 3-е кормление (гиганты/гастрит)
+    afternoon: list[MealPortion] = field(default_factory=list)  # 4-е кормление (щенки <4 мес)
 
 
 @dataclass
@@ -221,6 +222,22 @@ class DietCalculator:
             warnings.append(
                 f"Группа «{names}» исключена стоп-листом целиком — её доля перенесена в мясо. "
                 f"Подберите альтернативный источник вне стоп-листа, чтобы рацион оставался разнообразным."
+            )
+
+        # Эскалация бюджета: в выбранном тире вся группа была под стоп-листом, продукты
+        # взяты из более дорогого тира (иначе собака осталась бы без мяса/группы).
+        escalated = getattr(self, "_budget_escalated", [])
+        if escalated:
+            labels = {"vegetables": "овощи", "dairy": "кисломолочка", "muscle_meat": "мясо",
+                      "raw_meaty_bones": "кости", "eggs": "яйца", "organs": "субпродукты",
+                      "fish": "рыба", "oils_supplements": "масла"}
+            names = ", ".join(labels.get(g, g) for g in escalated)
+            budget_ru = {"supermarket": "супермаркет", "market": "рынок"}.get(dog.budget, dog.budget)
+            warnings.append(
+                f"В бюджете «{budget_ru}» все продукты группы «{names}» попали в стоп-лист — "
+                f"подобрали альтернативу из более доступного по цене сегмента (кролик, ягнёнок, "
+                f"индейка и т.п. вне стоп-листа). Это может выйти дороже: либо расширьте бюджет, "
+                f"либо пересмотрите стоп-лист. Главное — собака не осталась без этой группы."
             )
 
         # Беременность/лактация — дополнительные предупреждения
@@ -464,31 +481,43 @@ class DietCalculator:
         """Для каждой группы подбирает конкретные продукты с граммовками."""
         result = {}
         roots = stop_roots(dog.stop_products)
+        self._budget_escalated = []  # группы, где пришлось выйти за бюджетный тир
+
+        ALL_TIERS = ["supermarket", "market", "unlimited"]
+        budget_levels = {
+            "supermarket": ["supermarket"],
+            "market": ["supermarket", "market"],
+            "unlimited": ALL_TIERS,
+        }
+        allowed_avail = budget_levels.get(dog.budget, ALL_TIERS)
 
         for group, grams in distribution.items():
             if grams <= 0:
                 continue
 
             available = self.products_db.get(group, [])
-            # Фильтруем по бюджету
-            budget_levels = {
-                "supermarket": ["supermarket"],
-                "market": ["supermarket", "market"],
-                "unlimited": ["supermarket", "market", "unlimited"],
-            }
-            allowed_avail = budget_levels.get(dog.budget, ["supermarket", "market", "unlimited"])
-            candidates = [
-                p for p in available
-                if p.get("availability", "supermarket") in allowed_avail
-                and not p.get("rare", False)  # редкое/труднодоступное (конина, оленина) не предлагаем
-            ]
 
-            # Фильтруем стоп-продукты (матчинг — модульный stop_roots/is_stopped)
+            def _candidates(tiers):
+                return [p for p in available
+                        if p.get("availability", "supermarket") in tiers
+                        and not p.get("rare", False)]  # редкое (конина, оленина) не предлагаем
+
+            # Фильтруем по бюджету, затем по стоп-листу (матчинг — stop_roots/is_stopped)
+            candidates = _candidates(allowed_avail)
             filtered = [p for p in candidates if not is_stopped(p["name"], roots)]
+            if not filtered and roots and allowed_avail != ALL_TIERS:
+                # В бюджетном тире после стопов не осталось продуктов группы. Вместо
+                # того чтобы бросить группу (для мяса это = собака без мяса), расширяем
+                # тир и ищем альтернативу (кролик/ягнёнок вместо курицы/говядины).
+                # «Лучше мясо дороже, чем рацион без мяса». Помечаем для предупреждения.
+                widened = [p for p in _candidates(ALL_TIERS) if not is_stopped(p["name"], roots)]
+                if widened:
+                    filtered = widened
+                    self._budget_escalated.append(group)
             if filtered:
                 candidates = filtered
             elif roots:
-                # Все продукты в группе содержат стоп-продукт — пропускаем группу
+                # Вся группа под стопом даже во всей базе — пропускаем (warn добавит вызывающий)
                 continue
 
             # Фильтруем по аллергенности (если собака аллергик — убираем common_allergen)
@@ -1011,17 +1040,30 @@ class DietCalculator:
                 evening.append(MealPortion(d["product_id"], d["product_name"],
                     self._round_g(dairy_daily), "dairy"))
 
-            # 3 кормления (крупные/гигантские породы — риск заворота; гастрит):
-            # дробим вечерний приём на «День» + «Вечер» меньшего объёма (утро не
-            # трогаем). Так в миске за раз меньше еды. Для 2-разовых midday пуст.
-            midday = []
-            if meals_per_day >= 3 and evening:
-                midday = [MealPortion(p.product_id, p.product_name,
-                                      self._round_g(p.grams / 2), p.group) for p in evening]
-                evening = [MealPortion(p.product_id, p.product_name,
-                                       max(1, round(p.grams - self._round_g(p.grams / 2))), p.group)
-                           for p in evening]
-            menu.append(DayMenu(day_name=day_name, morning=morning, evening=evening, midday=midday))
+            # Дробление приёмов на слоты меню (состав не трогаем, делим объём):
+            #   2: Утро=morning, Вечер=evening
+            #   3: Утро=morning, День=evening/2, Вечер=evening/2 (гиганты/заворот, гастрит)
+            #   4: Утро=morning/2, День=morning/2, Полдник=evening/2, Вечер=evening/2
+            #      (щенки <4 мес — 4 кормления; раньше сводка обещала 4, а меню рисовало 3)
+            def _half(p):
+                return MealPortion(p.product_id, p.product_name,
+                                   self._round_g(p.grams / 2), p.group)
+
+            def _rest(p):
+                return MealPortion(p.product_id, p.product_name,
+                                   max(1, round(p.grams - self._round_g(p.grams / 2))), p.group)
+
+            midday, afternoon = [], []
+            if meals_per_day == 3 and evening:
+                midday = [_half(p) for p in evening]
+                evening = [_rest(p) for p in evening]
+            elif meals_per_day >= 4 and evening:
+                midday = [_half(p) for p in morning]
+                morning = [_rest(p) for p in morning]
+                afternoon = [_half(p) for p in evening]
+                evening = [_rest(p) for p in evening]
+            menu.append(DayMenu(day_name=day_name, morning=morning, evening=evening,
+                                midday=midday, afternoon=afternoon))
 
         return menu
 
@@ -1175,6 +1217,14 @@ if __name__ == "__main__":
     print(f"  Утро:")
     for p in day.morning:
         print(f"    {p.product_name}: {p.grams} г")
+    if getattr(day, 'midday', []):
+        print(f"  День:")
+        for p in day.midday:
+            print(f"    {p.product_name}: {p.grams} г")
+    if getattr(day, 'afternoon', []):
+        print(f"  Полдник:")
+        for p in day.afternoon:
+            print(f"    {p.product_name}: {p.grams} г")
     print(f"  Вечер:")
     for p in day.evening:
         print(f"    {p.product_name}: {p.grams} г")
