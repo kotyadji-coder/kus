@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка #{{ order.id }} — {{ order.dog_name }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; padding: 16px; }
+        .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
+        h1 { color:#055ba9; font-size:20px; }
+        .back { color:#055ba9; text-decoration:none; font-weight:600; font-size:14px; }
+        .grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap:16px; align-items:start; }
+        @media (max-width: 1000px){ .grid{ grid-template-columns:1fr; } }
+        .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px; }
+        .card h2 { font-size:15px; color:#055ba9; margin-bottom:10px; }
+        iframe { width:100%; height:78vh; border:1px solid #e2e8f0; border-radius:10px; background:#fff; }
+        .meta-row { font-size:13px; color:#555; margin:3px 0; }
+        .chk-ok { background:#dcfce7; color:#16a34a; padding:8px 12px; border-radius:8px; font-weight:600; font-size:13px; display:inline-block;}
+        .chk-bad { background:#fee2e2; color:#dc2626; padding:8px 12px; border-radius:8px; font-weight:600; font-size:13px; display:inline-block;}
+        .auto-detail { font-size:12px; color:#666; margin-top:8px; line-height:1.5; white-space:pre-wrap; }
+        label { display:block; font-weight:600; font-size:13px; margin:12px 0 4px; }
+        textarea { width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-size:13px; font-family:inherit; line-height:1.5; resize:vertical; }
+        .ta-sm { height:80px; } .ta-md { height:140px; } .ta-lg { height:220px; }
+        .btn { border:none; cursor:pointer; padding:11px 18px; border-radius:9px; font-weight:700; font-size:14px; color:#fff; }
+        .btn-approve { background:#16a34a; } .btn-save { background:#055ba9; } .btn-rework { background:#dc2626; }
+        .btn-ghost { background:#fff; color:#055ba9; border:1px solid #055ba9; text-decoration:none; display:inline-block; }
+        .warn-box { background:#fef3c7; border:1px solid #fbbf24; border-radius:8px; padding:10px 12px; font-size:13px; color:#92400e; margin-bottom:12px; }
+        .hint { font-size:12px; color:#888; margin-top:4px; }
+    </style>
+</head>
+<body>
+    <div class="top">
+        <a class="back" href="/admin/review">&larr; К очереди проверки</a>
+        <h1>#{{ order.id }} · {{ order.dog_name }} <span style="color:#888;font-weight:400;">({{ order.breed }})</span></h1>
+    </div>
+
+    {% if order.status in ('rework', 'processing') %}
+    <div class="warn-box"><strong>Идёт пересборка с учётом замечаний.</strong>
+    {% if order.review_notes %}Замечания: {{ order.review_notes }}<br>{% endif %}
+    Обновите страницу через минуту.</div>
+    {% endif %}
+
+    <div class="grid">
+        <!-- ЛЕВО: предпросмотр отчёта -->
+        <div>
+            <div class="card">
+                <h2>Отчёт (так его увидит клиент)</h2>
+                {% if order.pdf_path %}
+                    <iframe src="/admin/order/{{ order.id }}/view"></iframe>
+                    {% if is_combo %}
+                    <div style="margin-top:8px;">
+                        <a class="btn btn-ghost" href="/admin/order/{{ order.id }}/view?part=dry" target="_blank">Открыть подбор сухого корма →</a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div style="color:#888;">Отчёт ещё не сгенерирован.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ПРАВО: проверка и решение -->
+        <div>
+            <div class="card">
+                <h2>Авто-проверка (агент)</h2>
+                {% if order.auto_check_ok == 1 %}
+                    <span class="chk-ok">✓ Замечаний нет</span>
+                {% elif order.auto_check_ok == 0 %}
+                    <span class="chk-bad">⚠ Есть замечания — проверьте внимательно</span>
+                {% else %}
+                    <span style="color:#888;">проверка не выполнялась</span>
+                {% endif %}
+                {% if order.auto_check %}<div class="auto-detail">{{ order.auto_check }}</div>{% endif %}
+                {% if order.ai_fallback == 1 %}<div class="auto-detail" style="color:#b45309;">⚠ Часть текста на шаблоне (Gemini не ответил) — стоит вычитать особенно тщательно.</div>{% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Данные собаки</h2>
+                <div class="meta-row">Вес: {{ order.weight_kg }} кг · Возраст: {{ order.age_months }} мес · Кондиция: {{ order.condition }} · Активность: {{ order.activity }}</div>
+                <div class="meta-row">Диагнозы: {{ order.diagnoses or '—' }}</div>
+                <div class="meta-row">Стоп-продукты: {{ order.stop_products or '—' }}</div>
+                <div class="meta-row">Клиент: {{ order.client_name }} · {{ order.phone_or_telegram }} · {{ order.email }}{% if order.vk %} · VK: {{ order.vk }}{% endif %}</div>
+            </div>
+
+            {% for part, meta in metas.items() %}
+            <div class="card">
+                <h2>Правка текстов{% if is_combo %} — {{ 'натуралка' if part == 'natural' else 'сухой корм' }}{% endif %}</h2>
+                <p class="hint">Отредактируйте текст и сохраните — отчёт перерисуется (без обращения к Gemini). Цифры, меню и список покупок считаются автоматически и здесь не правятся.</p>
+                <form method="post" action="/admin/review/{{ order.id }}/edit">
+                    <input type="hidden" name="part" value="{{ part }}">
+                    <label>Вступление</label>
+                    <textarea class="ta-sm" name="ai_intro">{{ meta.ai_intro or '' }}</textarea>
+                    {% if part == 'natural' %}
+                    <label>Заметки (каждая мысль — с новой строки)</label>
+                    <textarea class="ta-md" name="ai_notes">{{ meta.ai_notes or '' }}</textarea>
+                    <label>Персональный анализ (HTML-блоки .insight)</label>
+                    <textarea class="ta-lg" name="ai_analysis">{{ meta.ai_analysis or '' }}</textarea>
+                    {% else %}
+                    <label>Итоговая рекомендация</label>
+                    <textarea class="ta-md" name="ai_conclusion">{{ meta.ai_conclusion or '' }}</textarea>
+                    {% endif %}
+                    <div style="margin-top:12px;"><button class="btn btn-save" type="submit">Сохранить и перерисовать</button></div>
+                </form>
+            </div>
+            {% endfor %}
+
+            <div class="card">
+                <h2>Решение</h2>
+                <form method="post" action="/admin/review/{{ order.id }}/approve" style="margin-bottom:16px;"
+                      onsubmit="return confirm('Одобрить и отправить клиенту?');">
+                    <button class="btn btn-approve" type="submit">✓ Одобрить и отправить клиенту</button>
+                    <div class="hint">Уйдёт в выбранные каналы: {{ order.delivery_channel or 'все доступные (Telegram / email / VK)' }}</div>
+                </form>
+                <form method="post" action="/admin/review/{{ order.id }}/rework">
+                    <label>На переделку — замечания для пересборки</label>
+                    <textarea class="ta-md" name="notes" required placeholder="Например: убери упоминание индейки (аллергия), смягчи тон про вес, добавь акцент на суставы…"></textarea>
+                    <div style="margin-top:10px;"><button class="btn btn-rework" type="submit">↻ Отправить на переделку</button></div>
+                    <div class="hint">Рацион пересоберётся с учётом замечаний и снова придёт на проверку.</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

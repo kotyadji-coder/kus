@@ -60,12 +60,18 @@ def main():
     if not _failed(reconciliation_checks(res, html + '<span class="g">0 г</span>'), "Нет нулей / ложки уместны"):
         misses.append("не пойман баг нулевой порции")
 
+    # 5. Зазор «суточная норма ≠ сумма групп» (как было 565 г vs 520 г).
+    r5 = copy.deepcopy(res)
+    r5.daily_grams = int(r5.daily_grams * 1.3)  # норма раздута, группы не тронуты
+    if not _failed(reconciliation_checks(r5, None), "Норма = сумма групп"):
+        misses.append("не пойман зазор норма ≠ сумма групп")
+
     if misses:
         print("✗ ДЕТЕКТОР ОСЛЕП — не поймал инъекции:")
         for m in misses:
             print(f"    - {m}")
         return 1
-    print("✓ Канарейка жива: детектор ловит все 4 инъекции, ложных срабатываний нет")
+    print("✓ Канарейка жива: детектор ловит все 5 инъекций, ложных срабатываний нет")
     return 0
 
 

@@ -101,6 +101,24 @@ def reconciliation_checks(result, html=None) -> list[dict]:
     else:
         checks.append({"key": "Мясо+рыба = бюджет", "status": "ok", "detail": "нет мясного бюджета"})
 
+    # 3b. Суточная норма ≈ сумма групп распределения. Ловит зазор сводка↔состав
+    # (как было 565 г норма vs 520 г по группам). Калькулятор сводит распределение
+    # к round(daily_grams) (_calc_distribution: diff→muscle_meat), поэтому крупное
+    # расхождение — баг, а не округление. Допуск держим узким: пол 12 г / 3%.
+    norm = getattr(result, "daily_grams", 0) or 0
+    groups_sum = sum(v for v in result.distribution.values() if v > 0)
+    if norm > 0:
+        dev = abs(norm - groups_sum)
+        dev_pct = dev / norm * 100
+        ok = dev <= max(12, 0.03 * norm)
+        warn = dev <= max(20, 0.05 * norm)
+        status = "ok" if ok else "warn" if warn else "fail"
+        checks.append({"key": "Норма = сумма групп", "status": status,
+                       "detail": f"норма {int(norm)}г vs группы {int(groups_sum)}г "
+                                 f"(Δ{int(dev)}г, {dev_pct:.0f}%)"})
+    else:
+        checks.append({"key": "Норма = сумма групп", "status": "ok", "detail": "нет суточной нормы"})
+
     if html is None:
         return checks
 

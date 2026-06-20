@@ -22,8 +22,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from models import OrderForm, init_db, create_order, get_order, update_order, list_orders
-from worker import process_order
+from models import (OrderForm, init_db, create_order, get_order, update_order, list_orders,
+                    list_orders_by_status, approve_order, request_rework)
+from worker import process_order, deliver_order, regenerate_with_edits, load_meta
 
 # --- Config ---
 YOOKASSA_SHOP_ID = os.getenv("YOOKASSA_SHOP_ID", "")
@@ -218,6 +219,32 @@ async def _create_yookassa_payment(order_id: int, amount: float, form: OrderForm
             return confirm_url
 
 
+async def _verify_yookassa_payment(payment_id: str | None, order_id: int) -> bool:
+    """Перепроверяет платёж напрямую в API ЮKassa: статус succeeded, paid=true и
+    совпадение order_id в metadata. Возвращает True только при полном совпадении."""
+    if not payment_id:
+        return False
+    import aiohttp
+    import base64
+    auth = base64.b64encode(f"{YOOKASSA_SHOP_ID}:{YOOKASSA_SECRET_KEY}".encode()).decode()
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"https://api.yookassa.ru/v3/payments/{payment_id}",
+                headers={"Authorization": f"Basic {auth}"},
+            ) as resp:
+                data = await resp.json()
+        if resp.status != 200:
+            log.error(f"YooKassa verify error ({resp.status}): {data}")
+            return False
+        meta_order = str((data.get("metadata") or {}).get("order_id", ""))
+        return (data.get("status") == "succeeded" and data.get("paid") is True
+                and meta_order == str(order_id))
+    except Exception as e:
+        log.error(f"YooKassa verify exception for #{order_id}: {e}")
+        return False
+
+
 @app.post("/webhook/yookassa")
 @app.post("/payment/webhook")
 async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
@@ -240,10 +267,17 @@ async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
     order_id = int(order_id)
 
     if event == "payment.succeeded" and status == "succeeded":
+        # Не доверяем телу вебхука: перепроверяем платёж в API ЮKassa (защита от
+        # подделки запроса — иначе любой POST давал бы бесплатный отчёт).
+        if YOOKASSA_SHOP_ID and YOOKASSA_SECRET_KEY:
+            verified = await _verify_yookassa_payment(payment_id, order_id)
+            if not verified:
+                log.warning(f"Order #{order_id}: вебхук НЕ подтверждён через API ЮKassa — игнорирую")
+                return JSONResponse({"status": "ignored"})
         await update_order(order_id, payment_status="succeeded", status="paid")
         order = await get_order(order_id)
         background_tasks.add_task(process_order, order)
-        log.info(f"Order #{order_id}: payment succeeded, generation started")
+        log.info(f"Order #{order_id}: payment succeeded (verified), generation started")
 
     elif event == "payment.canceled":
         await update_order(order_id, payment_status="canceled")
@@ -605,6 +639,105 @@ async def admin_evals(request: Request, user: str = Depends(verify_admin)):
 
     html += '</div></body></html>'
     return HTMLResponse(html)
+
+
+# =====================================================================
+# Ревью кинолога (проверка отчёта перед отправкой клиенту)
+# =====================================================================
+
+@app.get("/admin/review", response_class=HTMLResponse)
+async def admin_review_queue(request: Request, user: str = Depends(verify_admin)):
+    """Очередь заказов на проверку кинологом (review/rework/processing)."""
+    orders = await list_orders_by_status(["review", "rework", "processing"], 200)
+    return templates.TemplateResponse(request=request, name="review_list.html", context={
+        "orders": orders,
+    })
+
+
+@app.get("/admin/order/{order_id}/view", response_class=HTMLResponse)
+async def admin_order_view(order_id: int, part: str = "natural",
+                          user: str = Depends(verify_admin)):
+    """Просмотр отчёта админом на ЛЮБОМ статусе (для ревью до отправки клиенту)."""
+    order = await get_order(order_id)
+    if not order or not order.get("pdf_path"):
+        raise HTTPException(status_code=404, detail="Отчёт ещё не сгенерирован")
+    html_path = order["pdf_path"]
+    if part == "dry" and order["diet_type"] in ("barf_and_dry", "cooked_and_dry"):
+        html_path = os.path.join(os.path.dirname(html_path), f"order_{order_id}_dry.html")
+    if not os.path.exists(html_path):
+        raise HTTPException(status_code=404, detail="Файл отчёта не найден")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
+
+
+@app.get("/admin/review/{order_id}", response_class=HTMLResponse)
+async def admin_review_one(request: Request, order_id: int, user: str = Depends(verify_admin)):
+    """Карточка проверки одного заказа: просмотр отчёта, правка текстов, решение."""
+    order = await get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+    is_combo = order["diet_type"] in ("barf_and_dry", "cooked_and_dry")
+    if is_combo:
+        metas = {"natural": load_meta(order_id, "natural"), "dry": load_meta(order_id, "dry")}
+        kind = "combo"
+    else:
+        kind = "dry" if order["diet_type"] == "dry" else "natural"
+        metas = {kind: load_meta(order_id, kind)}
+    return templates.TemplateResponse(request=request, name="review.html", context={
+        "order": order,
+        "metas": metas,
+        "kind": kind,
+        "is_combo": is_combo,
+    })
+
+
+@app.post("/admin/review/{order_id}/approve")
+async def admin_review_approve(order_id: int, user: str = Depends(verify_admin)):
+    """Кинолог одобряет → статус done + запуск доставки (email/VK; Telegram — циклом бота)."""
+    order = await get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+    await approve_order(order_id, reviewed_by=user)
+    order = await get_order(order_id)  # перечитываем со статусом done
+    try:
+        delivered = await deliver_order(order)
+        log.info(f"Order #{order_id}: одобрен кинологом ({user}), доставка: {delivered}")
+    except Exception as e:
+        log.error(f"Order #{order_id}: ошибка доставки после одобрения: {e}")
+    return RedirectResponse(url="/admin/review", status_code=303)
+
+
+@app.post("/admin/review/{order_id}/rework")
+async def admin_review_rework(order_id: int, background_tasks: BackgroundTasks,
+                             notes: str = Form(...), user: str = Depends(verify_admin)):
+    """Кинолог отправляет на переделку с замечаниями → перегенерация → снова review."""
+    order = await get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+    await request_rework(order_id, notes.strip(), reviewed_by=user)
+    order = await get_order(order_id)  # теперь со статусом rework + review_notes
+    background_tasks.add_task(process_order, order)
+    log.info(f"Order #{order_id}: отправлен на переделку ({user}): {notes[:120]}")
+    return RedirectResponse(url="/admin/review", status_code=303)
+
+
+@app.post("/admin/review/{order_id}/edit")
+async def admin_review_edit(order_id: int, user: str = Depends(verify_admin),
+                           part: str = Form("natural"),
+                           ai_intro: str = Form(None), ai_notes: str = Form(None),
+                           ai_analysis: str = Form(None), ai_conclusion: str = Form(None)):
+    """Кинолог отредактировал тексты вручную → перерисовка части (без новых AI-вызовов).
+
+    part = natural|dry — какую часть правим (у комбо две независимые формы)."""
+    order = await get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+    edits = {k: v for k, v in {
+        "ai_intro": ai_intro, "ai_notes": ai_notes,
+        "ai_analysis": ai_analysis, "ai_conclusion": ai_conclusion,
+    }.items() if v is not None}
+    await regenerate_with_edits(order, edits, part=("dry" if part == "dry" else "natural"))
+    return RedirectResponse(url=f"/admin/review/{order_id}", status_code=303)
 
 
 # =====================================================================

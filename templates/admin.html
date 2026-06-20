@@ -19,6 +19,8 @@
         .badge-new { background: #e8e8e8; color: #666; }
         .badge-paid { background: #d4edda; color: #155724; }
         .badge-processing { background: #fff3cd; color: #856404; }
+        .badge-review { background: #ffe8b3; color: #8a5a00; }
+        .badge-rework { background: #f8d7da; color: #721c24; }
         .badge-done { background: #cce5ff; color: #004085; }
         .badge-error { background: #f8d7da; color: #721c24; }
         .stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -30,6 +32,7 @@
 <body>
     <div class="admin-nav">
         <a href="/admin" class="active">Заказы</a>
+        <a href="/admin/review">На проверке</a>
         <a href="/admin/support">Поддержка</a>
         <a href="/admin/evals">Эвалы</a>
     </div>
@@ -43,6 +46,10 @@
         <div class="stat-card">
             <div class="num">{{ orders|selectattr('status', 'eq', 'done')|list|length }}</div>
             <div class="label">Выполнено</div>
+        </div>
+        <div class="stat-card">
+            <div class="num">{{ (orders|selectattr('status', 'eq', 'review')|list|length) + (orders|selectattr('status', 'eq', 'rework')|list|length) }}</div>
+            <div class="label"><a href="/admin/review" style="color:#8a5a00;text-decoration:none;">На проверке →</a></div>
         </div>
         <div class="stat-card">
             <div class="num">{{ orders|selectattr('status', 'eq', 'processing')|list|length }}</div>
@@ -76,6 +83,9 @@
             <td>{{ o.amount }} р.</td>
             <td>
                 <span class="badge badge-{{ o.status }}">{{ o.status }}</span>
+                {% if o.status in ('review', 'rework') %}
+                <br><a href="/admin/review/{{ o.id }}" style="font-size:11px;font-weight:600;color:#055ba9;">проверить →</a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

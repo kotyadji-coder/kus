@@ -78,7 +78,7 @@ async def btn_order(message: Message):
     await message.answer(
         "На сайте вы можете узнать подробности и оформить подбор рациона — "
         "сухого корма или натуралки.\n\n"
-        "Результат придёт сюда обычно в течение 2 часов, но не более 3 рабочих дней.",
+        "Результат придёт сюда в течение 3 рабочих дней — каждый рацион проверяет наш специалист.",
         reply_markup=keyboard,
     )
 
@@ -369,6 +369,12 @@ async def _delivery_loop():
                 tg_id = order["telegram_user_id"]
                 html_path = order["pdf_path"]
                 if not os.path.exists(html_path):
+                    continue
+
+                # Уважаем выбор канала клиента: если просил только email/VK — не шлём в TG
+                pref = (order.get("delivery_channel") or "").strip().lower()
+                if pref and pref not in ("all",) and "telegram" not in pref:
+                    await update_order(order["id"], delivered=1)  # не TG-канал, снимаем из очереди
                     continue
 
                 diet_type = order["diet_type"]

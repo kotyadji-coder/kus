@@ -95,6 +95,9 @@ class OrderForm(BaseModel):
     client_name: str = Field(..., min_length=1, max_length=100)
     phone_or_telegram: str = Field(..., min_length=3, max_length=50)
     email: str = Field(..., min_length=5, max_length=100)
+    vk: Optional[str] = None  # ссылка/ID ВКонтакте (необязательно)
+    # Куда доставить готовый рацион: telegram / vk / email (через запятую) или all
+    delivery_channel: Optional[str] = None
 
     # Telegram deep link (если пришёл из бота)
     telegram_user_id: Optional[int] = None
@@ -104,7 +107,13 @@ class OrderForm(BaseModel):
 # SQLite — заказы
 # =====================================================================
 
-ORDER_STATUSES = ["new", "paid", "processing", "done", "error"]
+# Жизненный цикл заказа:
+#   new → paid → processing → review → done
+# review  — рацион сгенерирован, прошёл авто-проверку (агент) и ждёт кинолога.
+# rework  — кинолог вернул на переделку с замечаниями (review_notes); воркер
+#           перегенерирует и снова ставит review.
+# done    — кинолог одобрил; запускается доставка (TG/VK/email).
+ORDER_STATUSES = ["new", "paid", "processing", "review", "rework", "done", "error"]
 
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
@@ -153,7 +162,19 @@ async def init_db():
         # Миграции (безопасны для существующей таблицы; SQLite не умеет ADD COLUMN
         # IF NOT EXISTS, поэтому через try). QA-аудит заказа + флаг фолбэка Gemini.
         for col, decl in (("qa_score", "REAL"), ("qa_checked_at", "TIMESTAMP"),
-                          ("qa_notes", "TEXT"), ("ai_fallback", "INTEGER DEFAULT 0")):
+                          ("qa_notes", "TEXT"), ("ai_fallback", "INTEGER DEFAULT 0"),
+                          # Контакты/доставка
+                          ("vk", "TEXT"), ("delivery_channel", "TEXT"),
+                          ("delivered", "INTEGER DEFAULT 0"),         # доставлено в Telegram
+                          ("delivered_email", "INTEGER DEFAULT 0"),
+                          ("delivered_vk", "INTEGER DEFAULT 0"),
+                          ("admin_notified", "INTEGER DEFAULT 0"),
+                          # Ревью кинолога
+                          ("review_notes", "TEXT"),                   # замечания на переделку
+                          ("reviewed_by", "TEXT"), ("reviewed_at", "TIMESTAMP"),
+                          ("rework_count", "INTEGER DEFAULT 0"),
+                          # Авто-проверка (агент перед кинологом)
+                          ("auto_check", "TEXT"), ("auto_check_ok", "INTEGER")):
             try:
                 await db.execute(f"ALTER TABLE orders ADD COLUMN {col} {decl}")
             except Exception:
@@ -169,15 +190,15 @@ async def create_order(form: OrderForm, amount: float) -> int:
                 current_food, current_food_other, condition, activity,
                 diagnoses, stool, stool_other,
                 diet_type, budget, stop_products,
-                client_name, phone_or_telegram, email, telegram_user_id,
+                client_name, phone_or_telegram, email, vk, delivery_channel, telegram_user_id,
                 amount, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
         """, (
             form.dog_name, form.breed, form.age_months, form.sex, form.neutered, form.pregnant, form.lactating, form.weight_kg,
             form.current_food.value, form.current_food_other, form.condition.value, form.activity.value,
             form.diagnoses, form.stool.value, form.stool_other,
             form.diet_type.value, form.budget.value if form.budget else None, form.stop_products,
-            form.client_name, form.phone_or_telegram, form.email, form.telegram_user_id,
+            form.client_name, form.phone_or_telegram, form.email, form.vk, form.delivery_channel, form.telegram_user_id,
             amount,
         ))
         await db.commit()
@@ -230,3 +251,47 @@ async def list_orders(limit: int = 50) -> list[dict]:
         async with db.execute("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?", (limit,)) as cursor:
             rows = await cursor.fetchall()
             return [dict(r) for r in rows]
+
+
+async def list_orders_by_status(statuses: list[str], limit: int = 100) -> list[dict]:
+    """Заказы с любым из перечисленных статусов (для очереди ревью)."""
+    if not statuses:
+        return []
+    ph = ",".join("?" for _ in statuses)
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(
+            f"SELECT * FROM orders WHERE status IN ({ph}) ORDER BY created_at ASC LIMIT ?",
+            (*statuses, limit),
+        ) as cursor:
+            rows = await cursor.fetchall()
+            return [dict(r) for r in rows]
+
+
+async def set_auto_check(order_id: int, ok: bool, summary: str):
+    """Сохраняет результат авто-проверки (агент) перед ревью кинолога."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE orders SET auto_check = ?, auto_check_ok = ? WHERE id = ?",
+            (summary, 1 if ok else 0, order_id))
+        await db.commit()
+
+
+async def approve_order(order_id: int, reviewed_by: str = "кинолог"):
+    """Кинолог одобрил рацион → статус done (доставку запускает вызывающий код)."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE orders SET status='done', reviewed_by=?, reviewed_at=CURRENT_TIMESTAMP, "
+            "review_notes=NULL WHERE id=?",
+            (reviewed_by, order_id))
+        await db.commit()
+
+
+async def request_rework(order_id: int, notes: str, reviewed_by: str = "кинолог"):
+    """Кинолог вернул рацион на переделку с замечаниями → статус rework."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE orders SET status='rework', review_notes=?, reviewed_by=?, "
+            "reviewed_at=CURRENT_TIMESTAMP, rework_count=COALESCE(rework_count,0)+1 WHERE id=?",
+            (notes, reviewed_by, order_id))
+        await db.commit()

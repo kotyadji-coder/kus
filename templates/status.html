@@ -54,14 +54,14 @@
                 <div class="spinner"></div>
                 <div class="status-text">Ожидаем оплату</div>
                 <div class="status-desc">После оплаты мы сразу начнём готовить рацион</div>
-            {% elif order.status == 'paid' or order.status == 'processing' %}
+            {% elif order.status in ('paid', 'processing', 'review', 'rework') %}
                 <div class="cooking">
                     <div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div>
                     <div class="ladle"></div>
                     <div class="pot"><div class="pot-handle-l"></div><div class="pot-handle-r"></div></div>
                 </div>
                 <div class="status-text">Готовим рацион...</div>
-                <div class="status-desc">AI анализирует данные и рассчитывает персональный план.<br>Обычно это занимает 1-2 минуты.</div>
+                <div class="status-desc">Рассчитываем рацион по ветеринарным нормам, и наш специалист проверяет его перед отправкой.<br>Пришлём готовый план в Telegram и на email в течение 3 рабочих дней.</div>
                 {% if not order.telegram_user_id %}
                 <div style="margin-top:20px;background:#f0f6ff;border-radius:12px;padding:16px;text-align:center;">
                     <div style="font-weight:700;font-size:14px;color:#055ba9;margin-bottom:6px;">Получить PDF в Telegram</div>
@@ -113,7 +113,7 @@
     </div>
 </div>
 
-{% if order.status in ('new', 'paid', 'processing') %}
+{% if order.status in ('new', 'paid', 'processing', 'review', 'rework') %}
 <script>
     setInterval(async () => {
         try {

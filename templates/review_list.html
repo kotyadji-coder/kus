@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>На проверке — Кусь</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; padding: 20px; }
+        h1 { color: #055ba9; margin-bottom: 6px; }
+        .sub { color: #888; font-size: 13px; margin-bottom: 20px; }
+        .admin-nav { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .admin-nav a { color: #055ba9; font-weight: 600; text-decoration: none; font-size: 14px; padding: 8px 16px; border-radius: 8px; background: #e6f0fa; }
+        .admin-nav a.active { background: #055ba9; color: #fff; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #055ba9; color: white; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+        .badge-review { background:#fff3cd; color:#856404; }
+        .badge-rework { background:#f8d7da; color:#721c24; }
+        .badge-processing { background:#e2e3e5; color:#383d41; }
+        .chk-ok { color:#16a34a; font-weight:600; }
+        .chk-bad { color:#dc2626; font-weight:600; }
+        .btn { display:inline-block; padding:7px 14px; background:#055ba9; color:#fff; border-radius:8px; text-decoration:none; font-weight:600; font-size:13px; }
+        .empty { background:#fff; border-radius:12px; padding:40px; text-align:center; color:#888; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+    <div class="admin-nav">
+        <a href="/admin">Заказы</a>
+        <a href="/admin/review" class="active">На проверке</a>
+        <a href="/admin/support">Поддержка</a>
+        <a href="/admin/evals">Эвалы</a>
+    </div>
+    <h1>На проверке кинологом</h1>
+    <div class="sub">Рацион сначала проходит авто-проверку (агент), затем его смотрит кинолог. Клиенту отчёт уходит только после одобрения.</div>
+
+    {% if orders %}
+    <table>
+        <tr>
+            <th>#</th><th>Дата</th><th>Собака</th><th>Тип</th><th>Авто-проверка</th><th>Статус</th><th></th>
+        </tr>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.created_at[:16] if o.created_at else '' }}</td>
+            <td><strong>{{ o.dog_name }}</strong><br><small>{{ o.breed }}</small></td>
+            <td>{{ o.diet_type }}</td>
+            <td>
+                {% if o.auto_check_ok == 1 %}<span class="chk-ok">✓ ок</span>
+                {% elif o.auto_check_ok == 0 %}<span class="chk-bad">⚠ замечания</span>
+                {% else %}<small>—</small>{% endif %}
+                {% if o.auto_check %}<br><small style="color:#888;">{{ o.auto_check[:90] }}</small>{% endif %}
+            </td>
+            <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+            <td>
+                {% if o.status in ('review', 'rework') %}
+                <a class="btn" href="/admin/review/{{ o.id }}">Проверить</a>
+                {% else %}<small>идёт расчёт…</small>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="empty">Нет заказов на проверке. Всё разобрано 🎉</div>
+    {% endif %}
+</body>
+</html>
