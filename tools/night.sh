@@ -21,10 +21,11 @@ if [ -z "$digest" ]; then
   rc=1
 fi
 
-# 2. Токены из .env на 5.42 (Амстердам их не хранит)
-creds="$($SSH "$REMOTE" "grep -E '^(BOT_TOKEN|ADMIN_TELEGRAM_ID)=' $REPO/.env" 2>/dev/null)"
-TG_TOKEN="$(printf '%s\n' "$creds" | sed -n 's/^BOT_TOKEN=//p' | tr -d '\r')"
-TG_CHAT="$(printf '%s\n' "$creds" | sed -n 's/^ADMIN_TELEGRAM_ID=//p' | tr -d '\r')"
+# 2. Шлём в общий бот отчётов @Talepro_bot (консолидация уведомлений 2026-06-21).
+#    Токен берём из tales/.env на 5.42 (там же лежит), Амстердам секрет не хранит.
+creds="$($SSH "$REMOTE" "grep BOT_TOKEN /opt/tales/.env" 2>/dev/null)"
+TG_TOKEN="$(printf '%s\n' "$creds" | sed -nE 's/.*BOT_TOKEN[[:space:]]*=[[:space:]]*"?([0-9]+:[A-Za-z0-9_-]+).*/\1/p' | head -1)"
+TG_CHAT="856877325"
 
 # 3. Отправка С АМСТЕРДАМА (здесь Telegram доступен)
 if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then

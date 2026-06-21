@@ -47,17 +47,8 @@ if [ $overall -ne 0 ]; then
 $details"
 fi
 
-# Дайджест — в stdout (его забирает оркестратор на Амстердаме и шлёт в Telegram,
-# т.к. у 5.42 заблокирован egress на api.telegram.org). Попытку прямой отправки
-# оставляем для случая запуска на хосте С доступом — статус идёт в stderr, чтобы
-# не засорять «чистый» дайджест в stdout.
+# Дайджест — ТОЛЬКО в stdout. Отправку в Telegram делает оркестратор night.sh на
+# Амстердаме (там есть сеть). Прямую отправку отсюда УБРАЛИ 2026-06-21: она давала
+# ВТОРУЮ копию сообщения (Москва слала сама + оркестратор слал тот же текст).
 printf '%s\n' "$msg"
-if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
-  if curl -s --max-time 20 "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
-       --data-urlencode "chat_id=${TG_CHAT}" --data-urlencode "text=${msg}" >/dev/null 2>&1; then
-    echo "[nightly] дайджест отправлен в Telegram напрямую" >&2
-  else
-    echo "[nightly] прямая отправка не удалась (ожидаемо на 5.42) — пусть шлёт оркестратор" >&2
-  fi
-fi
 exit $overall
