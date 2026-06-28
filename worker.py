@@ -34,6 +34,7 @@ ADMIN_TELEGRAM_ID = os.getenv("ADMIN_TELEGRAM_ID", "")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "") or os.getenv("SMTP_USER", "")
 VK_TOKEN = os.getenv("VK_TOKEN", "")
 BASE_URL = os.getenv("BASE_URL", "https://kus.dogfine.ru")
+VK_COMMUNITY_URL = os.getenv("VK_COMMUNITY_URL", "")
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 
@@ -435,6 +436,19 @@ def _send_email_link(email: str, order: dict):
     """Отправляет ссылку на расчёт на email."""
     diet_label = _diet_label(order)
     view_url = f"{BASE_URL}/order/{order['id']}/view"
+    wants_vk = "vk" in _wanted_channels(order)
+    vk_note = ""
+    if wants_vk:
+        if VK_COMMUNITY_URL:
+            vk_note = (
+                f"\nЕсли хотите получить рацион во ВКонтакте, напишите нам в сообщество: "
+                f"{VK_COMMUNITY_URL}\n"
+            )
+        else:
+            vk_note = (
+                "\nЕсли хотите получить рацион во ВКонтакте, сначала напишите нам в сообщения "
+                "сообщества: без первого сообщения ВК может не принять доставку.\n"
+            )
 
     msg = MIMEMultipart()
     msg["From"] = SMTP_FROM
@@ -447,7 +461,8 @@ def _send_email_link(email: str, order: dict):
         f"ветеринарным нормам и проверил наш специалист.\n\n"
         f"Открыть рацион: {view_url}\n\n"
         f"На странице есть кнопка «Печать / Сохранить PDF» — можно распечатать или сохранить как PDF.\n\n"
-        f"У вас 7 дней поддержки. Пишите нам в Telegram: @doggifood_bot\n\n"
+        f"У вас 7 дней поддержки. Пишите нам в Telegram: @doggifood_bot\n"
+        f"{vk_note}\n"
         f"С заботой о вашем питомце,\nКоманда «Кусь»"
     )
     msg.attach(MIMEText(body, "plain", "utf-8"))

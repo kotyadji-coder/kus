@@ -42,6 +42,7 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
                             headers={"WWW-Authenticate": "Basic"})
     return credentials.username
 BASE_URL = os.getenv("BASE_URL", "https://kus.dogfine.ru")
+VK_COMMUNITY_URL = os.getenv("VK_COMMUNITY_URL", "")
 PRICES = {
     "barf": 1390,
     "cooked": 1390,
@@ -120,10 +121,13 @@ async def submit_order(request: Request, background_tasks: BackgroundTasks):
 
     # Чекбокс neutered
     data["neutered"] = data.get("neutered") == "on" or data.get("neutered") == "true"
-    data["age_months"] = int(data.get("age_months", 0))
-    data["weight_kg"] = float(data.get("weight_kg", 0))
-    if data.get("telegram_user_id"):
-        data["telegram_user_id"] = int(data["telegram_user_id"])
+    try:
+        data["age_months"] = int(data.get("age_months", 0))
+        data["weight_kg"] = float(data.get("weight_kg", 0))
+        if data.get("telegram_user_id"):
+            data["telegram_user_id"] = int(data["telegram_user_id"])
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="Некорректный возраст, вес или Telegram ID")
 
     # Комбо: натуралка + сухой корм
     if data.get("diet_type") == "combo":
@@ -250,7 +254,11 @@ async def _verify_yookassa_payment(payment_id: str | None, order_id: int) -> boo
 async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
     """Webhook от ЮKassa — подтверждение оплаты."""
     body = await request.body()
-    data = json.loads(body)
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        log.warning("YooKassa webhook: invalid JSON body ignored")
+        return JSONResponse({"status": "ignored"}, status_code=400)
 
     event = data.get("event")
     payment = data.get("object", {})
@@ -264,7 +272,16 @@ async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
     if not order_id:
         return JSONResponse({"status": "ok"})
 
-    order_id = int(order_id)
+    try:
+        order_id = int(order_id)
+    except (TypeError, ValueError):
+        log.warning(f"YooKassa webhook: invalid order_id={order_id!r} ignored")
+        return JSONResponse({"status": "ignored"})
+
+    order = await get_order(order_id)
+    if not order:
+        log.warning(f"YooKassa webhook: unknown order_id={order_id} ignored")
+        return JSONResponse({"status": "ignored"})
 
     if event == "payment.succeeded" and status == "succeeded":
         # Не доверяем телу вебхука: перепроверяем платёж в API ЮKassa (защита от
@@ -276,7 +293,8 @@ async def yookassa_webhook(request: Request, background_tasks: BackgroundTasks):
                 return JSONResponse({"status": "ignored"})
         await update_order(order_id, payment_status="succeeded", status="paid")
         order = await get_order(order_id)
-        background_tasks.add_task(process_order, order)
+        if order:
+            background_tasks.add_task(process_order, order)
         log.info(f"Order #{order_id}: payment succeeded (verified), generation started")
 
     elif event == "payment.canceled":
@@ -299,6 +317,7 @@ async def order_status(request: Request, order_id: int):
 
     return templates.TemplateResponse(request=request, name="status.html", context={
         "order": order,
+        "vk_community_url": VK_COMMUNITY_URL,
     })
 
 

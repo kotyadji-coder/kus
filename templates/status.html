@@ -40,6 +40,8 @@
         .contacts { margin-top: 30px; font-size: 13px; color: #aaa; }
         .contacts a { color: #055ba9; }
         .tg-btn { display: inline-flex; align-items: center; gap: 8px; background: #055ba9; color: #fff; font-weight: 600; font-size: 15px; padding: 12px 24px; border-radius: 12px; text-decoration: none; margin-top: 16px; }
+        .vk-box { margin-top:16px;background:#f5f8ff;border-radius:12px;padding:16px;text-align:center;border:1px solid #dbe7ff; }
+        .vk-btn { display:inline-flex;align-items:center;gap:8px;background:#0077ff;color:#fff;font-weight:600;font-size:15px;padding:12px 24px;border-radius:12px;text-decoration:none;margin-top:12px; }
     </style>
 </head>
 <body>
@@ -48,6 +50,7 @@
     <div class="status-card">
         <div class="dog-name">{{ order.dog_name }}</div>
         <div class="breed">{{ order.breed }}</div>
+        {% set wants_vk = order.vk and (not order.delivery_channel or order.delivery_channel == 'all' or 'vk' in order.delivery_channel) %}
 
         <div id="statusContent">
             {% if order.status == 'new' %}
@@ -70,6 +73,15 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
                         Получить в Telegram
                     </a>
+                </div>
+                {% endif %}
+                {% if wants_vk %}
+                <div class="vk-box">
+                    <div style="font-weight:700;font-size:14px;color:#055ba9;margin-bottom:6px;">Получить рацион во ВКонтакте</div>
+                    <div style="font-size:13px;color:#666;line-height:1.5;">Напишите нам в сообщения сообщества и укажите заказ #{{ order.id }}. Без первого сообщения ВКонтакте может не принять доставку.</div>
+                    {% if vk_community_url %}
+                    <a href="{{ vk_community_url }}" target="_blank" class="vk-btn">Написать во ВКонтакте</a>
+                    {% endif %}
                 </div>
                 {% endif %}
             {% elif order.status == 'done' %}
@@ -99,6 +111,15 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 11l18-7-3 16-7-3-3 4v-5l10-9-12 7-3-2z"/></svg>
                     Получить в Telegram
                 </a>
+                {% endif %}
+                {% if wants_vk %}
+                <div class="vk-box">
+                    <div style="font-weight:700;font-size:14px;color:#055ba9;margin-bottom:6px;">Доставка во ВКонтакте</div>
+                    <div style="font-size:13px;color:#666;line-height:1.5;">Если сообщение во ВКонтакте не пришло, напишите нам в сообщения сообщества и укажите заказ #{{ order.id }}.</div>
+                    {% if vk_community_url %}
+                    <a href="{{ vk_community_url }}" target="_blank" class="vk-btn">Написать во ВКонтакте</a>
+                    {% endif %}
+                </div>
                 {% endif %}
             {% elif order.status == 'error' %}
                 <div class="status-icon">&#9888;</div>
