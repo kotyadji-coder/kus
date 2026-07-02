@@ -1,0 +1,53 @@
+project:
+  id: kus
+  name: kus
+  type: unknown
+  risk_level: medium
+
+commands:
+  check: ./scripts/check.sh
+  local_verify: ./scripts/local-verify.sh
+  browser_check: ./scripts/browser-check.sh
+  smoke: ./scripts/smoke.sh
+  rollback: ./scripts/rollback.sh
+
+urls:
+  local: null
+  staging: null
+  live: null
+
+critical_pages:
+  - /
+
+critical_flows:
+  - open_main_page
+
+database:
+  enabled: unknown
+  backup_required_before_live_change: true
+
+deploy:
+  live_requires_phrase: "Разрешаю выложить на живой проект"
+
+forbidden:
+  - edit_env_without_approval
+  - commit_secrets
+  - push_directly_to_main
+  - deploy_live_without_approval
+  - delete_database
+  - delete_uploads
+  - delete_media
+  - delete_backups
+  - delete_docker_volumes
+
+required_checks:
+  - git_status
+  - project_check
+  - local_verify
+  - browser_check_for_web
+  - diff_review
+
+
+final_verdicts:
+  ready: "Готово к выкладке на живой проект"
+  blocked: "Нельзя выкладывать: есть проблемы"
