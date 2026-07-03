@@ -171,3 +171,19 @@ Quality improvements:
    lactation, tiny puppies, and dirty stop-product text.
 3. Keep `CLAUDE.md`, `PLAN.md`, and this `AGENTS.md` synchronized when tasks are
    completed.
+
+## Общий Безопасный Режим Codex
+
+Этот проект подключен к общим рабочим правилам:
+
+```text
+/root/ai-harness/HARNESS.md
+```
+
+Перед изменениями Codex должен прочитать общий файл, затем `PROJECT.md` и `HARNESS.yaml` этого проекта.
+
+Живой проект можно выкладывать только после точной фразы владельца:
+
+```text
+Разрешаю выложить на живой проект
+```
