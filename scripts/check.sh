@@ -14,8 +14,11 @@ fi
 
 if [ -f pyproject.toml ] || [ -f pytest.ini ] || [ -d tests ]; then
   echo "== Python project checks =="
-  if [ -x ./.venv/bin/python ]; then
+  export PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}."
+  if [ -x ./.venv/bin/python ] && ./.venv/bin/python -m pytest --version >/dev/null 2>&1; then
     ./.venv/bin/python -m pytest -q
+  elif [ -x ./venv/bin/python ] && ./venv/bin/python -m pytest --version >/dev/null 2>&1; then
+    ./venv/bin/python -m pytest -q
   elif command -v pytest >/dev/null 2>&1; then
     pytest -q
   else

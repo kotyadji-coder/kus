@@ -27,7 +27,9 @@ database:
   backup_required_before_live_change: true
 
 deploy:
-  live_requires_phrase: "Разрешаю выложить на живой проект"
+  live_requires_phrase: "деплой"
+  live_phrase_case_sensitive: false
+  live_phrase_must_be_standalone: true
 
 forbidden:
   - edit_env_without_approval
@@ -48,5 +50,6 @@ required_checks:
   - diff_review
 
 final_verdicts:
-  ready: "Готово к выкладке на живой проект"
+  ready: "Проверено. Готово к выкладке. Живой проект не тронут."
+  deployed: "Выложено на живой проект. Проверка после выкладки пройдена."
   blocked: "Нельзя выкладывать: есть проблемы"
